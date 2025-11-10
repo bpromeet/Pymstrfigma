@@ -449,12 +449,12 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex gap-3">
-            <AlertDialogCancel className="rounded-full bg-transparent border border-[#43586C] text-[#F6F7F9] hover:bg-white/[0.08] hover:border-[#757575] transition-all duration-200">
+            <AlertDialogCancel className="rounded-full bg-transparent border border-[#43586C] !text-[#1C1B1F] dark:!text-[#F6F7F9] hover:bg-black/[0.04] dark:hover:bg-white/[0.08] hover:border-[#757575] transition-all duration-200">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleSecurityConfirm}
-              className="rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200"
+              className="rounded-full bg-[#1E88E5] !text-white hover:bg-[#1565C0] transition-all duration-200"
             >
               Confirm
             </AlertDialogAction>
