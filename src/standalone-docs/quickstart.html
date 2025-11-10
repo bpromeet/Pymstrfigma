@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start Guide - PYMSTR Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #F6F7F9;
+            background: #2E3C49;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #394B5C;
+            border-right: 1px solid rgba(124, 114, 250, 0.2);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: #F6F7F9;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #07D7FF;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: #F6F7F9;
+            text-decoration: none;
+            border-radius: 9999px;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s;
+            opacity: 0.8;
+        }
+
+        .nav-link:hover {
+            background: rgba(124, 114, 250, 0.2);
+            color: #F6F7F9;
+            opacity: 1;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #7C72FA 0%, #F90BD5 100%);
+            color: #fff;
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #07D7FF;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(7, 215, 255, 0.1);
+            color: #07D7FF;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F6F7F9;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #F6F7F9;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #F6F7F9;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #F6F7F9;
+            opacity: 0.9;
+        }
+
+        .intro {
+            font-size: 1.125rem;
+            color: #F6F7F9;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        code {
+            background: #123653;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #07D7FF;
+        }
+
+        pre {
+            background: #123653;
+            color: #F6F7F9;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #F6F7F9;
+        }
+
+        ul, ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: #F6F7F9;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: #394B5C;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #123653;
+            color: #07D7FF;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            border: 1px solid rgba(7, 215, 255, 0.3);
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #7C72FA 0%, #F90BD5 100%);
+            color: #fff;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #8A80FF 0%, #FF1AE3 100%);
+            box-shadow: 0 4px 20px rgba(124, 114, 250, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(124, 114, 250, 0.2);
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">PYMSTR</div>
+            
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Documentation</div>
+                    <a href="quickstart.html" class="nav-link active">Quick Start</a>
+                    <a href="api-reference.html" class="nav-link">API Reference</a>
+                    <a href="code-examples.html" class="nav-link">Code Examples</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">On This Page</div>
+                    <a href="#overview" class="nav-link">Overview</a>
+                    <a href="#step1" class="nav-link">1. Get API Keys</a>
+                    <a href="#step2" class="nav-link">2. Create Payment Link</a>
+                    <a href="#step3" class="nav-link">3. Process Payment</a>
+                    <a href="#step4" class="nav-link">4. Verify Transaction</a>
+                    <a href="#next" class="nav-link">Next Steps</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <a href="index.html" class="back-button">← Back</a>
+
+            <h1>Quick Start Guide</h1>
+            <p class="intro">Get started with PYMSTR in minutes. This guide will walk you through creating your first Web3 stablecoin payment.</p>
+
+            <div class="card">
+                <p><strong>⏱️ Estimated time:</strong> 5-10 minutes</p>
+                <p><strong>📋 Requirements:</strong> PYMSTR merchant account</p>
+            </div>
+
+            <h2 id="overview">Overview</h2>
+            <p>PYMSTR is a Web3 stablecoin payment processor that enables merchants to accept crypto payments across multiple blockchain networks. This guide covers the basics of integrating PYMSTR into your application.</p>
+
+            <p><strong>Supported Stablecoins:</strong></p>
+            <ul>
+                <li><span class="badge">USDC</span> USD Coin</li>
+                <li><span class="badge">USDT</span> Tether</li>
+                <li><span class="badge">EURC</span> Euro Coin</li>
+            </ul>
+
+            <p><strong>Supported Networks:</strong></p>
+            <ul>
+                <li>Ethereum</li>
+                <li>Polygon</li>
+                <li>Arbitrum</li>
+                <li>Optimism</li>
+                <li>Base</li>
+            </ul>
+
+            <h2 id="step1">Step 1: Get Your API Keys</h2>
+            <p>First, you'll need to generate API keys from your PYMSTR dashboard.</p>
+
+            <ol>
+                <li>Log into your PYMSTR merchant dashboard</li>
+                <li>Navigate to <strong>Team</strong> → <strong>API Keys</strong></li>
+                <li>Click <strong>"Generate New API Key"</strong></li>
+                <li>Copy your API key and store it securely</li>
+            </ol>
+
+            <div class="card">
+                <p><strong>⚠️ Security Note:</strong> Never expose your API keys in client-side code. Always make API calls from your backend server.</p>
+            </div>
+
+            <h2 id="step2">Step 2: Create a Payment Link</h2>
+            <p>Use the PYMSTR API to create a payment link for your customer.</p>
+
+            <h3>API Request</h3>
+            <pre><code>POST https://api.pymstr.com/v1/payment-links
+Content-Type: application/json
+Authorization: Bearer YOUR_API_KEY
+
+{
+  "price": 50.00,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "description": "Monthly Subscription"
+}</code></pre>
+
+            <h3>Response</h3>
+            <pre><code>{
+  "linkId": "PL_abc123def456",
+  "url": "https://pymstr-staging.figma.site/#/pay/PL_abc123def456",
+  "status": "active",
+  "price": 50.00,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "createdAt": "2025-11-03T10:30:00Z"
+}</code></pre>
+
+            <h2 id="step3">Step 3: Redirect Customer to Payment</h2>
+            <p>After creating the payment link, redirect your customer to the URL provided in the API response.</p>
+
+            <pre><code>// Example: JavaScript redirect
+const paymentUrl = response.url;
+window.location.href = paymentUrl;</code></pre>
+
+            <p>The customer will be taken to the PYMSTR checkout page where they can:</p>
+            <ul>
+                <li>Connect their Web3 wallet</li>
+                <li>Review payment details</li>
+                <li>Complete the transaction on-chain</li>
+            </ul>
+
+            <h2 id="step4">Step 4: Verify Transaction</h2>
+            <p>After the customer completes payment, you can verify the transaction using webhooks or by querying the payment link status.</p>
+
+            <h3>Using Webhooks (Recommended)</h3>
+            <p>Set up a webhook endpoint to receive real-time payment notifications:</p>
+
+            <pre><code>POST https://your-server.com/webhooks/pymstr
+
+{
+  "event": "payment.completed",
+  "linkId": "PL_abc123def456",
+  "txHash": "0x1234...abcd",
+  "price": 50.00,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "timestamp": "2025-11-03T10:35:00Z"
+}</code></pre>
+
+            <h3>Polling Payment Status</h3>
+            <p>Alternatively, you can poll the payment link status:</p>
+
+            <pre><code>GET https://api.pymstr.com/v1/payment-links/PL_abc123def456
+Authorization: Bearer YOUR_API_KEY</code></pre>
+
+            <h2 id="next">Next Steps</h2>
+            <p>Now that you've completed your first payment, explore these resources:</p>
+
+            <ul>
+                <li><a href="api-reference.html">API Reference</a> - Complete API documentation</li>
+                <li><a href="code-examples.html">Code Examples</a> - Integration examples in multiple languages</li>
+                <li><strong>Webhooks</strong> - Set up real-time payment notifications</li>
+                <li><strong>Testing</strong> - Use testnet for development</li>
+            </ul>
+
+            <a href="https://pymstr-staging.figma.site/" class="button">Go to Dashboard →</a>
+        </main>
+    </div>
+</body>
+</html>

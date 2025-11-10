@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PYMSTR Mobile FAB Demo - MD3 Standard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    * {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  
+  <!-- ============================================
+       MOBILE VIEWPORT (Simulating your screenshot)
+       This mimics the dashboard you showed
+       ============================================ -->
+  <div class="max-w-[450px] mx-auto bg-white shadow-2xl min-h-screen">
+    
+    <!-- Top Bar -->
+    <div class="bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-30">
+      <div class="flex items-center gap-2">
+        <!-- Menu Icon -->
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </div>
+      <div class="flex items-center gap-2">
+        <!-- Menu Icon (right side) -->
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Dashboard Header -->
+    <div class="p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <h1 class="text-xl font-medium">Dashboard</h1>
+      </div>
+      <p class="text-sm text-gray-500">Overview of your payment processing and analytics</p>
+    </div>
+
+    <!-- OLD DESKTOP-STYLE BUTTON (What you currently see) -->
+    <div class="px-4 mb-4">
+      <button class="w-full bg-blue-500 text-white rounded-full py-3 px-6 flex items-center justify-center gap-2 font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Generate Payment Link
+      </button>
+      <p class="text-center text-xs text-red-600 mt-2 font-medium">❌ This button should be HIDDEN on mobile!</p>
+      <p class="text-center text-xs text-gray-500 mt-1">Instead, use the FAB at bottom-right →</p>
+    </div>
+
+    <!-- Dashboard Cards (Simulating your UI) -->
+    <div class="px-4 space-y-4 pb-32">
+      <!-- Total Volume Card -->
+      <div class="bg-gray-100 rounded-2xl p-4">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="text-gray-600">Total Volume</h3>
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+          </svg>
+        </div>
+        <p class="text-3xl font-semibold mb-1">$125,847.32</p>
+        <p class="text-sm text-gray-500">+12.5% from last month</p>
+      </div>
+
+      <!-- Successful Txns Card -->
+      <div class="bg-gray-100 rounded-2xl p-4">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="text-gray-600">Successful Txns</h3>
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <p class="text-3xl font-semibold mb-1">1,847</p>
+        <p class="text-sm text-gray-500">+8.2% from last month</p>
+      </div>
+
+      <!-- Avg Transaction Card -->
+      <div class="bg-gray-100 rounded-2xl p-4">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="text-gray-600">Avg Transaction</h3>
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+        <p class="text-3xl font-semibold mb-1">$68.14</p>
+        <p class="text-sm text-gray-500">+3.1% from last month</p>
+      </div>
+
+      <!-- Active Customers Card -->
+      <div class="bg-gray-100 rounded-2xl p-4">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="text-gray-600">Active Customers</h3>
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <p class="text-3xl font-semibold mb-1">342</p>
+        <p class="text-sm text-gray-500">+15.3% from last month</p>
+      </div>
+    </div>
+
+    <!-- ============================================
+         MD3 MOBILE FAB (BOTTOM-RIGHT)
+         
+         This is what you SHOULD see instead!
+         Position: fixed bottom-6 right-6
+         Size: 56px × 56px (w-14 h-14)
+         Color: Cyan #07D7FF
+         Icon: 24px Plus icon
+         ============================================ -->
+    <button 
+      class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-cyan-400 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+      style="background-color: #07D7FF;"
+      onclick="alert('✅ This is the MD3 Mobile FAB!\n\nPosition: bottom-right corner\nSize: 56px × 56px\nColor: Cyan #07D7FF\n\nThis should replace the top button on mobile!')"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+    </button>
+
+    <!-- Annotation Arrow (Visual Guide) -->
+    <div class="fixed bottom-24 right-4 z-40 animate-bounce">
+      <div class="bg-green-500 text-white px-3 py-2 rounded-lg text-xs font-medium shadow-lg">
+        ✅ FAB here!
+      </div>
+      <div class="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent border-t-green-500 ml-8"></div>
+    </div>
+
+  </div>
+
+  <!-- Instructions Panel (Desktop View) -->
+  <div class="max-w-4xl mx-auto mt-8 p-6 bg-blue-50 border-2 border-blue-200 rounded-2xl">
+    <h2 class="text-2xl font-bold mb-4 text-blue-900">📱 MD3 Mobile FAB Positioning</h2>
+    
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- What you see now -->
+      <div class="bg-white p-4 rounded-xl border-2 border-red-500">
+        <h3 class="font-bold text-red-600 mb-2 flex items-center gap-2">
+          <span class="text-2xl">❌</span> Current (Wrong)
+        </h3>
+        <ul class="space-y-2 text-sm">
+          <li>• Button at <strong>TOP</strong> of screen</li>
+          <li>• Full-width rectangular button</li>
+          <li>• Always visible (not floating)</li>
+          <li>• Desktop styling on mobile</li>
+          <li class="text-red-600 font-medium">⚠️ Not MD3 compliant!</li>
+        </ul>
+      </div>
+
+      <!-- What you should see -->
+      <div class="bg-white p-4 rounded-xl border-2 border-green-500">
+        <h3 class="font-bold text-green-600 mb-2 flex items-center gap-2">
+          <span class="text-2xl">✅</span> Correct (MD3)
+        </h3>
+        <ul class="space-y-2 text-sm">
+          <li>• Circular button at <strong>BOTTOM-RIGHT</strong></li>
+          <li>• Fixed position: <code class="bg-gray-200 px-1 rounded">bottom-6 right-6</code></li>
+          <li>• Size: 56px × 56px (MD3 standard)</li>
+          <li>• Cyan color (#07D7FF)</li>
+          <li class="text-green-600 font-medium">✓ MD3 compliant!</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-6 bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4">
+      <h3 class="font-bold text-yellow-900 mb-2">🔧 How to Fix Your App:</h3>
+      <ol class="space-y-2 text-sm list-decimal list-inside">
+        <li>Navigate to the <strong>Payment Links</strong> section (not Dashboard)</li>
+        <li>OR use the <code class="bg-gray-200 px-1 rounded">PaymentLinksDashboard</code> component I created</li>
+        <li>The FAB is already implemented - just needs to be integrated!</li>
+        <li>On mobile: Hide the top button, show the FAB</li>
+        <li>On desktop: Show the top button, hide the FAB</li>
+      </ol>
+    </div>
+
+    <div class="mt-6 bg-white border-2 border-gray-300 rounded-xl p-4">
+      <h3 class="font-bold mb-3">📝 Code Example:</h3>
+      <pre class="bg-gray-900 text-green-400 p-4 rounded-lg text-xs overflow-x-auto"><code><!-- Desktop: Toolbar Button -->
+<Button className="hidden md:inline-flex ...">
+  Generate Payment Link
+</Button>
+
+<!-- Mobile: FAB (Bottom-Right) -->
+<button className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg md:hidden">
+  <Plus className="w-6 h-6" />
+</button></code></pre>
+    </div>
+  </div>
+
+  <script>
+    // Add click animation to FAB
+    const fab = document.querySelector('button[class*="fixed bottom-6"]');
+    fab.addEventListener('click', function() {
+      this.classList.add('scale-95');
+      setTimeout(() => {
+        this.classList.remove('scale-95');
+      }, 100);
+    });
+  </script>
+
+</body>
+</html>

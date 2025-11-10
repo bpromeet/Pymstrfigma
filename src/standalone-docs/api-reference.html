@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Reference - PYMSTR Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #F6F7F9;
+            background: #2E3C49;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #394B5C;
+            border-right: 1px solid rgba(124, 114, 250, 0.2);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: #F6F7F9;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #07D7FF;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: #F6F7F9;
+            text-decoration: none;
+            border-radius: 9999px;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s;
+            opacity: 0.8;
+        }
+
+        .nav-link:hover {
+            background: rgba(124, 114, 250, 0.2);
+            color: #F6F7F9;
+            opacity: 1;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #7C72FA 0%, #F90BD5 100%);
+            color: #fff;
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #07D7FF;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(7, 215, 255, 0.1);
+            color: #07D7FF;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F6F7F9;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #F6F7F9;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(124, 114, 250, 0.2);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #F6F7F9;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #F6F7F9;
+            opacity: 0.9;
+        }
+
+        .intro {
+            font-size: 1.125rem;
+            color: #F6F7F9;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        code {
+            background: #123653;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #07D7FF;
+        }
+
+        pre {
+            background: #123653;
+            color: #F6F7F9;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #F6F7F9;
+        }
+
+        .card {
+            background: #394B5C;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .endpoint {
+            background: #123653;
+            color: #07D7FF;
+            padding: 1rem 1.5rem;
+            border-radius: 9999px;
+            margin: 1rem 0;
+            font-family: 'Monaco', 'Courier New', monospace;
+            border: 1px solid rgba(7, 215, 255, 0.3);
+        }
+
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .method.post {
+            background: #7C72FA;
+            color: #fff;
+        }
+
+        .method.get {
+            background: #07D7FF;
+            color: #000;
+        }
+
+        .method.delete {
+            background: #F90BD5;
+            color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        th {
+            background: #394B5C;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+            color: #F6F7F9;
+        }
+
+        td {
+            padding: 0.75rem;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+            color: #F6F7F9;
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(124, 114, 250, 0.2);
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            table {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">PYMSTR</div>
+            
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Documentation</div>
+                    <a href="quickstart.html" class="nav-link">Quick Start</a>
+                    <a href="api-reference.html" class="nav-link active">API Reference</a>
+                    <a href="code-examples.html" class="nav-link">Code Examples</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Endpoints</div>
+                    <a href="#auth" class="nav-link">Authentication</a>
+                    <a href="#create-link" class="nav-link">Create Payment Link</a>
+                    <a href="#get-link" class="nav-link">Get Payment Link</a>
+                    <a href="#list-links" class="nav-link">List Payment Links</a>
+                    <a href="#webhooks" class="nav-link">Webhooks</a>
+                    <a href="#errors" class="nav-link">Error Codes</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <a href="index.html" class="back-button">← Back</a>
+
+            <h1>API Reference</h1>
+            <p class="intro">Complete reference for the PYMSTR API. All API requests must be authenticated and made over HTTPS.</p>
+
+            <div class="card">
+                <p><strong>Base URL:</strong> <code>https://api.pymstr.com/v1</code></p>
+                <p><strong>Rate Limit:</strong> 100 requests per minute</p>
+            </div>
+
+            <h2 id="auth">Authentication</h2>
+            <p>All API requests require authentication using an API key. Include your API key in the <code>Authorization</code> header:</p>
+
+            <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+
+            <div class="card">
+                <p><strong>🔑 Getting Your API Key:</strong></p>
+                <ol>
+                    <li>Log into your PYMSTR dashboard</li>
+                    <li>Navigate to Team → API Keys</li>
+                    <li>Click "Generate New API Key"</li>
+                    <li>Copy and securely store your key</li>
+                </ol>
+            </div>
+
+            <h2 id="create-link">Create Payment Link</h2>
+            <p>Creates a new single-use payment link for accepting cryptocurrency payments.</p>
+
+            <div class="endpoint">
+                <span class="method post">POST</span> /payment-links
+            </div>
+
+            <h3>Request Body</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>price</code></td>
+                        <td>number</td>
+                        <td>Yes</td>
+                        <td>Payment price in the specified currency</td>
+                    </tr>
+                    <tr>
+                        <td><code>currency</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>Stablecoin type: USDC, USDT, or EURC</td>
+                    </tr>
+                    <tr>
+                        <td><code>chain</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>Blockchain network: Ethereum, Polygon, Arbitrum, Optimism, or Base</td>
+                    </tr>
+                    <tr>
+                        <td><code>description</code></td>
+                        <td>string</td>
+                        <td>No</td>
+                        <td>Payment description</td>
+                    </tr>
+                    <tr>
+                        <td><code>metadata</code></td>
+                        <td>object</td>
+                        <td>No</td>
+                        <td>Custom key-value pairs for your reference</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Example Request</h3>
+            <pre><code>POST /v1/payment-links
+Content-Type: application/json
+Authorization: Bearer sk_live_abc123...
+
+{
+  "price": 99.99,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "description": "Premium Subscription - Annual",
+  "metadata": {
+    "userId": "user_123",
+    "planId": "premium_annual"
+  }
+}</code></pre>
+
+            <h3>Example Response</h3>
+            <pre><code>{
+  "linkId": "PL_xK9mP2nQ4r",
+  "url": "https://pymstr-staging.figma.site/#/pay/PL_xK9mP2nQ4r",
+  "status": "active",
+  "price": 99.99,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "description": "Premium Subscription - Annual",
+  "metadata": {
+    "userId": "user_123",
+    "planId": "premium_annual"
+  },
+  "createdAt": "2025-11-03T14:22:00Z",
+  "expiresAt": "2025-11-10T14:22:00Z"
+}</code></pre>
+
+            <h2 id="get-link">Get Payment Link</h2>
+            <p>Retrieves details of a specific payment link, including its current status and transaction hash if completed.</p>
+
+            <div class="endpoint">
+                <span class="method get">GET</span> /payment-links/:linkId
+            </div>
+
+            <h3>Example Request</h3>
+            <pre><code>GET /v1/payment-links/PL_xK9mP2nQ4r
+Authorization: Bearer sk_live_abc123...</code></pre>
+
+            <h3>Example Response (Active)</h3>
+            <pre><code>{
+  "linkId": "PL_xK9mP2nQ4r",
+  "url": "https://pymstr-staging.figma.site/#/pay/PL_xK9mP2nQ4r",
+  "status": "active",
+  "price": 99.99,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "createdAt": "2025-11-03T14:22:00Z",
+  "expiresAt": "2025-11-10T14:22:00Z"
+}</code></pre>
+
+            <h3>Example Response (Completed)</h3>
+            <pre><code>{
+  "linkId": "PL_xK9mP2nQ4r",
+  "url": "https://pymstr-staging.figma.site/#/pay/PL_xK9mP2nQ4r",
+  "status": "completed",
+  "price": 99.99,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "txHash": "0x1234567890abcdef...",
+  "completedAt": "2025-11-03T14:30:15Z",
+  "createdAt": "2025-11-03T14:22:00Z"
+}</code></pre>
+
+            <h2 id="list-links">List Payment Links</h2>
+            <p>Returns a list of all payment links for your merchant account.</p>
+
+            <div class="endpoint">
+                <span class="method get">GET</span> /payment-links
+            </div>
+
+            <h3>Query Parameters</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>status</code></td>
+                        <td>string</td>
+                        <td>Filter by status: active, completed, expired</td>
+                    </tr>
+                    <tr>
+                        <td><code>source</code></td>
+                        <td>string</td>
+                        <td>Filter by source: manual, api</td>
+                    </tr>
+                    <tr>
+                        <td><code>limit</code></td>
+                        <td>number</td>
+                        <td>Number of results (default: 50, max: 100)</td>
+                    </tr>
+                    <tr>
+                        <td><code>offset</code></td>
+                        <td>number</td>
+                        <td>Pagination offset (default: 0)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Example Request</h3>
+            <pre><code>GET /v1/payment-links?status=completed&limit=20
+Authorization: Bearer sk_live_abc123...</code></pre>
+
+            <h2 id="webhooks">Webhooks</h2>
+            <p>PYMSTR sends webhook events to notify your application when payment links are completed or expire.</p>
+
+            <h3>Setting Up Webhooks</h3>
+            <ol>
+                <li>Log into your PYMSTR dashboard</li>
+                <li>Navigate to Team → Webhooks</li>
+                <li>Add your webhook endpoint URL</li>
+                <li>Select which events you want to receive</li>
+            </ol>
+
+            <h3>Webhook Events</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>payment.completed</code></td>
+                        <td>Payment link was successfully paid</td>
+                    </tr>
+                    <tr>
+                        <td><code>payment.expired</code></td>
+                        <td>Payment link expired without payment</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Webhook Payload Example</h3>
+            <pre><code>{
+  "event": "payment.completed",
+  "linkId": "PL_xK9mP2nQ4r",
+  "price": 99.99,
+  "currency": "USDC",
+  "chain": "Polygon",
+  "txHash": "0x1234567890abcdef...",
+  "metadata": {
+    "userId": "user_123",
+    "planId": "premium_annual"
+  },
+  "timestamp": "2025-11-03T14:30:15Z"
+}</code></pre>
+
+            <h2 id="errors">Error Codes</h2>
+            <p>The PYMSTR API uses standard HTTP status codes to indicate success or failure.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Status</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>200</td>
+                        <td>OK</td>
+                        <td>Request successful</td>
+                    </tr>
+                    <tr>
+                        <td>201</td>
+                        <td>Created</td>
+                        <td>Resource created successfully</td>
+                    </tr>
+                    <tr>
+                        <td>400</td>
+                        <td>Bad Request</td>
+                        <td>Invalid request parameters</td>
+                    </tr>
+                    <tr>
+                        <td>401</td>
+                        <td>Unauthorized</td>
+                        <td>Invalid or missing API key</td>
+                    </tr>
+                    <tr>
+                        <td>404</td>
+                        <td>Not Found</td>
+                        <td>Resource not found</td>
+                    </tr>
+                    <tr>
+                        <td>429</td>
+                        <td>Too Many Requests</td>
+                        <td>Rate limit exceeded</td>
+                    </tr>
+                    <tr>
+                        <td>500</td>
+                        <td>Internal Server Error</td>
+                        <td>Server error occurred</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Error Response Format</h3>
+            <pre><code>{
+  "error": {
+    "code": "invalid_request",
+    "message": "The 'currency' field must be one of: USDC, USDT, EURC",
+    "param": "currency"
+  }
+}</code></pre>
+        </main>
+    </div>
+</body>
+</html>

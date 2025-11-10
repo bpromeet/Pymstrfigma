@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYMSTR Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #F6F7F9;
+            background: #2E3C49;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #F6F7F9;
+            margin-bottom: 1rem;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: #07D7FF;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F6F7F9;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #F6F7F9;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #F6F7F9;
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .card {
+            background: #394B5C;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(124, 114, 250, 0.3);
+            border-color: rgba(124, 114, 250, 0.5);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            color: #F6F7F9;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: #F6F7F9;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #7C72FA 0%, #F90BD5 100%);
+            color: #fff;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #8A80FF 0%, #FF1AE3 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(124, 114, 250, 0.4);
+        }
+
+        .button-secondary {
+            background: #394B5C;
+            color: #F6F7F9;
+            border: 1px solid rgba(7, 215, 255, 0.3);
+        }
+
+        .button-secondary:hover {
+            background: #123653;
+            border-color: #07D7FF;
+        }
+
+        .features {
+            margin: 4rem 0;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #7C72FA 0%, #07D7FF 100%);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item h4 {
+            font-size: 1.125rem;
+            color: #F6F7F9;
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-item p {
+            font-size: 0.875rem;
+            color: #F6F7F9;
+            opacity: 0.8;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #123653;
+            color: #07D7FF;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid rgba(7, 215, 255, 0.3);
+        }
+
+        footer {
+            margin-top: 6rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(124, 114, 250, 0.2);
+            text-align: center;
+            color: #F6F7F9;
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1.125rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">PYMSTR</div>
+            <div class="tagline">Web3 Stablecoin Payment Processor</div>
+        </header>
+
+        <section>
+            <h1>Developer Documentation</h1>
+            <p>Everything you need to integrate cryptocurrency payments into your application. Accept USDC, USDT, and EURC across multiple blockchain networks.</p>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <h3>🚀 Quick Start</h3>
+                    <p>Get up and running in 5 minutes. Learn the basics and create your first payment link.</p>
+                    <a href="quickstart.html" class="button">Get Started →</a>
+                </div>
+
+                <div class="card">
+                    <h3>📖 API Reference</h3>
+                    <p>Complete API documentation with detailed endpoint descriptions and parameters.</p>
+                    <a href="api-reference.html" class="button">View API Docs →</a>
+                </div>
+
+                <div class="card">
+                    <h3>💻 Code Examples</h3>
+                    <p>Ready-to-use code snippets in JavaScript, Python, PHP, and more.</p>
+                    <a href="code-examples.html" class="button">Browse Examples →</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Supported Assets & Networks</h2>
+            
+            <div style="margin: 2rem 0;">
+                <h4 style="color: #F6F7F9; margin-bottom: 1rem;">Stablecoins</h4>
+                <span class="badge">USDC</span>
+                <span class="badge">USDT</span>
+                <span class="badge">EURC</span>
+            </div>
+
+            <div style="margin: 2rem 0;">
+                <h4 style="color: #F6F7F9; margin-bottom: 1rem;">Blockchain Networks</h4>
+                <span class="badge">Ethereum</span>
+                <span class="badge">Polygon</span>
+                <span class="badge">Arbitrum</span>
+                <span class="badge">Optimism</span>
+                <span class="badge">Base</span>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>Key Features</h2>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h4>Secure Payments</h4>
+                    <p>Non-custodial architecture with Account Abstraction for seamless transactions</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h4>Fast Integration</h4>
+                    <p>RESTful API with comprehensive documentation and code examples</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🔔</div>
+                    <h4>Real-time Webhooks</h4>
+                    <p>Instant notifications when payments are completed or expire</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <h4>Analytics Dashboard</h4>
+                    <p>Track payments, view transaction history, and analyze performance</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🌍</div>
+                    <h4>Multi-chain Support</h4>
+                    <p>Accept payments on 5 major blockchain networks</p>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">💼</div>
+                    <h4>Business Tools</h4>
+                    <p>Payment links, API integration, team management, and more</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2025 PYMSTR. All rights reserved.</p>
+            <p style="margin-top: 1rem;">
+                <a href="quickstart.html" style="color: inherit; margin: 0 1rem;">Quick Start</a>
+                <a href="api-reference.html" style="color: inherit; margin: 0 1rem;">API Docs</a>
+                <a href="code-examples.html" style="color: inherit; margin: 0 1rem;">Examples</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

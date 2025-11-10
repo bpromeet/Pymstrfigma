@@ -1,0 +1,169 @@
+╔══════════════════════════════════════════════════════════════════╗
+║         PYMSTR Architecture - App + Documentation                ║
+╚══════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│  FIGMA STAGING SITE (Your React App)                            │
+│  https://pymstr-staging.figma.site/                             │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │  🏠 Merchant Dashboard                                     │ │
+│  │  💳 Payment Links Management                               │ │
+│  │  💰 Wallet & Balance                                       │ │
+│  │  👥 Team Management                                        │ │
+│  │  🔐 Settings & Security                                    │ │
+│  │  🛒 Checkout Flow (#/pay/...)                             │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  Add links to external docs:                                    │
+│  <a href="https://pymstr-docs.netlify.app/">Docs</a>  ───────┐ │
+│                                                                │ │
+└────────────────────────────────────────────────────────────────│─┘
+                                                                 │
+                                                                 ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                                                                  │
+│  STANDALONE DOCUMENTATION (Hosted on Netlify/Vercel/GitHub)     │
+│  Example: https://pymstr-docs.netlify.app/                      │
+│  (Or use custom domain: https://docs.pymstr.com)                │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │  📄 index.html         - Landing page & overview          │ │
+│  │  🚀 quickstart.html    - 5-minute integration guide       │ │
+│  │  📖 api-reference.html - Complete API documentation       │ │
+│  │  💻 code-examples.html - JS, Python, PHP, cURL samples    │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  "Go to Dashboard" button in all pages:                         │
+│  → https://pymstr-staging.figma.site/  ────────────────────┐   │
+│                                                             │   │
+└─────────────────────────────────────────────────────────────│───┘
+                                                              │
+                                                              ↓
+                                    Returns to Figma staging site
+
+────────────────────────────────────────────────────────────────────
+
+🌐 LINKING FROM EXTERNAL SOURCES
+
+  From anywhere on the internet, you can link directly to docs:
+
+  ✉️  Email:
+      "Get started: https://pymstr-docs.netlify.app/quickstart.html"
+
+  📝  Blog Post:
+      <a href="https://pymstr-docs.netlify.app/api-reference.html">
+
+  🐙  GitHub README:
+      [Quick Start](https://pymstr-docs.netlify.app/quickstart.html)
+
+  🐦  Twitter:
+      "New API docs: https://pymstr-docs.netlify.app"
+
+  🔗  Marketing Site:
+      <nav>
+        <a href="https://pymstr-docs.netlify.app/">Docs</a>
+      </nav>
+
+────────────────────────────────────────────────────────────────────
+
+✅ WHAT'S ALREADY CONFIGURED
+
+  All HTML files updated to use your Figma staging site:
+  
+  ✓ index.html          - Links to Figma site
+  ✓ quickstart.html     - Links to Figma site  
+  ✓ api-reference.html  - Shows Figma URLs in examples
+  ✓ code-examples.html  - Ready to use
+
+  NO MANUAL UPDATES NEEDED!
+
+────────────────────────────────────────────────────────────────────
+
+🚀 DEPLOYMENT OPTIONS
+
+  Option 1: Netlify (Easiest - 2 minutes)
+  ├─ Go to netlify.com
+  ├─ Drag /standalone-docs/ folder
+  └─ Get URL: https://pymstr-docs.netlify.app
+
+  Option 2: GitHub Pages (5 minutes)
+  ├─ Create GitHub repo
+  ├─ Upload files
+  ├─ Enable Pages in Settings
+  └─ Get URL: https://yourusername.github.io/repo-name/
+
+  Option 3: Vercel
+  ├─ Go to vercel.com
+  ├─ Upload /standalone-docs/ folder
+  └─ Deploy
+
+  Option 4: Custom Hosting
+  └─ Upload to any web server (Apache, Nginx, etc.)
+
+────────────────────────────────────────────────────────────────────
+
+💡 WHY SEPARATE HOSTING?
+
+  Figma Sites host your React app (the functional application).
+  Documentation is best hosted separately because:
+
+  ✓ Better SEO - Search engines can index static HTML
+  ✓ Faster loading - No React bundle needed for docs
+  ✓ External linking - Easy to share from anywhere
+  ✓ Independent updates - Update docs without touching app
+  ✓ CDN friendly - Static HTML is cached globally
+  ✓ No build required - Just edit HTML and re-upload
+
+────────────────────────────────────────────────────────────────────
+
+🎯 USER JOURNEY EXAMPLES
+
+  Example 1: Developer reads blog post
+  ├─ Blog: "Check out PYMSTR API"
+  ├─ Link: https://pymstr-docs.netlify.app/api-reference.html
+  ├─ Reads API docs
+  ├─ Clicks "Go to Dashboard"
+  └─ Lands on: https://pymstr-staging.figma.site/
+
+  Example 2: Email campaign
+  ├─ Email: "Quick Start Guide"
+  ├─ Link: https://pymstr-docs.netlify.app/quickstart.html
+  ├─ Follows tutorial
+  ├─ Clicks "Go to Dashboard"
+  └─ Creates merchant account
+
+  Example 3: From merchant dashboard
+  ├─ User in: https://pymstr-staging.figma.site/
+  ├─ Clicks "Documentation" in nav
+  ├─ Opens: https://pymstr-docs.netlify.app/
+  ├─ Reads docs
+  ├─ Clicks "Back" or "Go to Dashboard"
+  └─ Returns to: https://pymstr-staging.figma.site/
+
+────────────────────────────────────────────────────────────────────
+
+📁 FILE STRUCTURE
+
+  Your Project:
+  ├── App.tsx                    ← React app on Figma site
+  ├── components/                ← React components
+  ├── pages/                     ← React pages
+  └── standalone-docs/           ← Deploy these separately!
+      ├── index.html
+      ├── quickstart.html
+      ├── api-reference.html
+      ├── code-examples.html
+      ├── FIGMA_SITE_SETUP.md    ← Read this!
+      └── ... other files
+
+────────────────────────────────────────────────────────────────────
+
+🎉 READY TO DEPLOY!
+
+  1. Open /standalone-docs/FIGMA_SITE_SETUP.md
+  2. Follow deployment instructions
+  3. Share your doc links!
+
+────────────────────────────────────────────────────────────────────

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test All Documentation Pages - PYMSTR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+            background: #f9fafb;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #000;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .intro {
+            color: #6b7280;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0.5rem;
+        }
+
+        .intro strong {
+            color: #92400e;
+        }
+
+        .test-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f9fafb;
+            border-radius: 1rem;
+            border: 2px solid #e5e7eb;
+        }
+
+        .test-section h2 {
+            color: #000;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .test-section p {
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+
+        .button {
+            display: inline-block;
+            background: #000;
+            color: white;
+            padding: 0.75rem 2rem;
+            text-decoration: none;
+            border-radius: 9999px;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .button:hover {
+            background: #1a1a1a;
+            transform: translateY(-1px);
+        }
+
+        .checklist {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .checklist li {
+            margin: 0.75rem 0;
+            color: #4b5563;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .status.ready {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status.test {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        code {
+            background: #e5e7eb;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            color: #1f2937;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .success-box p {
+            color: #065f46;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Your Documentation Pages</h1>
+        
+        <div class="intro">
+            <strong>📍 You are here:</strong> This is a test page to verify all your documentation pages work correctly. Click each link below to test the pages locally before deploying.
+        </div>
+
+        <div class="test-section">
+            <h2>📄 All Documentation Pages <span class="status ready">Ready to Test</span></h2>
+            <p>Click each button to open the corresponding documentation page in a new tab:</p>
+            
+            <a href="index.html" target="_blank" class="button">🏠 Home / Landing Page</a>
+            <a href="quickstart.html" target="_blank" class="button">🚀 Quick Start Guide</a>
+            <a href="api-reference.html" target="_blank" class="button">📖 API Reference</a>
+            <a href="code-examples.html" target="_blank" class="button">💻 Code Examples</a>
+        </div>
+
+        <div class="test-section">
+            <h2>✅ Testing Checklist</h2>
+            <p>For each page, verify the following:</p>
+            
+            <ul class="checklist">
+                <li>✓ Page loads without errors</li>
+                <li>✓ Sidebar navigation is visible</li>
+                <li>✓ Links in sidebar navigate to other pages</li>
+                <li>✓ Internal anchor links work (scroll to sections)</li>
+                <li>✓ "Back" button works</li>
+                <li>✓ Mobile view looks good (resize browser)</li>
+                <li>✓ Code examples are readable</li>
+                <li>✓ All buttons and links are clickable</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>📱 Mobile Testing</h2>
+            <p>To test mobile responsiveness:</p>
+            <ol class="checklist">
+                <li>Open a page in your browser</li>
+                <li>Press <code>F12</code> to open Developer Tools</li>
+                <li>Click the device icon (📱) to toggle device mode</li>
+                <li>Select "iPhone 12" or "Pixel 5" from dropdown</li>
+                <li>Verify the page looks good on mobile</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>🌐 After Local Testing</h2>
+            <p>Once you've verified everything works locally, you're ready to deploy!</p>
+            
+            <div class="success-box">
+                <p><strong>✨ Next Step:</strong> Follow the instructions in <code>DEPLOYMENT_GUIDE.md</code> to deploy these pages to Netlify, Vercel, or GitHub Pages.</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Quick Fixes</h2>
+            <p><strong>If pages don't open:</strong></p>
+            <ul class="checklist">
+                <li>Make sure all HTML files are in the same folder as this test page</li>
+                <li>Try opening files directly (double-click the .html file)</li>
+                <li>Run a local server: <code>python3 -m http.server 8000</code></li>
+            </ul>
+
+            <p><strong>If styles look broken:</strong></p>
+            <ul class="checklist">
+                <li>This is normal when opening files directly (file:// protocol)</li>
+                <li>It will work fine once deployed to a web server</li>
+                <li>For local testing, use a local server (see above)</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e5e7eb; text-align: center; color: #6b7280;">
+            <p>Ready to deploy? Check <code>DEPLOYMENT_GUIDE.md</code> for step-by-step instructions! 🚀</p>
+        </div>
+    </div>
+</body>
+</html>

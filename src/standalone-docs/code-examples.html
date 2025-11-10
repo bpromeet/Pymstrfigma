@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Examples - PYMSTR Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #F6F7F9;
+            background: #2E3C49;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #394B5C;
+            border-right: 1px solid rgba(124, 114, 250, 0.2);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            color: #F6F7F9;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #07D7FF;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: #F6F7F9;
+            text-decoration: none;
+            border-radius: 9999px;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s;
+            opacity: 0.8;
+        }
+
+        .nav-link:hover {
+            background: rgba(124, 114, 250, 0.2);
+            color: #F6F7F9;
+            opacity: 1;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #7C72FA 0%, #F90BD5 100%);
+            color: #fff;
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #07D7FF;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(7, 215, 255, 0.1);
+            color: #07D7FF;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #F6F7F9;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #F6F7F9;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(124, 114, 250, 0.2);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #F6F7F9;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #F6F7F9;
+            opacity: 0.9;
+        }
+
+        .intro {
+            font-size: 1.125rem;
+            color: #F6F7F9;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        code {
+            background: #123653;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #07D7FF;
+        }
+
+        pre {
+            background: #123653;
+            color: #F6F7F9;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            position: relative;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #F6F7F9;
+        }
+
+        .card {
+            background: #394B5C;
+            border: 1px solid rgba(124, 114, 250, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .language-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .language-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            background: #123653;
+            color: #F6F7F9;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(7, 215, 255, 0.3);
+            font-family: inherit;
+            font-size: 0.875rem;
+        }
+
+        .language-tab:hover {
+            background: rgba(124, 114, 250, 0.2);
+            border-color: #7C72FA;
+        }
+
+        .language-tab.active {
+            background: linear-gradient(135deg, #7C72FA 0%, #F90BD5 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .code-block {
+            display: none;
+        }
+
+        .code-block.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid rgba(124, 114, 250, 0.2);
+            }
+
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo">PYMSTR</div>
+            
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-title">Documentation</div>
+                    <a href="quickstart.html" class="nav-link">Quick Start</a>
+                    <a href="api-reference.html" class="nav-link">API Reference</a>
+                    <a href="code-examples.html" class="nav-link active">Code Examples</a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-title">Examples</div>
+                    <a href="#create-payment" class="nav-link">Create Payment</a>
+                    <a href="#verify-payment" class="nav-link">Verify Payment</a>
+                    <a href="#webhook-handler" class="nav-link">Webhook Handler</a>
+                    <a href="#list-payments" class="nav-link">List Payments</a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <a href="index.html" class="back-button">← Back</a>
+
+            <h1>Code Examples</h1>
+            <p class="intro">Ready-to-use code examples for integrating PYMSTR into your application. Examples available in JavaScript, Python, PHP, and cURL.</p>
+
+            <div class="card">
+                <p><strong>💡 Tip:</strong> Replace <code>YOUR_API_KEY</code> with your actual API key from the PYMSTR dashboard.</p>
+            </div>
+
+            <h2 id="create-payment">Create Payment Link</h2>
+            <p>Create a new single-use payment link for your customer.</p>
+
+            <div class="language-tabs">
+                <button class="language-tab active" onclick="switchLanguage(event, 'create-js')">JavaScript</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'create-python')">Python</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'create-php')">PHP</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'create-curl')">cURL</button>
+            </div>
+
+            <div id="create-js" class="code-block active">
+                <pre><code>// Node.js with fetch
+const createPaymentLink = async () => {
+  const response = await fetch('https://api.pymstr.com/v1/payment-links', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer YOUR_API_KEY'
+    },
+    body: JSON.stringify({
+      price: 50.00,
+      currency: 'USDC',
+      chain: 'Polygon',
+      description: 'Monthly Subscription',
+      metadata: {
+        userId: 'user_123',
+        planId: 'basic_monthly'
+      }
+    })
+  });
+
+  const data = await response.json();
+  console.log('Payment URL:', data.url);
+  
+  // Redirect customer to payment page
+  window.location.href = data.url;
+};</code></pre>
+            </div>
+
+            <div id="create-python" class="code-block">
+                <pre><code>import requests
+
+def create_payment_link():
+    url = 'https://api.pymstr.com/v1/payment-links'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer YOUR_API_KEY'
+    }
+    payload = {
+        'price': 50.00,
+        'currency': 'USDC',
+        'chain': 'Polygon',
+        'description': 'Monthly Subscription',
+        'metadata': {
+            'userId': 'user_123',
+            'planId': 'basic_monthly'
+        }
+    }
+    
+    response = requests.post(url, json=payload, headers=headers)
+    data = response.json()
+    
+    print(f"Payment URL: {data['url']}")
+    return data['url']</code></pre>
+            </div>
+
+            <div id="create-php" class="code-block">
+                <pre><code><?php
+function createPaymentLink() {
+    $url = 'https://api.pymstr.com/v1/payment-links';
+    $data = array(
+        'price' => 50.00,
+        'currency' => 'USDC',
+        'chain' => 'Polygon',
+        'description' => 'Monthly Subscription',
+        'metadata' => array(
+            'userId' => 'user_123',
+            'planId' => 'basic_monthly'
+        )
+    );
+    
+    $options = array(
+        'http' => array(
+            'method' => 'POST',
+            'header' => "Content-Type: application/json\r\n" .
+                       "Authorization: Bearer YOUR_API_KEY\r\n",
+            'content' => json_encode($data)
+        )
+    );
+    
+    $context = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    $response = json_decode($result, true);
+    
+    echo "Payment URL: " . $response['url'];
+    return $response['url'];
+}
+?></code></pre>
+            </div>
+
+            <div id="create-curl" class="code-block">
+                <pre><code>curl -X POST https://api.pymstr.com/v1/payment-links \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "price": 50.00,
+    "currency": "USDC",
+    "chain": "Polygon",
+    "description": "Monthly Subscription",
+    "metadata": {
+      "userId": "user_123",
+      "planId": "basic_monthly"
+    }
+  }'</code></pre>
+            </div>
+
+            <h2 id="verify-payment">Verify Payment Status</h2>
+            <p>Check if a payment link has been completed and retrieve the transaction hash.</p>
+
+            <div class="language-tabs">
+                <button class="language-tab active" onclick="switchLanguage(event, 'verify-js')">JavaScript</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'verify-python')">Python</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'verify-php')">PHP</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'verify-curl')">cURL</button>
+            </div>
+
+            <div id="verify-js" class="code-block active">
+                <pre><code>const verifyPayment = async (linkId) => {
+  const response = await fetch(`https://api.pymstr.com/v1/payment-links/${linkId}`, {
+    headers: {
+      'Authorization': 'Bearer YOUR_API_KEY'
+    }
+  });
+
+  const payment = await response.json();
+  
+  if (payment.status === 'completed') {
+    console.log('Payment confirmed!');
+    console.log('Transaction hash:', payment.txHash);
+    console.log('Completed at:', payment.completedAt);
+    
+    // Process the order, grant access, etc.
+    return true;
+  } else {
+    console.log('Payment status:', payment.status);
+    return false;
+  }
+};</code></pre>
+            </div>
+
+            <div id="verify-python" class="code-block">
+                <pre><code>import requests
+
+def verify_payment(link_id):
+    url = f'https://api.pymstr.com/v1/payment-links/{link_id}'
+    headers = {
+        'Authorization': 'Bearer YOUR_API_KEY'
+    }
+    
+    response = requests.get(url, headers=headers)
+    payment = response.json()
+    
+    if payment['status'] == 'completed':
+        print('Payment confirmed!')
+        print(f"Transaction hash: {payment['txHash']}")
+        print(f"Completed at: {payment['completedAt']}")
+        return True
+    else:
+        print(f"Payment status: {payment['status']}")
+        return False</code></pre>
+            </div>
+
+            <div id="verify-php" class="code-block">
+                <pre><code><?php
+function verifyPayment($linkId) {
+    $url = "https://api.pymstr.com/v1/payment-links/{$linkId}";
+    
+    $options = array(
+        'http' => array(
+            'method' => 'GET',
+            'header' => "Authorization: Bearer YOUR_API_KEY\r\n"
+        )
+    );
+    
+    $context = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    $payment = json_decode($result, true);
+    
+    if ($payment['status'] === 'completed') {
+        echo "Payment confirmed!\n";
+        echo "Transaction hash: " . $payment['txHash'] . "\n";
+        echo "Completed at: " . $payment['completedAt'] . "\n";
+        return true;
+    } else {
+        echo "Payment status: " . $payment['status'] . "\n";
+        return false;
+    }
+}
+?></code></pre>
+            </div>
+
+            <div id="verify-curl" class="code-block">
+                <pre><code>curl -X GET https://api.pymstr.com/v1/payment-links/PL_abc123 \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+            </div>
+
+            <h2 id="webhook-handler">Webhook Handler</h2>
+            <p>Handle incoming webhook notifications when payments are completed.</p>
+
+            <div class="language-tabs">
+                <button class="language-tab active" onclick="switchLanguage(event, 'webhook-js')">JavaScript</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'webhook-python')">Python</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'webhook-php')">PHP</button>
+            </div>
+
+            <div id="webhook-js" class="code-block active">
+                <pre><code>// Express.js webhook endpoint
+app.post('/webhooks/pymstr', express.json(), (req, res) => {
+  const event = req.body;
+  
+  // Verify webhook signature (recommended)
+  // const signature = req.headers['x-pymstr-signature'];
+  // if (!verifyWebhookSignature(req.body, signature)) {
+  //   return res.status(401).send('Invalid signature');
+  // }
+  
+  switch (event.event) {
+    case 'payment.completed':
+      console.log('Payment completed:', event.linkId);
+      console.log('Transaction hash:', event.txHash);
+      console.log('Price:', event.price, event.currency);
+      
+      // Process the payment
+      // Grant user access, update database, etc.
+      processCompletedPayment(event);
+      break;
+      
+    case 'payment.expired':
+      console.log('Payment expired:', event.linkId);
+      // Handle expired payment
+      break;
+  }
+  
+  // Respond with 200 to acknowledge receipt
+  res.status(200).send('Webhook received');
+});</code></pre>
+            </div>
+
+            <div id="webhook-python" class="code-block">
+                <pre><code># Flask webhook endpoint
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/webhooks/pymstr', methods=['POST'])
+def webhook_handler():
+    event = request.json
+    
+    # Verify webhook signature (recommended)
+    # signature = request.headers.get('X-Pymstr-Signature')
+    # if not verify_webhook_signature(request.data, signature):
+    #     return jsonify({'error': 'Invalid signature'}), 401
+    
+    if event['event'] == 'payment.completed':
+        print(f"Payment completed: {event['linkId']}")
+        print(f"Transaction hash: {event['txHash']}")
+        print(f"Price: {event['price']} {event['currency']}")
+        
+        # Process the payment
+        process_completed_payment(event)
+        
+    elif event['event'] == 'payment.expired':
+        print(f"Payment expired: {event['linkId']}")
+        # Handle expired payment
+    
+    # Respond with 200 to acknowledge receipt
+    return jsonify({'status': 'success'}), 200</code></pre>
+            </div>
+
+            <div id="webhook-php" class="code-block">
+                <pre><code><?php
+// webhook.php
+$payload = file_get_contents('php://input');
+$event = json_decode($payload, true);
+
+// Verify webhook signature (recommended)
+// $signature = $_SERVER['HTTP_X_PYMSTR_SIGNATURE'];
+// if (!verifyWebhookSignature($payload, $signature)) {
+//     http_response_code(401);
+//     exit('Invalid signature');
+// }
+
+switch ($event['event']) {
+    case 'payment.completed':
+        error_log("Payment completed: " . $event['linkId']);
+        error_log("Transaction hash: " . $event['txHash']);
+        error_log("Price: " . $event['price'] . " " . $event['currency']);
+        
+        // Process the payment
+        processCompletedPayment($event);
+        break;
+        
+    case 'payment.expired':
+        error_log("Payment expired: " . $event['linkId']);
+        // Handle expired payment
+        break;
+}
+
+// Respond with 200 to acknowledge receipt
+http_response_code(200);
+echo json_encode(['status' => 'success']);
+?></code></pre>
+            </div>
+
+            <h2 id="list-payments">List Payment Links</h2>
+            <p>Retrieve a list of payment links with optional filtering.</p>
+
+            <div class="language-tabs">
+                <button class="language-tab active" onclick="switchLanguage(event, 'list-js')">JavaScript</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'list-python')">Python</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'list-php')">PHP</button>
+                <button class="language-tab" onclick="switchLanguage(event, 'list-curl')">cURL</button>
+            </div>
+
+            <div id="list-js" class="code-block active">
+                <pre><code>const listPaymentLinks = async (status = null, source = null) => {
+  let url = 'https://api.pymstr.com/v1/payment-links?limit=50';
+  
+  if (status) url += `&status=${status}`;
+  if (source) url += `&source=${source}`;
+  
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': 'Bearer YOUR_API_KEY'
+    }
+  });
+
+  const data = await response.json();
+  console.log(`Found ${data.payments.length} payment links`);
+  
+  data.payments.forEach(payment => {
+    console.log(`${payment.linkId}: ${payment.status} - ${payment.price} ${payment.currency}`);
+  });
+  
+  return data.payments;
+};
+
+// Examples:
+// listPaymentLinks('completed');  // Only completed payments
+// listPaymentLinks(null, 'api');  // Only API-generated links
+// listPaymentLinks('active', 'manual');  // Active manual links</code></pre>
+            </div>
+
+            <div id="list-python" class="code-block">
+                <pre><code>import requests
+
+def list_payment_links(status=None, source=None):
+    url = 'https://api.pymstr.com/v1/payment-links'
+    headers = {
+        'Authorization': 'Bearer YOUR_API_KEY'
+    }
+    params = {'limit': 50}
+    
+    if status:
+        params['status'] = status
+    if source:
+        params['source'] = source
+    
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+    
+    print(f"Found {len(data['payments'])} payment links")
+    
+    for payment in data['payments']:
+        print(f"{payment['linkId']}: {payment['status']} - {payment['price']} {payment['currency']}")
+    
+    return data['payments']
+
+# Examples:
+# list_payment_links(status='completed')
+# list_payment_links(source='api')
+# list_payment_links(status='active', source='manual')</code></pre>
+            </div>
+
+            <div id="list-php" class="code-block">
+                <pre><code><?php
+function listPaymentLinks($status = null, $source = null) {
+    $url = 'https://api.pymstr.com/v1/payment-links?limit=50';
+    
+    if ($status) $url .= "&status={$status}";
+    if ($source) $url .= "&source={$source}";
+    
+    $options = array(
+        'http' => array(
+            'method' => 'GET',
+            'header' => "Authorization: Bearer YOUR_API_KEY\r\n"
+        )
+    );
+    
+    $context = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    $data = json_decode($result, true);
+    
+    echo "Found " . count($data['payments']) . " payment links\n";
+    
+    foreach ($data['payments'] as $payment) {
+        echo "{$payment['linkId']}: {$payment['status']} - {$payment['price']} {$payment['currency']}\n";
+    }
+    
+    return $data['payments'];
+}
+
+// Examples:
+// listPaymentLinks('completed');
+// listPaymentLinks(null, 'api');
+// listPaymentLinks('active', 'manual');
+?></code></pre>
+            </div>
+
+            <div id="list-curl" class="code-block">
+                <pre><code># List all payment links
+curl -X GET "https://api.pymstr.com/v1/payment-links?limit=50" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Filter by status
+curl -X GET "https://api.pymstr.com/v1/payment-links?status=completed&limit=50" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Filter by source
+curl -X GET "https://api.pymstr.com/v1/payment-links?source=api&limit=50" \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>Next Steps</h3>
+                <p>Ready to integrate PYMSTR? Check out these resources:</p>
+                <ul>
+                    <li><a href="quickstart.html">Quick Start Guide</a> - Step-by-step integration guide</li>
+                    <li><a href="api-reference.html">API Reference</a> - Complete API documentation</li>
+                    <li><strong>SDKs</strong> - Official client libraries (coming soon)</li>
+                    <li><strong>Testing</strong> - Sandbox environment and test networks</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchLanguage(event, blockId) {
+            // Get all tabs and blocks for the current section
+            const section = event.target.closest('.language-tabs').nextElementSibling;
+            const tabs = event.target.closest('.language-tabs').querySelectorAll('.language-tab');
+            const blocks = [];
+            
+            // Find all code blocks until the next h2 or h3
+            let currentElement = section;
+            while (currentElement && !currentElement.matches('h2, h3')) {
+                if (currentElement.classList && currentElement.classList.contains('code-block')) {
+                    blocks.push(currentElement);
+                }
+                currentElement = currentElement.nextElementSibling;
+            }
+            
+            // Remove active class from all tabs
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Hide all blocks and show the selected one
+            blocks.forEach(block => {
+                if (block.id === blockId) {
+                    block.classList.add('active');
+                } else {
+                    block.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

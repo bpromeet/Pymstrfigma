@@ -1,0 +1,407 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #FFFFFF;
+  --foreground: oklch(0.145 0 0);
+  --card: #FFFFFF;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: #EEEEEE;
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #EEEEEE;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: #EEEEEE;
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #030213;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: #EEEEEE;
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: rgba(0, 0, 0, 0.1);
+  --sidebar-ring: oklch(0.708 0 0);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+  
+  /* PYMSTR MD3 Design Tokens */
+  /* Primary Color Role */
+  --md3-primary: #1E88E5;
+  --md3-on-primary: #FFFFFF;
+  --md3-primary-container: #E3F2FD;
+  --md3-on-primary-container: #1E88E5;
+  
+  /* Secondary Color Role */
+  --md3-secondary: #07D7FF;
+  --md3-on-secondary: #FFFFFF;
+  --md3-secondary-container: rgba(7, 215, 255, 0.12);
+  
+  /* Tertiary Color Role */
+  --md3-tertiary: #F90BD5;
+  --md3-on-tertiary: #FFFFFF;
+  --md3-tertiary-container: rgba(249, 11, 213, 0.12);
+  
+  /* Surface Colors */
+  --md3-surface: #FFFFFF;
+  --md3-surface-dim: #FAFAFA;
+  --md3-surface-bright: #FAFAFA;
+  --md3-on-surface: #1C1B1F;
+  --md3-on-surface-variant: #49454F;
+  
+  /* Error, Success, Warning */
+  --md3-error: #DD6B6B;
+  --md3-on-error: #FFFFFF;
+  --md3-error-container: rgba(221, 107, 107, 0.12);
+  
+  --md3-success: #7DD069;
+  --md3-on-success: #FFFFFF;
+  --md3-success-container: rgba(125, 208, 105, 0.12);
+  
+  --md3-warning: #D9C370;
+  --md3-on-warning: #2E3C49;
+  --md3-warning-container: rgba(217, 195, 112, 0.12);
+  
+  /* Neutral Colors */
+  --md3-outline: #43586C;
+  --md3-outline-variant: #757575;
+}
+
+.dark {
+  --background: #0A0A0A;
+  --foreground: oklch(0.985 0 0);
+  --card: #303030;
+  --card-foreground: oklch(0.985 0 0);
+  --popover: rgba(20, 20, 20, 0.95);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
+  --input-background: #303030;
+  --ring: oklch(0.439 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: rgba(255, 255, 255, 0.05);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: rgba(255, 255, 255, 0.05);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: oklch(0.439 0 0);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
+  
+  /* PYMSTR MD3 Design Tokens - Dark Mode */
+  /* Primary Color Role */
+  --md3-primary: #1E88E5;
+  --md3-on-primary: #FFFFFF;
+  --md3-primary-container: #1565C0;
+  --md3-on-primary-container: #E3F2FD;
+  
+  /* Secondary Color Role */
+  --md3-secondary: #07D7FF;
+  --md3-on-secondary: #FFFFFF;
+  --md3-secondary-container: rgba(7, 215, 255, 0.16);
+  
+  /* Tertiary Color Role */
+  --md3-tertiary: #F90BD5;
+  --md3-on-tertiary: #FFFFFF;
+  --md3-tertiary-container: rgba(249, 11, 213, 0.12);
+  
+  /* Surface Colors */
+  --md3-surface: #0a0a0a;
+  --md3-surface-dim: #2E3C49;
+  --md3-surface-bright: #303030;
+  --md3-on-surface: #F6F7F9;
+  --md3-on-surface-variant: #798A9B;
+  
+  /* Error, Success, Warning */
+  --md3-error: #DD6B6B;
+  --md3-on-error: #FFFFFF;
+  --md3-error-container: rgba(221, 107, 107, 0.12);
+  
+  --md3-success: #7DD069;
+  --md3-on-success: #FFFFFF;
+  --md3-success-container: rgba(125, 208, 105, 0.12);
+  
+  --md3-warning: #D9C370;
+  --md3-on-warning: #2E3C49;
+  --md3-warning-container: rgba(217, 195, 112, 0.12);
+  
+  /* Neutral Colors */
+  --md3-outline: #43586C;
+  --md3-outline-variant: #757575;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-glass-border: var(--glass-border);
+  --color-glass-shadow: var(--glass-shadow);
+  
+  /* MD3 Design Token Mappings for Tailwind */
+  --color-md3-primary: var(--md3-primary);
+  --color-md3-on-primary: var(--md3-on-primary);
+  --color-md3-primary-container: var(--md3-primary-container);
+  --color-md3-on-primary-container: var(--md3-on-primary-container);
+  --color-md3-secondary: var(--md3-secondary);
+  --color-md3-on-secondary: var(--md3-on-secondary);
+  --color-md3-secondary-container: var(--md3-secondary-container);
+  --color-md3-tertiary: var(--md3-tertiary);
+  --color-md3-on-tertiary: var(--md3-on-tertiary);
+  --color-md3-tertiary-container: var(--md3-tertiary-container);
+  --color-md3-surface: var(--md3-surface);
+  --color-md3-surface-dim: var(--md3-surface-dim);
+  --color-md3-surface-bright: var(--md3-surface-bright);
+  --color-md3-on-surface: var(--md3-on-surface);
+  --color-md3-on-surface-variant: var(--md3-on-surface-variant);
+  --color-md3-error: var(--md3-error);
+  --color-md3-on-error: var(--md3-on-error);
+  --color-md3-error-container: var(--md3-error-container);
+  --color-md3-success: var(--md3-success);
+  --color-md3-on-success: var(--md3-on-success);
+  --color-md3-success-container: var(--md3-success-container);
+  --color-md3-warning: var(--md3-warning);
+  --color-md3-on-warning: var(--md3-on-warning);
+  --color-md3-warning-container: var(--md3-warning-container);
+  --color-md3-outline: var(--md3-outline);
+  --color-md3-outline-variant: var(--md3-outline-variant);
+}
+
+@layer base {
+  body {
+    @apply border-border outline-ring/50 bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* PYMSTR 900ms Transition Standard - Universal Override */
+/* Place OUTSIDE @layer to ensure highest specificity and override ALL Tailwind utilities */
+*,
+*::before,
+*::after,
+html,
+body,
+div,
+nav,
+main,
+header,
+footer,
+section,
+article,
+aside,
+button,
+input,
+select,
+textarea,
+a,
+span,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+li,
+table,
+tr,
+td,
+th,
+svg,
+path,
+[role="button"],
+[role="navigation"],
+[role="main"],
+[class*="bg-"],
+[class*="dark:bg-"],
+[class*="text-"],
+[class*="dark:text-"],
+[class*="border-"],
+[class*="dark:border-"],
+[data-*],
+[data-slot] {
+  transition-property: background-color, border-color, color, fill, stroke, background, border !important;
+  transition-duration: 900ms !important;
+  transition-timing-function: ease-out !important;
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* Glassmorphism Utilities */
+@layer utilities {
+  .glass {
+    background: var(--color-card);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 8px 32px 0 var(--color-glass-shadow);
+    transition: background-color 900ms ease-out, border-color 900ms ease-out, box-shadow 900ms ease-out !important;
+  }
+
+  .glass-strong {
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    transition: background-color 900ms ease-out, border-color 900ms ease-out !important;
+  }
+
+  .glass-subtle {
+    backdrop-filter: blur(8px) saturate(150%);
+    -webkit-backdrop-filter: blur(8px) saturate(150%);
+    transition: background-color 900ms ease-out, border-color 900ms ease-out !important;
+  }
+
+  .glass-menu {
+    background: var(--color-popover);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+    box-shadow: 0 8px 32px 0 var(--color-glass-shadow);
+    transition: background-color 900ms ease-out, border-color 900ms ease-out, box-shadow 900ms ease-out !important;
+  }
+
+  .glass-hover {
+    transition: all 900ms ease-out !important;
+  }
+
+  .glass-hover:hover {
+    background: var(--color-card);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 48px 0 var(--color-glass-shadow);
+    transform: translateY(-2px);
+  }
+
+  .dark .glass-hover:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}

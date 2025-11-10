@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYMSTR Documentation Links - Test Page</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #000;
+            border-bottom: 3px solid #000;
+            padding-bottom: 10px;
+        }
+        .link-section {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .link-section h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        a {
+            display: inline-block;
+            background: #000;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px 5px 5px 0;
+            transition: background 0.2s;
+        }
+        a:hover {
+            background: #333;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 PYMSTR Documentation Links Test</h1>
+    
+    <div class="note">
+        <strong>📝 Instructions:</strong>
+        <ol>
+            <li>Make sure your PYMSTR app is running (e.g., at <code>http://localhost:5173</code>)</li>
+            <li>Update the URLs below to match your local/production URL</li>
+            <li>Click any link to test the standalone documentation pages</li>
+        </ol>
+    </div>
+
+    <div class="link-section">
+        <h2>📚 Quick Start Guide</h2>
+        <p>All these URLs should open the Quick Start Guide without merchant navigation:</p>
+        <a href="http://localhost:5173/#quickstart">Simple: #quickstart</a>
+        <a href="http://localhost:5173/#/quickstart">With slash: #/quickstart</a>
+        <a href="http://localhost:5173/#/docs/quickstart">Docs path: #/docs/quickstart</a>
+    </div>
+
+    <div class="link-section">
+        <h2>📖 API Reference</h2>
+        <p>All these URLs should open the API Reference without merchant navigation:</p>
+        <a href="http://localhost:5173/#api-reference">Simple: #api-reference</a>
+        <a href="http://localhost:5173/#/api-reference">With slash: #/api-reference</a>
+        <a href="http://localhost:5173/#/docs/api-reference">Docs path: #/docs/api-reference</a>
+        <a href="http://localhost:5173/#apireference">No dash: #apireference</a>
+    </div>
+
+    <div class="link-section">
+        <h2>💻 Code Examples</h2>
+        <p>All these URLs should open the Code Examples without merchant navigation:</p>
+        <a href="http://localhost:5173/#code-examples">Simple: #code-examples</a>
+        <a href="http://localhost:5173/#/code-examples">With slash: #/code-examples</a>
+        <a href="http://localhost:5173/#/docs/code-examples">Docs path: #/docs/code-examples</a>
+    </div>
+
+    <div class="link-section">
+        <h2>🏠 Back to Merchant Dashboard</h2>
+        <p>This should open the normal merchant app:</p>
+        <a href="http://localhost:5173/">Main App (no hash)</a>
+    </div>
+
+    <div class="note">
+        <strong>⚠️ Important:</strong>
+        <ul>
+            <li>Replace <code>http://localhost:5173</code> with your actual app URL</li>
+            <li>The standalone pages should appear WITHOUT the top navigation bar</li>
+            <li>Each page has its own sidebar navigation and back button</li>
+            <li>If you see the merchant navigation (Dashboard, Links, Wallet, etc.), the routing isn't working</li>
+        </ul>
+    </div>
+
+    <hr style="margin: 40px 0;">
+
+    <div class="link-section">
+        <h2>🧪 What Should Happen</h2>
+        <p><strong>✅ Correct behavior:</strong></p>
+        <ul>
+            <li>Click a documentation link above</li>
+            <li>Page opens showing ONLY the documentation (no merchant navigation at top)</li>
+            <li>You see a sidebar with sections and a "Back" button</li>
+            <li>The page is fullscreen with just the documentation content</li>
+        </ul>
+        
+        <p><strong>❌ If this happens, something is wrong:</strong></p>
+        <ul>
+            <li>You see the merchant navigation bar (Dashboard, Links, Wallet, etc.)</li>
+            <li>The page shows the admin dashboard instead of documentation</li>
+            <li>The URL doesn't change when you click the links</li>
+        </ul>
+    </div>
+</body>
+</html>
