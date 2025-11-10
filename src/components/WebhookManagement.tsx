@@ -1034,8 +1034,8 @@ app.post('/webhooks/pymstr', (req, res) => {
           Position: fixed bottom-24 right-6 (96px from bottom, 24px from right)
           Note: bottom-24 positions FAB above 80px bottom nav with 16px spacing
           Size: w-14 h-14 (56px × 56px - MD3 standard)
-          Color: #07D7FF (PYMSTR primary FAB/cyan)
-          Icon: w-6 h-6 (24px)
+          Color: #1E88E5 (PYMSTR primary blue - MD3 primary color role)
+          Icon: Plus (w-6 h-6 / 24px) - MD3 standard "add" action icon
           Elevation: shadow-lg (Level 3)
           Hidden on desktop: md:hidden
           Opens Add Webhook dialog
@@ -1043,9 +1043,10 @@ app.post('/webhooks/pymstr', (req, res) => {
       <button
         onClick={() => setIsAddDialogOpen(true)}
         aria-label="Add webhook"
-        className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#07D7FF] focus:ring-offset-2 focus:outline-none transition-all duration-200 flex items-center justify-center md:hidden"
+        style={{ backgroundColor: '#1E88E5' }}
+        className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 focus:outline-none transition-all duration-200 flex items-center justify-center md:hidden"
       >
-        <Webhook className="w-6 h-6" />
+        <Plus className="w-6 h-6" />
       </button>
         </div>
       </PageLayout.Content>

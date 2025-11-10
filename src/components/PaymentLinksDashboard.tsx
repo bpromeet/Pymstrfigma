@@ -253,41 +253,40 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
               <TabsContent value="all" className="space-y-4 mt-4">
                 {getFilteredLinks().map((link) => (
                   <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-[#43586C] rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center flex-shrink-0">
-                            <LinkIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="text-gray-900 dark:text-white truncate">{link.description || 'Payment Link'}</h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 font-mono truncate">{link.linkId}</p>
-                          </div>
-                        </div>
+                    {/* Title Row with Icon */}
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center flex-shrink-0">
+                        <LinkIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap justify-end flex-shrink-0">
-                        <Badge
-                          variant={link.status === 'active' ? 'default' : link.status === 'completed' ? 'default' : 'secondary'}
-                          className={`rounded-full whitespace-nowrap ${
-                            link.status === 'completed' 
-                              ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
-                              : link.status === 'active'
-                              ? 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
-                          }`}
-                        >
-                          {link.status}
-                        </Badge>
-                        <Badge variant="outline" className="rounded-full whitespace-nowrap">
-                          {link.source}
-                        </Badge>
-                        {link.expiryDate && (
-                          <Badge className="rounded-full whitespace-nowrap bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
-                            <Clock className="w-3 h-3 mr-1" />
-                            Expires: {new Date(link.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </Badge>
-                        )}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-gray-900 dark:text-white truncate">{link.description || 'Payment Link'}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 font-mono truncate">{link.linkId}</p>
                       </div>
+                    </div>
+
+                    {/* Badges Row - Full Width */}
+                    <div className="flex items-center gap-2 flex-wrap mb-3">
+                      <Badge
+                        variant={link.status === 'active' ? 'default' : link.status === 'completed' ? 'default' : 'secondary'}
+                        className={`rounded-full whitespace-nowrap ${
+                          link.status === 'completed' 
+                            ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
+                            : link.status === 'active'
+                            ? 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
+                        }`}
+                      >
+                        {link.status}
+                      </Badge>
+                      <Badge variant="outline" className="rounded-full whitespace-nowrap">
+                        {link.source}
+                      </Badge>
+                      {link.expiryDate && (
+                        <Badge className="rounded-full whitespace-nowrap bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                          <Clock className="w-3 h-3 mr-1" />
+                          Expires: {new Date(link.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </Badge>
+                      )}
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-3">
@@ -367,41 +366,40 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
               <TabsContent value="manual" className="space-y-4 mt-4">
                 {getFilteredLinks('manual').map((link) => (
                   <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-[#43586C] rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center flex-shrink-0">
-                            <LinkIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="text-gray-900 dark:text-white truncate">{link.description || 'Payment Link'}</h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 font-mono truncate">{link.linkId}</p>
-                          </div>
-                        </div>
+                    {/* Title Row with Icon */}
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center flex-shrink-0">
+                        <LinkIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap justify-end flex-shrink-0">
-                        <Badge
-                          variant={link.status === 'active' ? 'default' : link.status === 'completed' ? 'default' : 'secondary'}
-                          className={`rounded-full whitespace-nowrap ${
-                            link.status === 'completed' 
-                              ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
-                              : link.status === 'active'
-                              ? 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
-                          }`}
-                        >
-                          {link.status}
-                        </Badge>
-                        <Badge variant="outline" className="rounded-full whitespace-nowrap">
-                          {link.source}
-                        </Badge>
-                        {link.expiryDate && (
-                          <Badge className="rounded-full whitespace-nowrap bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
-                            <Clock className="w-3 h-3 mr-1" />
-                            Expires: {new Date(link.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </Badge>
-                        )}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-gray-900 dark:text-white truncate">{link.description || 'Payment Link'}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 font-mono truncate">{link.linkId}</p>
                       </div>
+                    </div>
+
+                    {/* Badges Row - Full Width */}
+                    <div className="flex items-center gap-2 flex-wrap mb-3">
+                      <Badge
+                        variant={link.status === 'active' ? 'default' : link.status === 'completed' ? 'default' : 'secondary'}
+                        className={`rounded-full whitespace-nowrap ${
+                          link.status === 'completed' 
+                            ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
+                            : link.status === 'active'
+                            ? 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
+                        }`}
+                      >
+                        {link.status}
+                      </Badge>
+                      <Badge variant="outline" className="rounded-full whitespace-nowrap">
+                        {link.source}
+                      </Badge>
+                      {link.expiryDate && (
+                        <Badge className="rounded-full whitespace-nowrap bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                          <Clock className="w-3 h-3 mr-1" />
+                          Expires: {new Date(link.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </Badge>
+                      )}
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
@@ -485,41 +483,40 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
               <TabsContent value="api" className="space-y-4 mt-4">
                 {getFilteredLinks('api').map((link) => (
                   <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-[#43586C] rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
-                    <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center flex-shrink-0">
-                            <LinkIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h4 className="text-gray-900 dark:text-white truncate">{link.description || 'Payment Link'}</h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 font-mono truncate">{link.linkId}</p>
-                          </div>
-                        </div>
+                    {/* Title Row with Icon */}
+                    <div className="flex items-center space-x-3 mb-3">
+                      <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center flex-shrink-0">
+                        <LinkIcon className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                       </div>
-                      <div className="flex items-center gap-2 flex-wrap justify-end flex-shrink-0">
-                        <Badge
-                          variant={link.status === 'active' ? 'default' : link.status === 'completed' ? 'default' : 'secondary'}
-                          className={`rounded-full whitespace-nowrap ${
-                            link.status === 'completed' 
-                              ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
-                              : link.status === 'active'
-                              ? 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
-                          }`}
-                        >
-                          {link.status}
-                        </Badge>
-                        <Badge variant="outline" className="rounded-full whitespace-nowrap">
-                          {link.source}
-                        </Badge>
-                        {link.expiryDate && (
-                          <Badge className="rounded-full whitespace-nowrap bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
-                            <Clock className="w-3 h-3 mr-1" />
-                            Expires: {new Date(link.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </Badge>
-                        )}
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-gray-900 dark:text-white truncate">{link.description || 'Payment Link'}</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 font-mono truncate">{link.linkId}</p>
                       </div>
+                    </div>
+
+                    {/* Badges Row - Full Width */}
+                    <div className="flex items-center gap-2 flex-wrap mb-3">
+                      <Badge
+                        variant={link.status === 'active' ? 'default' : link.status === 'completed' ? 'default' : 'secondary'}
+                        className={`rounded-full whitespace-nowrap ${
+                          link.status === 'completed' 
+                            ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
+                            : link.status === 'active'
+                            ? 'bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
+                        }`}
+                      >
+                        {link.status}
+                      </Badge>
+                      <Badge variant="outline" className="rounded-full whitespace-nowrap">
+                        {link.source}
+                      </Badge>
+                      {link.expiryDate && (
+                        <Badge className="rounded-full whitespace-nowrap bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                          <Clock className="w-3 h-3 mr-1" />
+                          Expires: {new Date(link.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </Badge>
+                      )}
                     </div>
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">

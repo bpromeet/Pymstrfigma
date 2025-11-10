@@ -899,20 +899,20 @@ Compact button for secondary actions.
 ### Button Sizes (MD3 Specifications)
 
 **Large Buttons (Primary CTAs):**
-* **Padding**: `px-8 py-3` (32px × 12px) or `px-10 py-4` (40px × 16px)
-* **Height**: `h-12` (48px) or `h-14` (56px) - aligns to 8px grid, meets 48dp touch target
+* **Padding**: `px-8 py-3` (32px × 12px)
+* **Height**: `h-12` (48px) - aligns to 8px grid, meets 48dp touch target
 * **Min-height**: `min-h-12` (48px) for touch targets
-* **Icon size**: `w-6 h-6` (24px) or `w-5 h-5` (20px)
+* **Icon size**: `w-[18px] h-[18px]` (18dp - MD3 standard) or `w-5 h-5` (20px)
 * **Icon spacing**: `mr-2` (8px) - MD3 standard
-* **Use for**: Primary CTAs, main actions, hero sections, mobile primary actions
+* **Use for**: Primary CTAs, hero actions, prominent create buttons, mobile primary actions
 
 **Regular Buttons (Standard Actions):**
-* **Padding**: `px-6 py-2.5` (24px × 10px) or `px-8 py-3` (32px × 12px)
-* **Height**: `h-10` (40px) or `h-11` (44px) - aligns to 8px grid
+* **Padding**: `px-6 py-2.5` (24px × 10px)
+* **Height**: `h-10` (40px) - aligns to 8px grid
 * **Min-height**: `min-h-10` (40px) desktop, `min-h-12` (48px) mobile
-* **Icon size**: `w-5 h-5` (20px) or `w-[18px] h-[18px]` (18dp - MD3 standard)
+* **Icon size**: `w-[18px] h-[18px]` (18dp - MD3 standard) or `w-5 h-5` (20px)
 * **Icon spacing**: `mr-2` (8px) - MD3 standard
-* **Use for**: Standard actions, form submissions, modal actions
+* **Use for**: Standard actions, form submissions, modal actions, edit/save buttons, account actions
 
 **Small Buttons (Secondary/Compact):**
 * **Padding**: `px-4 py-2` (16px × 8px) or `px-6 py-2` (24px × 8px)
@@ -1039,16 +1039,16 @@ Circular icon-only buttons for quick actions following Material Design 3 FAB spe
 
 ### FAB Variants (MD3)
 
-**Primary FAB (Cyan):**
+**Primary FAB (Blue):**
 * **Normal State:**
-  * Background: `#07D7FF` (secondary color - cyan)
-  * Icon: `#FFFFFF` (on-secondary)
+  * Background: `#1E88E5` (primary color - blue)
+  * Icon: `#FFFFFF` (on-primary)
   * Shape: Perfect circle `w-14 h-14` (56px - MD3 standard)
   * Elevation: Level 3 (`shadow-lg`)
   * Border radius: `rounded-full`
   
 * **Hover State:**
-  * Background: `#07D7FF` with 8% white state layer (lighter cyan)
+  * Background: `#1565C0` (primary hover - darker blue)
   * Elevation: Level 4 (`shadow-xl`)
   * Scale: `scale-105`
   * Transition: `transition-all duration-200`
@@ -1058,17 +1058,17 @@ Circular icon-only buttons for quick actions following Material Design 3 FAB spe
   * Scale: `scale-95`
   
 * **Focus State:**
-  * Ring: `ring-2 ring-[#07D7FF] ring-offset-2`
+  * Ring: `ring-2 ring-[#1E88E5] ring-offset-2`
 
-**Secondary FAB (Magenta):**
+**Secondary FAB (Cyan):**
 * **Normal State:**
-  * Background: `#F90BD5` (tertiary color - magenta)
-  * Icon: `#FFFFFF` (on-tertiary)
+  * Background: `#07D7FF` (secondary color - cyan)
+  * Icon: `#FFFFFF` (on-secondary)
   * Shape: Perfect circle `w-14 h-14` (56px)
   * Elevation: Level 3 (`shadow-lg`)
   
 * **Hover State:**
-  * Background: Lighter magenta (8% white overlay)
+  * Background: Lighter cyan (8% white overlay)
   * Elevation: Level 4 (`shadow-xl`)
   * Scale: `scale-105`
 
@@ -1118,15 +1118,15 @@ Circular icon-only buttons for quick actions following Material Design 3 FAB spe
 
 **Example Implementation (PYMSTR Two-Speed System):**
 ```tsx
-// Primary FAB (Cyan) - MD3 Standard
+// Primary FAB (Blue) - MD3 Standard
 // ✅ 200ms for snappy scale/shadow feedback
-<button className="w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#07D7FF] focus:ring-offset-2 transition-all duration-200 flex items-center justify-center">
+<button className="w-14 h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 flex items-center justify-center">
   <Plus className="w-6 h-6" />
 </button>
 
-// Secondary FAB (Magenta)
+// Secondary FAB (Cyan)
 // ✅ 200ms for instant interaction
-<button className="w-14 h-14 rounded-full bg-[#F90BD5] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center">
+<button className="w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center">
   <Video className="w-6 h-6" />
 </button>
 
@@ -1974,13 +1974,13 @@ When you need secondary actions alongside the primary FAB:
 </button>
 
 // Primary FAB (main action)
-<button className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg md:hidden">
+<button className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white shadow-lg md:hidden">
   <Plus className="w-6 h-6" />
 </button>
 ```
 
 **Guidelines:**
-* **Primary FAB**: Bottom position (56px size, cyan color)
+* **Primary FAB**: Bottom position (56px size, blue color)
 * **Secondary FAB**: 72px above primary (`bottom-24` = 96px, creates 72px gap accounting for FAB size)
 * **Tertiary FAB**: 72px above secondary (if needed)
 * **Maximum**: 3 FABs in vertical stack (more = use bottom sheet)
@@ -1994,7 +1994,7 @@ Use when label adds clarity to the action:
 
 ```tsx
 // Extended FAB with text label
-<button className="fixed bottom-6 right-6 z-50 px-6 py-3 min-h-14 rounded-full bg-[#07D7FF] text-white shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 md:hidden">
+<button className="fixed bottom-6 right-6 z-50 px-6 py-3 min-h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-2 md:hidden">
   <Plus className="w-6 h-6" />
   <span className="font-medium">Create</span>
 </button>
@@ -2011,7 +2011,7 @@ Use for better left-handed accessibility:
 
 ```tsx
 // Bottom-center FAB (ambidextrous)
-<button className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg md:hidden">
+<button className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-lg md:hidden">
   <Plus className="w-6 h-6" />
 </button>
 ```
@@ -2057,7 +2057,7 @@ import { Sheet, SheetContent, SheetTrigger } from './components/ui/sheet';
 
 <Sheet>
   <SheetTrigger asChild>
-    <button className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg md:hidden">
+    <button className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-lg md:hidden">
       <Plus className="w-6 h-6" />
     </button>
   </SheetTrigger>
@@ -2099,8 +2099,9 @@ import { Sheet, SheetContent, SheetTrigger } from './components/ui/sheet';
 * ❌ **Don't use for destructive actions** (use dialog confirmation)
 
 **Visual:**
-* ✅ **Primary color** for main FAB (cyan `#07D7FF`)
-* ✅ **Surface color** for secondary FABs (gray `#303030`)
+* ✅ **Primary color** for main FAB (blue `#1E88E5`)
+* ✅ **Secondary color** for secondary FABs (cyan `#07D7FF`)
+* ✅ **Surface color** for tertiary FABs (gray `#303030`)
 * ✅ **56px standard** size for primary FAB
 * ✅ **48px size** for secondary FABs
 * ✅ **24px icon** for primary FAB
@@ -2114,7 +2115,7 @@ On desktop, replace mobile FABs with toolbar buttons:
 
 ```tsx
 // Mobile: FAB
-<button className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg md:hidden">
+<button className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-lg md:hidden">
   <Plus className="w-6 h-6" />
 </button>
 
@@ -2160,7 +2161,7 @@ export const PaymentLinksDashboard = () => {
       {/* Mobile: Primary FAB (Bottom-Right) */}
       <button 
         onClick={() => setShowCreateSheet(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#07D7FF] focus:ring-offset-2 transition-all duration-200 flex items-center justify-center md:hidden"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 flex items-center justify-center md:hidden"
         aria-label="Create payment link"
       >
         <Plus className="w-6 h-6" />
@@ -2181,11 +2182,11 @@ export const PaymentLinksDashboard = () => {
 
 **For PYMSTR Mobile Dashboards:**
 1. **Use bottom-right FAB** for primary action (Create Payment Link)
-2. **56px size** (`w-14 h-14`) with cyan color (`#07D7FF`)
+2. **56px size** (`w-14 h-14`) with primary blue color (`#1E88E5`)
 3. **Fixed positioning** (`fixed bottom-6 right-6 z-50`)
 4. **Hidden on desktop** (`md:hidden`) - use toolbar button instead
 5. **Opens bottom sheet** for form/actions (`SheetContent side="bottom"`)
-6. **Secondary FABs** stacked above if needed (filter, search)
+6. **Secondary FABs** stacked above if needed (filter, search) - use cyan (`#07D7FF`)
 7. **48px minimum** touch targets for all mobile actions
 8. **Scale animation** on interaction for tactile feedback
 

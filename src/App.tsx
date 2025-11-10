@@ -3213,15 +3213,15 @@ const App = () => {
 
   const CustomerCheckout = () => (
     <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className={`w-[448px] relative overflow-hidden flex flex-col ${
-        showCryptoSelection && currencyVariant === "multiple" ? 'h-[600px]' : 'h-[500px]'
+      <Card className={`w-full max-w-md relative overflow-hidden flex flex-col rounded-2xl ${
+        showCryptoSelection && currencyVariant === "multiple" ? 'min-h-[600px]' : 'min-h-[500px]'
       }`}>
-        <CardHeader className={`text-center pt-4 px-6 flex-shrink-0 ${showCryptoSelection ? 'pb-0' : 'pb-2'}`}>
+        <CardHeader className={`text-center p-6 flex-shrink-0 ${showCryptoSelection ? 'pb-4' : 'pb-6'}`}>
           {/* Back button in top left - conditional based on screen */}
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-6 left-6">
             <Button
               variant="ghost"
-              size="sm"
+              className="min-h-12 px-4 rounded-full transition-all duration-200"
               onClick={() => {
                 // Screen #8: Success - no back button shown, handled by "Return to Dashboard" button
                 if (paymentStatus === "completed") return;
@@ -3277,10 +3277,9 @@ const App = () => {
                 setPaymentStatus("pending");
                 window.location.hash = "";
               }}
-              className="text-muted-foreground rounded-full"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
+              <ArrowLeft className="w-[18px] h-[18px] mr-2" />
+              <span>Back</span>
             </Button>
           </div>
           
@@ -3288,37 +3287,37 @@ const App = () => {
             <img
               src={darkMode ? pymstrLogoLight : pymstrLogo}
               alt="PYMSTR"
-              className="h-7"
+              className="h-8"
             />
           </div>
         </CardHeader>
-        <CardContent className={`px-6 pb-4 flex-1 flex flex-col ${showCryptoSelection ? 'pt-0' : showFundingOptions ? 'pt-0' : 'pt-2'}`}>
+        <CardContent className={`px-6 pb-6 flex-1 flex flex-col ${showCryptoSelection ? 'pt-0' : showFundingOptions ? 'pt-0' : 'pt-4'}`}>
           {showWeb3Auth ? (
-            <div className="flex flex-col justify-center h-full space-y-3">
-              <div className="text-center space-y-1">
-                <h3 className="text-xl">Login to Pay</h3>
-                <p className="text-base text-muted-foreground">
+            <div className="flex flex-col justify-center h-full space-y-6">
+              <div className="text-center space-y-2">
+                <h3>Login to Pay</h3>
+                <p className="text-muted-foreground">
                   ${currentPayment?.price || 156.78} • {currentPayment?.description || "Payment"}
                 </p>
               </div>
 
               {isConnecting ? (
-                <div className="text-center space-y-3 py-6">
-                  <div className="w-10 h-10 border-4 border-[#757575] border-t-transparent rounded-full animate-spin mx-auto"></div>
-                  <p className="text-xs text-muted-foreground">
+                <div className="text-center space-y-4 py-8">
+                  <div className="w-12 h-12 border-4 border-[#1E88E5] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <p className="text-muted-foreground">
                     Connecting...
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {/* Social Login Options - 2 Column Grid */}
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-3">
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full h-9 text-xs px-3"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Google")}
                     >
-                      <svg className="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -3329,46 +3328,46 @@ const App = () => {
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full h-9 text-xs px-3"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Twitter")}
                     >
-                      <Twitter className="w-4 h-4 flex-shrink-0" />
+                      <Twitter className="w-5 h-5 flex-shrink-0" />
                       <span className="flex-1 text-left">Twitter</span>
                     </Button>
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full h-9 text-xs px-3"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Github")}
                     >
-                      <Github className="w-4 h-4 flex-shrink-0" />
+                      <Github className="w-5 h-5 flex-shrink-0" />
                       <span className="flex-1 text-left">Github</span>
                     </Button>
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full h-9 text-xs px-3"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("MetaMask")}
                     >
-                      <Wallet className="w-4 h-4 flex-shrink-0" />
+                      <Wallet className="w-5 h-5 flex-shrink-0" />
                       <span className="flex-1 text-left">MetaMask</span>
                     </Button>
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full h-9 text-xs px-3"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("WalletConnect")}
                     >
-                      <Wallet className="w-4 h-4 flex-shrink-0" />
+                      <Wallet className="w-5 h-5 flex-shrink-0" />
                       <span className="flex-1 text-left">WalletConnect</span>
                     </Button>
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full h-9 text-xs px-3"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Coinbase Wallet")}
                     >
-                      <Wallet className="w-4 h-4 flex-shrink-0" />
+                      <Wallet className="w-5 h-5 flex-shrink-0" />
                       <span className="flex-1 text-left">Coinbase</span>
                     </Button>
                   </div>
@@ -3376,25 +3375,25 @@ const App = () => {
               )}
             </div>
           ) : showCryptoSelection ? (
-            <div className="flex flex-col h-full pt-2 pb-4 px-0 space-y-3">
-              <div className="text-center space-y-0">
-                <div className="text-xl">
+            <div className="flex flex-col h-full pt-4 pb-6 px-0 space-y-4">
+              <div className="text-center space-y-2">
+                <div>
                   ${currentPayment?.price || 156.78}
                 </div>
-                <p className="text-xs text-muted-foreground leading-tight">
+                <p className="text-muted-foreground">
                   {currentPayment
                     ? currentPayment.description
                     : "Payment to CryptoStore"}
                 </p>
-                <p className="text-xs text-green-600">
+                <p className="text-[#7DD069]">
                   ✓ {connectedWallet}
                 </p>
               </div>
 
               {/* Chain Selection */}
-              <div className="space-y-1">
-                <Label className="text-xs">Network</Label>
-                <div className="grid grid-cols-3 gap-1">
+              <div className="space-y-2">
+                <Label>Network</Label>
+                <div className="grid grid-cols-3 gap-2">
                   {supportedChains
                     .filter(chain => {
                       // First check merchant config - only show chains enabled for selected token
@@ -3411,10 +3410,10 @@ const App = () => {
                     .map((chain) => (
                       <div
                         key={chain.id}
-                        className={`flex items-center justify-center gap-1 px-2 py-1 border rounded-full cursor-pointer transition-colors ${
+                        className={`flex items-center justify-center gap-2 px-3 py-2 min-h-12 border rounded-xl cursor-pointer transition-all duration-200 ${
                           selectedChain === chain.id
-                            ? "border-[#000000] bg-[#000000]/10 dark:border-white dark:bg-white/20"
-                            : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                            ? "border-[#1E88E5] bg-[#E3F2FD] dark:border-[#1E88E5] dark:bg-[#1E88E5]/20"
+                            : "border-[#43586C] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
                         }`}
                         onClick={() => {
                           setSelectedChain(chain.id);
@@ -3428,16 +3427,16 @@ const App = () => {
                           }
                         }}
                       >
-                        <div className="scale-75">{chain.icon}</div>
-                        <span className="text-xs">{chain.name}</span>
+                        <div>{chain.icon}</div>
+                        <span>{chain.name}</span>
                       </div>
                     ))}
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <Label className="text-xs">Currency</Label>
-                <div className="space-y-1">
+              <div className="space-y-2">
+                <Label>Currency</Label>
+                <div className="space-y-2">
                   {supportedCryptos
                     .filter(crypto => {
                       // First check merchant config - only show tokens enabled for selected chain
@@ -3459,10 +3458,10 @@ const App = () => {
                     .map((crypto) => (
                     <div
                       key={crypto.symbol}
-                      className={`p-1.5 border rounded-full cursor-pointer transition-colors ${
+                      className={`p-3 min-h-12 border rounded-xl cursor-pointer transition-all duration-200 ${
                         selectedCrypto === crypto.symbol
-                          ? "border-[#000000] bg-[#000000]/10 dark:border-white dark:bg-white/20"
-                          : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                          ? "border-[#1E88E5] bg-[#E3F2FD] dark:border-[#1E88E5] dark:bg-[#1E88E5]/20"
+                          : "border-[#43586C] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
                       }`}
                       onClick={() => {
                         setSelectedCrypto(crypto.symbol);
@@ -3477,25 +3476,25 @@ const App = () => {
                       }}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <div className="scale-75">{crypto.logo}</div>
-                          <div className="leading-tight">
-                            <p className="text-xs">{crypto.name}</p>
-                            <p className="text-[10px] text-muted-foreground">
+                        <div className="flex items-center gap-3">
+                          <div>{crypto.logo}</div>
+                          <div>
+                            <p>{crypto.name}</p>
+                            <p className="text-muted-foreground">
                               {crypto.symbol}
                             </p>
                           </div>
                         </div>
-                        <div className="text-right flex items-center gap-1.5">
-                          <div className="leading-tight">
-                            <p className="text-xs">
+                        <div className="text-right flex items-center gap-3">
+                          <div>
+                            <p>
                               {calculateCryptoAmount(
                                 currentPayment?.price || 156.78,
                                 crypto.symbol,
                               )}{" "}
                               {crypto.symbol}
                             </p>
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-muted-foreground">
                               Bal: {getWalletBalance(
                                 crypto.symbol,
                                 selectedChain
@@ -3503,9 +3502,9 @@ const App = () => {
                             </p>
                           </div>
                           {hasSufficientBalance(crypto.symbol) ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-green-500 flex-shrink-0" />
+                            <CheckCircle className="w-5 h-5 text-[#7DD069] flex-shrink-0" />
                           ) : (
-                            <AlertCircle className="w-3.5 h-3.5 text-[#FF5914] flex-shrink-0" />
+                            <AlertCircle className="w-5 h-5 text-[#DD6B6B] flex-shrink-0" />
                           )}
                         </div>
                       </div>
@@ -3515,7 +3514,7 @@ const App = () => {
               </div>
 
               <Button
-                className="w-full rounded-full bg-[#000000] hover:bg-[#1a1a1a] text-white h-10"
+                className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white min-h-12 transition-all duration-200"
                 onClick={() => {
                   // Validate token-chain combination with merchant config
                   if (!isTokenChainEnabled(selectedCrypto, selectedChain)) {
@@ -3538,53 +3537,31 @@ const App = () => {
                   : `Add ${selectedCrypto} to Pay`}
               </Button>
 
-              {/* Secure Footer with Toggle */}
-              <div className="mt-auto pt-3 border-t space-y-2">
-                <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-                  <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
-                  <span className="text-xs">
-                    Non-custodial & bulletproof by design
-                  </span>
-                </div>
-                <div className="text-center">
-                  <button
-                    onClick={() => {
-                      setCurrencyVariant(currencyVariant === "single" ? "multiple" : "single");
-                      // Reset to USDC when switching variants
-                      setSelectedCrypto("USDC");
-                    }}
-                    className="text-[10px] text-muted-foreground hover:text-foreground transition-colors underline py-1"
-                  >
-                    {currencyVariant === "single" 
-                      ? "→ Test: Multiple Currencies" 
-                      : "→ Test: Single Currency"}
-                  </button>
-                </div>
-              </div>
+
             </div>
           ) : showFundingOptions ? (
             showFundingSuccess ? (
-              <div className="space-y-4">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle className="w-8 h-8 text-green-600" />
+              <div className="space-y-6">
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-[#7DD069]/20 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle className="w-8 h-8 text-[#7DD069]" />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <h3>Funding Method Ready!</h3>
                     <p className="text-muted-foreground">
                       You can now proceed with adding{" "}
                       {selectedCrypto} funds
                     </p>
                   </div>
-                  <div className="bg-green-50 p-4 rounded-3xl border border-green-200">
-                    <p className="text-sm text-green-700">
+                  <div className="bg-[#7DD069]/10 p-6 rounded-2xl border border-[#7DD069]/30">
+                    <p className="text-[#7DD069]">
                       Your selected funding method is ready to
                       use. Click continue to proceed with the
                       payment.
                     </p>
                   </div>
                   <Button
-                    className="w-full"
+                    className="w-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
                     onClick={() => {
                       setShowFundingOptions(false);
                       setShowPaymentForm(true);
@@ -3594,16 +3571,15 @@ const App = () => {
                         `${selectedCrypto} ${getChainName(selectedChain)} funding completed successfully!`,
                       );
                     }}
-                    className="bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
                   >
                     Continue to Payment
                   </Button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <div className="text-center -mt-4">
-                  <div className="text-3xl mb-2">
+              <div className="space-y-6">
+                <div className="text-center space-y-2">
+                  <div>
                     ${currentPayment?.price || 156.78}
                   </div>
                   <p className="text-muted-foreground">
@@ -3611,24 +3587,24 @@ const App = () => {
                       ? currentPayment.description
                       : "Payment to CryptoStore"}
                   </p>
-                  <p className="text-xs text-[#7DD069]">
+                  <p className="text-[#7DD069]">
                     ✓ Connected with {connectedWallet}
                   </p>
-                  <p className="text-xs text-[#D9C370]">
+                  <p className="text-[#D9C370]">
                     Insufficient {selectedCrypto} {getChainName(selectedChain)} balance
                   </p>
                 </div>
 
-                <Separator />
+                <Separator className="bg-[#43586C]" />
 
-                <div className="bg-[#D9C370]/10 p-4 rounded-3xl border border-[#D9C370]/30">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <AlertCircle className="w-4 h-4 text-[#D9C370]" />
-                    <span className="text-sm text-[#D9C370]">
+                <div className="bg-[#D9C370]/10 p-6 rounded-2xl border border-[#D9C370]/30">
+                  <div className="flex items-center gap-3 mb-3">
+                    <AlertCircle className="w-5 h-5 text-[#D9C370]" />
+                    <span className="text-[#D9C370]">
                       Add Funds Required
                     </span>
                   </div>
-                  <p className="text-sm text-[#D9C370]/90">
+                  <p className="text-[#D9C370]">
                     Add{" "}
                     {parseFloat(
                       calculateCryptoAmount(
@@ -3640,15 +3616,15 @@ const App = () => {
                   </p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <Label>Choose funding method:</Label>
 
                   {/* QR Code or Copy Wallet Address Option */}
                   <div
-                    className={`p-4 border rounded-3xl cursor-pointer transition-colors ${
+                    className={`p-4 min-h-16 border rounded-2xl cursor-pointer transition-all duration-200 ${
                       fundingMethod === "qr"
-                        ? "border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-950/50"
-                        : "hover:bg-gray-50 dark:hover:bg-gray-800"
+                        ? "border-[#1E88E5] bg-[#E3F2FD] dark:border-[#1E88E5] dark:bg-[#1E88E5]/20"
+                        : "border-[#43586C] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
                     }`}
                     onClick={() => {
                       setFundingMethod("qr");
@@ -3656,13 +3632,13 @@ const App = () => {
                       setQrFundingBalance(0);
                     }}
                   >
-                    <div className="flex items-center space-x-3">
-                      <QrCode className="w-6 h-6 text-blue-600" />
+                    <div className="flex items-center gap-4">
+                      <QrCode className="w-6 h-6 text-[#1E88E5] flex-shrink-0" />
                       <div>
-                        <p className="font-medium">
+                        <p>
                           Scan QR Code or Copy Wallet Address
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground">
                           Transfer {selectedCrypto} {getChainName(selectedChain)} from another wallet
                         </p>
                       </div>
@@ -3671,19 +3647,19 @@ const App = () => {
 
                   {/* Credit Card Option */}
                   <div
-                    className={`p-4 border rounded-3xl cursor-pointer transition-colors ${"hover:bg-gray-50 dark:hover:bg-gray-800"}`}
+                    className={`p-4 min-h-16 border rounded-2xl cursor-pointer transition-all duration-200 border-[#43586C] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]`}
                     onClick={() => {
                       setFundingMethod("card");
                       setShowOnRamper(true);
                     }}
                   >
-                    <div className="flex items-center space-x-3">
-                      <CreditCard className="w-6 h-6 text-blue-600" />
+                    <div className="flex items-center gap-4">
+                      <CreditCard className="w-6 h-6 text-[#1E88E5] flex-shrink-0" />
                       <div>
-                        <p className="font-medium">
+                        <p>
                           Buy with Credit Card
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-muted-foreground">
                           Purchase {selectedCrypto} {getChainName(selectedChain)} instantly
                         </p>
                       </div>
@@ -3693,29 +3669,29 @@ const App = () => {
               </div>
             )
           ) : !showPaymentForm ? (
-            <div className="flex flex-col justify-center h-full space-y-6">
-              <div className="text-center space-y-1 -mt-4">
-                <div className="text-3xl">
+            <div className="flex flex-col justify-center h-full space-y-8">
+              <div className="text-center space-y-3">
+                <div>
                   ${currentPayment?.price || 156.78}
                 </div>
-                <p className="text-base text-muted-foreground">
+                <p className="text-muted-foreground">
                   {currentPayment
                     ? currentPayment.description
                     : "Payment to CryptoStore"}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-muted-foreground">
                   {currentPayment
                     ? `Payment ID: ${currentPayment.id}`
                     : "Demo Payment"}
                 </p>
               </div>
 
-              <div className="text-center space-y-3">
-                <p className="text-sm text-muted-foreground">
+              <div className="text-center space-y-4">
+                <p className="text-muted-foreground">
                   Login or register to continue with payment
                 </p>
                 <Button
-                  className="w-full rounded-full bg-[#000000] hover:bg-[#1a1a1a] text-white h-10"
+                  className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white min-h-12 transition-all duration-200"
                   onClick={() => setShowWeb3Auth(true)}
                 >
                   Login / Register
@@ -3724,8 +3700,8 @@ const App = () => {
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="text-center -mt-4">
-                <div className="text-3xl mb-2">
+              <div className="text-center space-y-2">
+                <div>
                   ${currentPayment?.price || 156.78}
                 </div>
                 <p className="text-muted-foreground">
@@ -3733,20 +3709,20 @@ const App = () => {
                     ? currentPayment.description
                     : "Payment to CryptoStore"}
                 </p>
-                <p className="text-xs text-green-600">
+                <p className="text-[#7DD069]">
                   ✓ Connected with {connectedWallet}
                 </p>
-                <p className="text-xs text-blue-600">
+                <p className="text-[#1E88E5]">
                   Paying with {selectedCrypto}
                 </p>
               </div>
 
-              <Separator />
+              <Separator className="bg-[#43586C]" />
 
               {paymentStatus === "pending" && (
-                <div className="space-y-4">
-                  <div className="bg-blue-50 dark:bg-blue-950/50 p-4 rounded-3xl border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center justify-between mb-2">
+                <div className="space-y-6">
+                  <div className="bg-[#E3F2FD] dark:bg-[#1E88E5]/20 p-6 rounded-2xl border border-[#1E88E5]/30">
+                    <div className="flex items-center justify-between mb-3">
                       <span>Amount:</span>
                       <span>
                         {calculateCryptoAmount(
@@ -3756,11 +3732,11 @@ const App = () => {
                         {selectedCrypto}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-3">
                       <span>{supportedChains.find(chain => chain.id === selectedChain)?.name || "Network"} Fee:</span>
                       <span>~0.001 {selectedCrypto}</span>
                     </div>
-                    <div className="flex items-center justify-between font-bold">
+                    <div className="flex items-center justify-between">
                       <span>Total:</span>
                       <span>
                         {(
@@ -3777,19 +3753,19 @@ const App = () => {
                   </div>
 
                   <Button
-                    className="w-full rounded-full bg-[#000000] hover:bg-[#1a1a1a] text-white h-10"
+                    className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white min-h-12 transition-all duration-200"
                     onClick={handlePayment}
                   >
-                    <Wallet className="w-4 h-4 mr-2" />
+                    <Wallet className="w-5 h-5 mr-2" />
                     Confirm Payment
                   </Button>
                 </div>
               )}
 
               {paymentStatus === "processing" && (
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                  <div>
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 border-4 border-[#1E88E5] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <div className="space-y-2">
                     <p>Processing payment...</p>
                     <p className="text-muted-foreground">
                       Please wait while we confirm your
@@ -3800,11 +3776,11 @@ const App = () => {
               )}
 
               {paymentStatus === "completed" && (
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-green-100 dark:bg-green-950/50 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-[#7DD069]/20 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle className="w-8 h-8 text-[#7DD069]" />
                   </div>
-                  <div>
+                  <div className="space-y-2">
                     <h3>Payment Successful!</h3>
                     <p className="text-muted-foreground">
                       Your payment has been processed
@@ -3812,7 +3788,7 @@ const App = () => {
                     </p>
                   </div>
                   <Button
-                    className="w-full"
+                    className="w-full min-h-12 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white transition-all duration-200"
                     onClick={() => {
                       setActiveTab("admin");
                       setCurrentPayment(null);
@@ -3837,10 +3813,10 @@ const App = () => {
         </CardContent>
 
         {/* Secure Footer */}
-        <div className="p-4 border-t bg-gray-50/50 dark:bg-gray-800/50">
-          <div className="flex items-center justify-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-            <Shield className="w-4 h-4 text-green-600 dark:text-green-400" />
-            <span>
+        <div className="p-6 border-t border-[#43586C]">
+          <div className="flex items-center justify-center gap-3">
+            <Shield className="w-5 h-5 text-[#7DD069] fill-[#7DD069]" />
+            <span className="whitespace-nowrap">
               Non-custodial & bulletproof by design
             </span>
           </div>
@@ -3850,28 +3826,28 @@ const App = () => {
       {/* OnRamper Credit Card Purchase Dialog */}
       <Dialog open={showOnRamper} onOpenChange={setShowOnRamper}>
         <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden rounded-3xl">
-          <DialogHeader className="p-6 pb-4">
+          <DialogHeader className="p-8 pb-6">
             <DialogTitle>Buy {selectedCrypto} with Credit Card</DialogTitle>
             <DialogDescription>
               Complete your purchase through our secure payment partner OnRamper
             </DialogDescription>
           </DialogHeader>
-          <div className="px-6 pb-6">
-            <div className="bg-blue-50 dark:bg-blue-950/50 p-4 rounded-3xl border border-blue-200 dark:border-blue-800 mb-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">You need:</span>
-                <span className="font-medium">
+          <div className="px-8 pb-8">
+            <div className="bg-[#E3F2FD] dark:bg-[#1E88E5]/20 p-6 rounded-2xl border border-[#1E88E5]/30 mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span>You need:</span>
+                <span>
                   {calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)} {selectedCrypto}
                 </span>
               </div>
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-sm">Network:</span>
-                <span className="font-medium">{getChainName(selectedChain)}</span>
+              <div className="flex items-center justify-between">
+                <span>Network:</span>
+                <span>{getChainName(selectedChain)}</span>
               </div>
             </div>
             
             {/* OnRamper iframe */}
-            <div className="rounded-3xl overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="rounded-2xl overflow-hidden border border-[#43586C]">
               <iframe
                 src={`https://widget.onramper.com?apiKey=pk_prod_01JA8K7NMCXHXQZYNT22V3FPJ8&defaultCrypto=${selectedCrypto}&defaultAmount=${calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)}&networks=${getOnRamperNetwork(selectedChain)}&wallets=${selectedCrypto}:${walletAddress}&isAddressEditable=false`}
                 title="OnRamper Widget"
@@ -3882,9 +3858,9 @@ const App = () => {
               />
             </div>
 
-            <div className="mt-4 space-y-3">
+            <div className="mt-6 space-y-4">
               <Button
-                className="w-full rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200"
+                className="w-full rounded-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200"
                 onClick={() => {
                   setShowOnRamper(false);
                   setShowFundingSuccess(true);
@@ -3895,7 +3871,7 @@ const App = () => {
               </Button>
               <Button
                 variant="ghost"
-                className="w-full rounded-full"
+                className="w-full rounded-full min-h-12 transition-all duration-200"
                 onClick={() => setShowOnRamper(false)}
               >
                 Cancel
