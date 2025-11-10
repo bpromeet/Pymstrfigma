@@ -168,9 +168,29 @@ import { BottomNavigation } from "./components/BottomNavigation";
 import { NavigationRail } from "./components/NavigationRail";
 import PaymentLinksDashboard from "./components/PaymentLinksDashboard";
 import PageLayout from "./components/PageLayout";
-import WalletAddressExamples from "./components/WalletAddressExamples";
-import WalletMainActionExample from "./components/WalletMainActionExample";
 import { WalletMainActionButton } from "./components/WalletMainActionButton";
+import {
+  INITIAL_PAYMENT_LINKS,
+  INITIAL_WALLETS,
+  INITIAL_TEAM_MEMBERS,
+  INITIAL_API_KEYS,
+  DASHBOARD_STATS,
+  RECENT_TRANSACTIONS,
+  CHART_DATA,
+  INITIAL_MERCHANT_CONFIG,
+  INITIAL_NEW_MEMBER,
+  INITIAL_NEW_API_KEY,
+} from "./constants/mockData";
+import {
+  getExplorerUrl,
+  getChainName,
+  getOnRamperNetwork,
+  getCryptoName,
+  copyToClipboard as copyToClipboardUtil,
+  getExchangeRate,
+  calculateCryptoAmount,
+  getWalletBalance,
+} from "./utils/helpers";
 
 const App = () => {
   const [activeTab, setActiveTab] = useState("admin");
@@ -197,276 +217,7 @@ const App = () => {
     useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [userLoginMethod, setUserLoginMethod] = useState("");
-  const [paymentLinks, setPaymentLinks] = useState([
-    {
-      id: "1",
-      linkId: "#PL001",
-      price: 250,
-      description: "Consulting Services",
-      status: "completed",
-      clicks: 12,
-      source: "manual",
-      chain: "ethereum",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "USDT", "EURC"],
-      availableChains: ["ethereum", "polygon"],
-      txHash: "0x7f3a8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
-    },
-    {
-      id: "2",
-      linkId: "#PL002",
-      price: 89.99,
-      description: "Digital Product",
-      status: "expired",
-      clicks: 45,
-      source: "api",
-      chain: "polygon",
-      currency: "USDT",
-      availableCurrencies: ["USDT"],
-      availableChains: ["polygon"],
-    },
-    {
-      id: "3",
-      linkId: "#PL003",
-      price: 150,
-      description: "Monthly Subscription",
-      status: "active",
-      clicks: 8,
-      source: "manual",
-      expiryDate: "2025-12-31",
-      chain: "arbitrum",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "EURC"],
-      availableChains: ["arbitrum", "optimism"],
-    },
-    {
-      id: "4",
-      linkId: "#PL004",
-      price: 75.5,
-      description: "API Generated Link",
-      status: "active",
-      clicks: 23,
-      source: "api",
-      chain: "optimism",
-      currency: "EURC",
-      availableCurrencies: ["EURC", "USDC"],
-      availableChains: ["optimism"],
-    },
-    {
-      id: "5",
-      linkId: "#PL005",
-      price: 199.99,
-      description: "Premium Service",
-      status: "active",
-      clicks: 5,
-      source: "manual",
-      expiryDate: "2025-11-15",
-      chain: "ethereum",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "USDT", "EURC"],
-      availableChains: ["ethereum", "polygon", "arbitrum"],
-    },
-    {
-      id: "6",
-      linkId: "#PL006",
-      price: 45.0,
-      description: "E-book Download",
-      status: "completed",
-      clicks: 67,
-      source: "api",
-      expiryDate: "2025-10-20",
-      chain: "polygon",
-      currency: "USDT",
-      availableCurrencies: ["USDT", "USDC"],
-      availableChains: ["polygon", "ethereum"],
-      txHash: "0xa4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
-    },
-    {
-      id: "7",
-      linkId: "#PL007",
-      price: 299.5,
-      description: "Annual License",
-      status: "active",
-      clicks: 34,
-      source: "manual",
-      chain: "arbitrum",
-      currency: "EURC",
-      availableCurrencies: ["EURC"],
-      availableChains: ["arbitrum", "optimism"],
-    },
-    {
-      id: "8",
-      linkId: "#PL008",
-      price: 12.99,
-      description: "Monthly Plan",
-      status: "inactive",
-      clicks: 89,
-      source: "api",
-      chain: "optimism",
-      currency: "USDC",
-      availableCurrencies: ["USDC"],
-      availableChains: ["optimism"],
-    },
-    {
-      id: "9",
-      linkId: "#PL009",
-      price: 500,
-      description: "Enterprise Setup",
-      status: "active",
-      clicks: 15,
-      source: "manual",
-      expiryDate: "2025-12-01",
-      chain: "ethereum",
-      currency: "USDT",
-      availableCurrencies: ["USDC", "USDT", "EURC"],
-      availableChains: ["ethereum", "polygon", "arbitrum", "optimism", "base"],
-    },
-    {
-      id: "10",
-      linkId: "#PL010",
-      price: 25.0,
-      description: "Basic Package",
-      status: "completed",
-      clicks: 156,
-      source: "api",
-      chain: "polygon",
-      currency: "USDC",
-      availableCurrencies: ["USDC"],
-      availableChains: ["polygon"],
-      txHash: "0x8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b",
-    },
-    {
-      id: "11",
-      linkId: "#PL011",
-      price: 175.75,
-      description: "Design Services",
-      status: "active",
-      clicks: 29,
-      source: "manual",
-      expiryDate: "2025-10-25",
-      chain: "arbitrum",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "USDT"],
-      availableChains: ["arbitrum", "polygon"],
-    },
-    {
-      id: "12",
-      linkId: "#PL012",
-      price: 99.99,
-      description: "Pro Subscription",
-      status: "expired",
-      clicks: 78,
-      source: "api",
-      expiryDate: "2025-09-30",
-      chain: "optimism",
-      currency: "EURC",
-      availableCurrencies: ["EURC"],
-      availableChains: ["optimism", "arbitrum"],
-    },
-    {
-      id: "13",
-      linkId: "#PL013",
-      price: 350,
-      description: "Custom Development",
-      status: "active",
-      clicks: 19,
-      source: "manual",
-      chain: "base",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "USDT"],
-      availableChains: ["base", "polygon"],
-    },
-    {
-      id: "14",
-      linkId: "#PL014",
-      price: 59.99,
-      description: "Plugin License",
-      status: "active",
-      clicks: 92,
-      source: "api",
-      expiryDate: "2025-11-30",
-      chain: "polygon",
-      currency: "USDT",
-      availableCurrencies: ["USDT"],
-      availableChains: ["polygon", "ethereum"],
-    },
-    {
-      id: "15",
-      linkId: "#PL015",
-      price: 125,
-      description: "Training Session",
-      status: "inactive",
-      clicks: 41,
-      source: "manual",
-      chain: "arbitrum",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "EURC"],
-      availableChains: ["arbitrum"],
-    },
-    {
-      id: "16",
-      price: 19.99,
-      description: "Mobile App",
-      status: "active",
-      clicks: 203,
-      source: "api",
-      expiryDate: "2025-10-15",
-      chain: "optimism",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "USDT", "EURC"],
-      availableChains: ["optimism", "polygon", "arbitrum"],
-    },
-    {
-      id: "17",
-      price: 750,
-      description: "Full Website",
-      status: "active",
-      clicks: 7,
-      source: "manual",
-      chain: "ethereum",
-      currency: "EURC",
-      availableCurrencies: ["EURC", "USDC"],
-      availableChains: ["ethereum"],
-    },
-    {
-      id: "18",
-      price: 39.99,
-      description: "Theme Package",
-      status: "active",
-      clicks: 125,
-      source: "api",
-      chain: "polygon",
-      currency: "USDC",
-      availableCurrencies: ["USDC", "USDT"],
-      availableChains: ["polygon"],
-    },
-    {
-      id: "19",
-      price: 225,
-      description: "SEO Audit",
-      status: "active",
-      clicks: 33,
-      source: "manual",
-      chain: "arbitrum",
-      currency: "USDT",
-      expiryDate: "2025-11-10",
-      availableCurrencies: ["USDT", "USDC"],
-      availableChains: ["arbitrum", "ethereum"],
-    },
-    {
-      id: "20",
-      price: 8.99,
-      description: "Stock Photos",
-      status: "expired",
-      clicks: 267,
-      source: "api",
-      expiryDate: "2025-09-15",
-      chain: "optimism",
-      currency: "EURC",
-      availableCurrencies: ["EURC"],
-      availableChains: ["optimism"],
-    },
-  ]);
+  const [paymentLinks, setPaymentLinks] = useState(INITIAL_PAYMENT_LINKS);
   const [paymentLinksTab, setPaymentLinksTab] = useState("all");
   const [chainFilter, setChainFilter] = useState("all");
   const [currencyFilter, setCurrencyFilter] = useState("all");
@@ -476,24 +227,53 @@ const App = () => {
   const [showPaymentLinkDialog, setShowPaymentLinkDialog] = useState(false);
   const [currencyVariant, setCurrencyVariant] = useState<"single" | "multiple">("single"); // For screen #4 simulation
   const paymentLinksRef = useRef(paymentLinks);
+  const [isNavRailExpanded, setIsNavRailExpanded] = useState(false);
 
-  // URL hash routing for standalone documentation pages
+  // URL hash routing for documentation pages and payment links
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.toLowerCase();
+      const hash = window.location.hash;
+      const hashLower = hash.toLowerCase();
       
-      // Support multiple hash formats for flexibility
-      if (hash.includes('quickstart')) {
+      // Handle payment links first (#/pay/*)
+      if (hash.startsWith("#/pay/")) {
+        const paymentId = hash.replace("#/pay/", "");
+        const payment = paymentLinksRef.current.find((link) => link.id === paymentId);
+        
+        if (payment && payment.status === "active") {
+          setCurrentPayment({
+            id: payment.id,
+            price: payment.price,
+            description: payment.description,
+            merchantName: "PYMSTR Merchant",
+            availableCurrencies: payment.availableCurrencies || ["USDC", "USDT", "EURC"],
+            availableChains: payment.availableChains || ["ethereum", "polygon", "arbitrum", "optimism", "base"],
+          });
+          setActiveTab("checkout");
+          setIsStandalonePage(false);
+        } else if (payment && payment.status === "completed") {
+          setActiveTab("admin");
+          setIsStandalonePage(false);
+          toast("This payment link has already been used");
+        } else {
+          setActiveTab("admin");
+          setIsStandalonePage(false);
+          toast("Payment link not found or inactive");
+        }
+        return;
+      }
+      
+      // Handle documentation pages
+      if (hashLower.includes('quickstart')) {
         setActiveTab('quickstart');
         setIsStandalonePage(true);
-      } else if (hash.includes('api-reference') || hash.includes('apireference')) {
+      } else if (hashLower.includes('api-reference') || hashLower.includes('apireference')) {
         setActiveTab('apireference');
         setIsStandalonePage(true);
-      } else if (hash.includes('code-example')) {
+      } else if (hashLower.includes('code-example')) {
         setActiveTab('codeexamples');
         setIsStandalonePage(true);
-      } else if (hash === '#/pay' || hash.startsWith('#/pay/')) {
-        // Payment checkout URLs
+      } else if (hash === '#/pay') {
         setActiveTab('checkout');
         setIsStandalonePage(false);
       } else {
@@ -501,116 +281,13 @@ const App = () => {
       }
     };
 
-    // Check hash on mount
     handleHashChange();
-
-    // Listen for hash changes
     window.addEventListener('hashchange', handleHashChange);
-
-    return () => {
-      window.removeEventListener('hashchange', handleHashChange);
-    };
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   // Wallet states
-  const [wallets, setWallets] = useState([
-    {
-      id: "1",
-      name: "Main Wallet",
-      address: "0x742d35cc6af4b1e2b6b265c3e2f3b4d123456789",
-      balance: {
-        USDC: 1245.67,
-        USDT: 890.23,
-        EURC: 567.89,
-      },
-      chainBalances: {
-        USDC: {
-          ethereum: 450.23,
-          polygon: 320.15,
-          arbitrum: 275.89,
-          optimism: 199.40,
-        },
-        USDT: {
-          ethereum: 320.50,
-          polygon: 245.73,
-          arbitrum: 180.00,
-          optimism: 144.00,
-        },
-        EURC: {
-          ethereum: 200.45,
-          polygon: 150.22,
-          arbitrum: 120.12,
-          optimism: 97.10,
-        },
-      },
-      isDefault: true,
-      emailNotifications: true,
-    },
-    {
-      id: "2",
-      name: "Business Wallet",
-      address: "0x8f3e4a5b7c9d1e2f3a4b5c6d7e8f9a0b1c2d3e4f",
-      balance: {
-        USDC: 456.78,
-        USDT: 123.45,
-        EURC: 789.01,
-      },
-      chainBalances: {
-        USDC: {
-          ethereum: 200.00,
-          polygon: 100.50,
-          arbitrum: 90.28,
-          optimism: 66.00,
-        },
-        USDT: {
-          ethereum: 50.00,
-          polygon: 30.45,
-          arbitrum: 23.00,
-          optimism: 20.00,
-        },
-        EURC: {
-          ethereum: 350.00,
-          polygon: 200.01,
-          arbitrum: 150.00,
-          optimism: 89.00,
-        },
-      },
-      isDefault: false,
-      emailNotifications: true,
-    },
-    {
-      id: "3",
-      name: "Savings Wallet",
-      address: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
-      balance: {
-        USDC: 2890.45,
-        USDT: 1567.23,
-        EURC: 934.12,
-      },
-      chainBalances: {
-        USDC: {
-          ethereum: 1200.00,
-          polygon: 800.45,
-          arbitrum: 550.00,
-          optimism: 340.00,
-        },
-        USDT: {
-          ethereum: 700.00,
-          polygon: 400.23,
-          arbitrum: 300.00,
-          optimism: 167.00,
-        },
-        EURC: {
-          ethereum: 400.00,
-          polygon: 250.12,
-          arbitrum: 184.00,
-          optimism: 100.00,
-        },
-      },
-      isDefault: false,
-      emailNotifications: false,
-    },
-  ]);
+  const [wallets, setWallets] = useState(INITIAL_WALLETS);
   const [editingWallet, setEditingWallet] = useState(null);
   const [showCreateWallet, setShowCreateWallet] =
     useState(false);
@@ -624,50 +301,9 @@ const App = () => {
   const [targetWalletId, setTargetWalletId] = useState("");
 
   // Team states
-  const [teamMembers, setTeamMembers] = useState([
-    {
-      id: "1",
-      name: "John Admin",
-      email: "john@pymstr.com",
-      role: "admin",
-      status: "active",
-      avatar: "JA",
-      lastActive: "2025-10-05T10:30:00Z",
-    },
-    {
-      id: "2",
-      name: "Sarah Manager",
-      email: "sarah@pymstr.com",
-      role: "limited",
-      status: "active",
-      avatar: "SM",
-      lastActive: "2025-10-05T08:15:00Z",
-    },
-    {
-      id: "3",
-      name: "Mike Viewer",
-      email: "mike@pymstr.com",
-      role: "view-only",
-      status: "active",
-      avatar: "MV",
-      lastActive: "2025-10-04T16:45:00Z",
-    },
-    {
-      id: "4",
-      name: "Lisa Analyst",
-      email: "lisa@pymstr.com",
-      role: "limited",
-      status: "inactive",
-      avatar: "LA",
-      lastActive: "2025-10-03T12:20:00Z",
-    },
-  ]);
+  const [teamMembers, setTeamMembers] = useState(INITIAL_TEAM_MEMBERS);
   const [showAddMember, setShowAddMember] = useState(false);
-  const [newMember, setNewMember] = useState({
-    name: "",
-    email: "",
-    role: "view-only",
-  });
+  const [newMember, setNewMember] = useState(INITIAL_NEW_MEMBER);
   const [showDeleteConfirm, setShowDeleteConfirm] =
     useState(false);
   const [memberToDelete, setMemberToDelete] = useState<{
@@ -676,68 +312,10 @@ const App = () => {
   } | null>(null);
 
   // API Key states
-  const [apiKeys, setApiKeys] = useState([
-    {
-      id: "1",
-      name: "Production - Main Website",
-      key: "pk_live_a7f3d9e2b4c8h1k5m9n2p6q8t3v7w1x4",
-      environment: "live",
-      status: "active",
-      createdAt: "2025-10-05T10:30:00Z",
-      lastUsed: "2025-10-09T08:15:00Z",
-      totalCalls: 15234,
-      permissions: [
-        "read_payments",
-        "create_payment_links",
-        "receive_webhooks",
-      ],
-      ipWhitelist: ["192.168.1.1", "10.0.0.5"],
-      domainWhitelist: ["example.com", "app.example.com"],
-      rateLimit: { perMinute: 100, perHour: 1000 },
-    },
-    {
-      id: "2",
-      name: "Test - Development",
-      key: "pk_test_x9y8z7w6v5u4t3s2r1q0p9o8n7m6l5k4",
-      environment: "test",
-      status: "active",
-      createdAt: "2025-09-20T14:20:00Z",
-      lastUsed: "2025-10-08T16:45:00Z",
-      totalCalls: 8923,
-      permissions: ["read_payments", "create_payment_links"],
-      ipWhitelist: [],
-      domainWhitelist: [],
-      rateLimit: { perMinute: 100, perHour: 1000 },
-    },
-    {
-      id: "3",
-      name: "Mobile App - iOS",
-      key: "pk_live_m5n4b3v2c1x0z9y8w7v6u5t4s3r2q1p0",
-      environment: "live",
-      status: "inactive",
-      createdAt: "2025-08-12T09:10:00Z",
-      lastUsed: null,
-      totalCalls: 0,
-      permissions: ["read_payments"],
-      ipWhitelist: [],
-      domainWhitelist: [],
-      rateLimit: { perMinute: 100, perHour: 1000 },
-    },
-  ]);
-  const [showCreateApiKey, setShowCreateApiKey] =
-    useState(false);
-  const [selectedApiKey, setSelectedApiKey] = useState<
-    string | null
-  >(null);
-  const [newApiKey, setNewApiKey] = useState({
-    name: "",
-    environment: "test",
-    permissions: ["read_payments"],
-    ipWhitelist: "",
-    domainWhitelist: "",
-    autoExpire: false,
-    expiryDays: 90,
-  });
+  const [apiKeys, setApiKeys] = useState(INITIAL_API_KEYS);
+  const [showCreateApiKey, setShowCreateApiKey] = useState(false);
+  const [selectedApiKey, setSelectedApiKey] = useState<string | null>(null);
+  const [newApiKey, setNewApiKey] = useState(INITIAL_NEW_API_KEY);
   const [showApiKeySecret, setShowApiKeySecret] = useState<
     string | null
   >(null);
@@ -748,14 +326,7 @@ const App = () => {
   const [showCopyTooltip, setShowCopyTooltip] = useState("");
 
   // Merchant configuration state
-  const [merchantConfig, setMerchantConfig] = useState({
-    merchantId: "MERCH123",
-    acceptedPayments: [
-      { token: "USDC", chains: ["ethereum", "polygon", "arbitrum", "optimism", "base"] },
-      { token: "USDT", chains: ["ethereum", "polygon", "arbitrum", "optimism", "base"] },
-      { token: "EURC", chains: ["ethereum", "polygon", "arbitrum", "optimism", "base"] },
-    ],
-  });
+  const [merchantConfig, setMerchantConfig] = useState(INITIAL_MERCHANT_CONFIG);
 
   // Dark mode state
   const [darkMode, setDarkMode] = useState(() => {
@@ -848,151 +419,12 @@ const App = () => {
     paymentLinksRef.current = paymentLinks;
   }, [paymentLinks]);
 
-  // Handle URL routing for payment links
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash.startsWith("#/pay/")) {
-        const paymentId = hash.replace("#/pay/", "");
-        const payment = paymentLinksRef.current.find(
-          (link) => link.id === paymentId,
-        );
-        if (payment && payment.status === "active") {
-          // Set payment data and navigate directly without calling handlePaymentLinkClick
-          setCurrentPayment({
-            id: payment.id,
-            price: payment.price,
-            description: payment.description,
-            merchantName: "PYMSTR Merchant",
-            availableCurrencies: payment.availableCurrencies || ["USDC", "USDT", "EURC"],
-            availableChains: payment.availableChains || ["ethereum", "polygon", "arbitrum", "optimism", "base"],
-          });
-          setActiveTab("checkout");
-          // Update clicks
-          setPaymentLinks((links) =>
-            links.map((l) =>
-              l.id === payment.id
-                ? { ...l, clicks: l.clicks + 1 }
-                : l,
-            ),
-          );
-        } else if (payment && payment.status === "completed") {
-          // Reject completed payment links (single-use only)
-          setActiveTab("admin");
-          toast("This payment link has already been used");
-        } else {
-          // Redirect to admin if payment not found or inactive
-          setActiveTab("admin");
-          toast("Payment link not found or inactive");
-        }
-      }
-    };
 
-    // Check on initial load
-    handleHashChange();
-
-    // Listen for hash changes
-    window.addEventListener("hashchange", handleHashChange);
-    return () =>
-      window.removeEventListener(
-        "hashchange",
-        handleHashChange,
-      );
-  }, []); // Empty dependency array to prevent infinite loops
 
   // Mock data
-  const dashboardStats = {
-    // Tier 1 - Essential
-    totalVolumeProcessed: 125847.32,
-    successfulTransactions: 1847,
-    successRate: 96.8,
-    averageTransactionValue: 68.14,
-    
-    // Tier 2 - Important Secondary
-    activePayors: 342,
-    failedTransactions: 61,
-    settlementSpeed: 45, // seconds
-    totalFeesCollected: 3649.77,
-    
-    // Tier 3 - Web3 Specific
-    gasFeesSaved: 892.45,
-    multiChainVolume: {
-      ethereum: 67234.12,
-      polygon: 32456.89,
-      arbitrum: 18934.56,
-      optimism: 7221.75,
-      base: 15892.34,
-    },
-    currencyVolume: {
-      USDC: 68542.34,
-      USDT: 42156.78,
-      EURC: 12847.12,
-    },
-  };
-
-  const recentTransactions = [
-    {
-      id: "1",
-      linkId: "#PL001",
-      price: 156.78,
-      crypto: "USDC",
-      status: "Success",
-      date: "2025-09-30T10:30:00Z",
-      chain: "ethereum",
-      txHash: "0x7f3a8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
-    },
-    {
-      id: "2",
-      linkId: "#PL002",
-      price: 89.5,
-      crypto: "USDT",
-      status: "Pending",
-      date: "2025-09-30T09:15:00Z",
-      chain: "polygon",
-      txHash: "0xa4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
-    },
-    {
-      id: "3",
-      linkId: "#PL003",
-      price: 234.12,
-      crypto: "USDC",
-      status: "Fail",
-      date: "2025-09-30T08:45:00Z",
-      chain: "arbitrum",
-      txHash: "0x1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
-    },
-    {
-      id: "4",
-      linkId: "#PL004",
-      price: 67.89,
-      crypto: "EURC",
-      status: "Success",
-      date: "2025-09-30T07:20:00Z",
-      chain: "optimism",
-      txHash: "0x8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b",
-    },
-  ];
-
-  const chartData = [
-    { month: "Jan", transactions: 145, revenue: 12456 },
-    { month: "Feb", transactions: 178, revenue: 15234 },
-    { month: "Mar", transactions: 234, revenue: 18967 },
-    { month: "Apr", transactions: 289, revenue: 23145 },
-    { month: "May", transactions: 312, revenue: 26789 },
-    { month: "Jun", transactions: 345, revenue: 29456 },
-  ];
-
-  // Helper function to get blockchain explorer URL
-  const getExplorerUrl = (chain: string, txHash: string) => {
-    const explorers: { [key: string]: string } = {
-      ethereum: "https://etherscan.io/tx/",
-      polygon: "https://polygonscan.com/tx/",
-      arbitrum: "https://arbiscan.io/tx/",
-      optimism: "https://optimistic.etherscan.io/tx/",
-      base: "https://basescan.org/tx/",
-    };
-    return explorers[chain.toLowerCase()] + txHash;
-  };
+  const dashboardStats = DASHBOARD_STATS;
+  const recentTransactions = RECENT_TRANSACTIONS;
+  const chartData = CHART_DATA;
 
   const CryptoIcon = ({ symbol, size = "w-8 h-8" }: { symbol: string; size?: string }) => {
     const iconProps = { className: size };
@@ -1150,104 +582,9 @@ const App = () => {
     },
   ];
 
-  // Helper function to get chain display name
-  const getChainName = (chainId: string) => {
-    const chain = supportedChains.find(c => c.id === chainId);
-    return chain ? chain.name : chainId.charAt(0).toUpperCase() + chainId.slice(1);
-  };
-
-  // Helper function to map our chain IDs to OnRamper network names
-  const getOnRamperNetwork = (chainId: string) => {
-    const networkMap: { [key: string]: string } = {
-      ethereum: "ethereum",
-      polygon: "polygon",
-      arbitrum: "arbitrum",
-      optimism: "optimism",
-      base: "base",
-    };
-    return networkMap[chainId.toLowerCase()] || "ethereum";
-  };
-
-  // Helper function to get crypto full name
-  const getCryptoName = (symbol: string) => {
-    const crypto = supportedCryptos.find(c => c.symbol === symbol);
-    return crypto ? crypto.name : symbol;
-  };
-
-  const copyToClipboard = (
-    text: string,
-    tooltipId?: string,
-  ) => {
-    // Fallback method that doesn't require Clipboard API permissions
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    
-    try {
-      document.execCommand('copy');
-      toast("Copied to clipboard!");
-
-      if (tooltipId) {
-        setShowCopyTooltip(tooltipId);
-        setTimeout(() => {
-          setShowCopyTooltip("");
-        }, 1000);
-      }
-    } catch (err) {
-      toast("Failed to copy to clipboard");
-    } finally {
-      document.body.removeChild(textarea);
-    }
-  };
-
-  // Mock exchange rates (in real app, this would come from an API)
-  const getExchangeRate = (crypto: string) => {
-    const rates: { [key: string]: number } = {
-      USDC: 1.0,
-      USDT: 1.001,
-      EURC: 0.92,
-    };
-    return rates[crypto] || 1;
-  };
-
-  const calculateCryptoAmount = (
-    usdAmount: number,
-    crypto: string,
-  ) => {
-    const rate = getExchangeRate(crypto);
-    return (usdAmount / rate).toFixed(6);
-  };
-
-  // Mock wallet balances (in real app, this would come from connected wallet)
-  // Network-specific balances: different balances per chain
-  const getWalletBalance = (crypto: string, chain: string) => {
-    const balances: { [key: string]: { [key: string]: number } } = {
-      USDC: {
-        ethereum: 0.0,    // Zero balance on Ethereum
-        polygon: 245.67,   // Has balance on Polygon
-        arbitrum: 150.23,
-        optimism: 89.45,
-        base: 425.90,      // Has balance on Base
-      },
-      USDT: {
-        ethereum: 0.0,
-        polygon: 0.0,
-        arbitrum: 320.15,
-        optimism: 0.0,
-        base: 180.50,
-      },
-      EURC: {
-        ethereum: 500.78,
-        polygon: 0.0,
-        arbitrum: 0.0,
-        optimism: 312.45,
-        base: 0.0,         // Zero balance on Base for EURC
-      },
-    };
-    return balances[crypto]?.[chain] || 0;
+  // Local wrapper for copyToClipboard to pass setShowCopyTooltip
+  const copyToClipboard = (text: string, tooltipId?: string) => {
+    copyToClipboardUtil(text, tooltipId, setShowCopyTooltip);
   };
 
   // Check if user has sufficient balance for payment
@@ -1369,7 +706,6 @@ const App = () => {
     price: number;
     description: string;
     status: "active";
-    clicks: number;
     chain: string;
     currency: string;
   }) => {
@@ -1599,7 +935,7 @@ const App = () => {
         subtitle="Overview of your payment processing and analytics"
       />
       <PageLayout.Content>
-        <div className="space-y-6 transition-colors duration-[900ms] ease-out">
+        <div className="space-y-6">
 
       {/* ========================================
           DESKTOP ACTION BUTTON (Left-aligned, below subtitle)
@@ -2051,7 +1387,7 @@ const App = () => {
         subtitle="View detailed analytics and insights about your payment activity"
       />
       <PageLayout.Content>
-        <div className="space-y-6 transition-colors duration-[900ms] ease-out">
+        <div className="space-y-6">
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
@@ -2080,25 +1416,26 @@ const App = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Geographic Distribution</CardTitle>
+            <CardTitle>Network Activity</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {[
-                "United States",
-                "United Kingdom",
-                "Germany",
-                "Canada",
-                "Australia",
-              ].map((country) => (
+                { chain: "Polygon", txCount: 1247, avgValue: "$125" },
+                { chain: "Arbitrum", txCount: 892, avgValue: "$342" },
+                { chain: "Base", txCount: 654, avgValue: "$89" },
+                { chain: "Optimism", txCount: 423, avgValue: "$267" },
+                { chain: "Ethereum", txCount: 156, avgValue: "$1,834" },
+              ].map((network) => (
                 <div
-                  key={country}
+                  key={network.chain}
                   className="flex items-center justify-between"
                 >
-                  <span>{country}</span>
-                  <span>
-                    {Math.floor(Math.random() * 100)}%
-                  </span>
+                  <span>{network.chain}</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[#798A9B]">{network.txCount} txs</span>
+                    <span className="text-[#F6F7F9]">{network.avgValue} avg</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -4916,9 +4253,17 @@ const App = () => {
     };
 
     return (
-      <div className="min-h-screen bg-background pb-20">
-        {/* User Dashboard Header with Avatar Menu */}
-        <header className="sticky top-0 z-40 bg-white dark:bg-[#303030] border-b border-[#43586C] shadow-sm">
+      <div className="min-h-screen bg-background">
+        {/* User Dashboard Header with Avatar Menu - Auto-hides on scroll down (mobile only) */}
+        <header 
+          className={`
+            fixed md:sticky top-0 left-0 right-0 z-40 
+            bg-white dark:bg-[#303030] border-b border-[#43586C] shadow-sm
+            transition-transform duration-300 ease-out
+            ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}
+            md:!translate-y-0
+          `}
+        >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               {/* Left: Logo/Brand + Back to Merchant (Desktop only) */}
@@ -5039,8 +4384,8 @@ const App = () => {
           </div>
         </header>
 
-        {/* User Dashboard Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* User Dashboard Content - Add pt-16 on mobile to compensate for fixed header */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pt-16 md:pt-6 space-y-6">
           {/* Overview Section */}
           {userActiveSection === "overview" && (
             <div className="space-y-6">
@@ -6255,10 +5600,6 @@ const App = () => {
             }}
           />
         );
-      case "wallet-examples":
-        return <WalletAddressExamples />;
-      case "wallet-main-action":
-        return <WalletMainActionExample />;
       case "checkout":
         return <CustomerCheckout />;
       case "userdashboard":
@@ -6280,21 +5621,30 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0A0A0A] overflow-x-hidden transition-colors duration-[900ms] ease-out">
+    <div className="min-h-screen bg-white dark:bg-[#0A0A0A] overflow-x-hidden">
       {/* Navigation Rail (Desktop Only) - Hide for checkout and user dashboard */}
       {activeTab !== "checkout" && activeTab !== "userdashboard" && (
         <NavigationRail 
           activeTab={activeTab === "admin" ? "dashboard" : activeTab}
           onNavigate={setActiveTab}
+          isExpanded={isNavRailExpanded}
+          onExpandedChange={setIsNavRailExpanded}
         />
       )}
 
       {/* Content Area - Shifts right on desktop to account for nav rail */}
-      <div className={`transition-all duration-[900ms] ease-out ${activeTab !== "checkout" && activeTab !== "userdashboard" ? "md:pl-20" : ""}`}>
+      <div 
+        className={`${
+          activeTab !== "checkout" && activeTab !== "userdashboard" 
+            ? isNavRailExpanded ? "md:pl-64" : "md:pl-20"
+            : ""
+        }`}
+        style={{transition: 'padding-left 1500ms ease-out'}}
+      >
         {activeTab !== "checkout" && activeTab !== "userdashboard" && (
-          <div className="transition-colors duration-[900ms] ease-out">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-colors duration-[900ms] ease-out">
-              <div className="flex items-center justify-between h-16 transition-colors duration-[900ms] ease-out">
+          <div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => setActiveTab("admin")}
@@ -6774,7 +6124,7 @@ const App = () => {
           </div>
         )}
 
-        <main className={`transition-colors duration-[900ms] ease-out ${activeTab !== "checkout" && activeTab !== "userdashboard" ? "pb-24 md:pb-6" : ""}`}>
+        <main className={`${activeTab !== "checkout" && activeTab !== "userdashboard" ? "pb-24 md:pb-6" : ""}`}>
           {renderContent()}
         </main>
       </div>

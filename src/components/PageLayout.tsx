@@ -52,7 +52,7 @@ export const PageLayout: React.FC<PageLayoutProps> & {
   Section: React.FC<PageSectionProps>;
 } = ({ children, className = '' }) => {
   return (
-    <div className={`min-h-screen bg-white dark:bg-[#0A0A0A] transition-colors duration-[900ms] ease-out ${className}`}>
+    <div className={`min-h-screen bg-white dark:bg-[#0A0A0A] ${className}`}>
       {children}
     </div>
   );
@@ -66,7 +66,7 @@ export const PageLayout: React.FC<PageLayoutProps> & {
  * - Title typography: Uses semantic h1 (auto-styled by globals.css)
  * - Icon size: w-6 h-6 (24px - MD3 standard)
  * - Action button alignment: right side
- * - NO mx-auto: Let NavigationRail spacer handle left offset naturally
+ * - mx-auto: Centers header content within the available space after nav rail offset
  */
 const PageHeader: React.FC<PageHeaderProps> = ({
   title,
@@ -76,9 +76,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   className = '',
 }) => {
   return (
-    <header className={`transition-colors duration-[900ms] ease-out ${className}`}>
-      <div className="max-w-7xl px-6 lg:px-8 py-6 md:py-8 transition-colors duration-[900ms] ease-out">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 transition-colors duration-[900ms] ease-out">
+    <header className={className}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6 md:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               {icon}
@@ -105,7 +105,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
  * - Padding: px-6 lg:px-8 (24px/32px horizontal)
  * - Spacing: py-4 md:py-6 (16px/24px vertical)
  * - Background: Inherits from PageLayout (transparent)
- * - NO mx-auto: Let NavigationRail spacer handle left offset naturally
+ * - mx-auto: Centers content within the available space after nav rail offset
  */
 const PageContent: React.FC<PageContentProps> = ({
   children,
@@ -115,7 +115,7 @@ const PageContent: React.FC<PageContentProps> = ({
   const maxWidth = narrow ? 'max-w-4xl' : 'max-w-7xl';
 
   return (
-    <main className={`${maxWidth} px-6 lg:px-8 py-4 md:py-6 transition-colors duration-[900ms] ease-out ${className}`}>
+    <main className={`${maxWidth} mx-auto px-6 lg:px-8 py-4 md:py-6 ${className}`}>
       {children}
     </main>
   );
@@ -139,13 +139,13 @@ const PageSection: React.FC<PageSectionProps> = ({
 }) => {
   return (
     <section
-      className={`bg-white dark:bg-[#303030] rounded-2xl shadow-sm p-6 md:p-8 transition-all duration-[900ms] ease-out ${className}`}
+      className={`bg-white dark:bg-[#303030] rounded-2xl shadow-sm p-6 md:p-8 ${className}`}
     >
       {(title || description) && (
         <div className="mb-6">
-          {title && <h3 className="text-gray-900 dark:text-white transition-colors duration-[900ms] ease-out">{title}</h3>}
+          {title && <h3 className="text-gray-900 dark:text-white">{title}</h3>}
           {description && (
-            <p className="text-[#798A9B] dark:text-[#798A9B] mt-2 transition-colors duration-[900ms] ease-out">
+            <p className="text-[#798A9B] dark:text-[#798A9B] mt-2">
               {description}
             </p>
           )}

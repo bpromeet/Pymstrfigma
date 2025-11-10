@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Copy, Trash2, ExternalLink, Pause, Play, Share2, Link as LinkIcon, Hexagon, Triangle, Zap, CircleDot, Layers, DollarSign, Euro, Coins, Clock } from 'lucide-react';
+import { Plus, Search, Copy, Trash2, ExternalLink, Share2, Link as LinkIcon, Hexagon, Triangle, Zap, CircleDot, Layers, DollarSign, Euro, Coins, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
@@ -252,7 +252,7 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
               {/* All Tab */}
               <TabsContent value="all" className="space-y-4 mt-4">
                 {getFilteredLinks().map((link) => (
-                  <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-gray-800 rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
+                  <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-[#43586C] rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-3 mb-2">
@@ -290,7 +290,7 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-3">
                       <div>
                         <p className="text-gray-600 dark:text-gray-400">Price</p>
                         <p className="text-gray-900 dark:text-white">${link.price}</p>
@@ -308,10 +308,6 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
                           {getCurrencyIcon(link.currency)}
                           <p className="text-gray-900 dark:text-white">{link.currency || 'N/A'}</p>
                         </div>
-                      </div>
-                      <div>
-                        <p className="text-gray-600 dark:text-gray-400">Clicks</p>
-                        <p className="text-gray-900 dark:text-white">{link.clicks}</p>
                       </div>
                     </div>
 
@@ -349,16 +345,6 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
                       >
                         <Share2 className="w-4 h-4" />
                       </Button>
-                      {link.status !== 'expired' && link.status !== 'completed' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => { e.stopPropagation(); onDeactivateLink(link.id); }}
-                          className={link.status === 'active' ? 'text-[#D9C370] hover:text-[#D9C370] hover:border-[#D9C370] rounded-full' : 'text-[#7DD069] hover:text-[#7DD069] hover:border-[#7DD069] rounded-full'}
-                        >
-                          {link.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                        </Button>
-                      )}
                       <Button
                         variant="outline"
                         size="sm"
@@ -380,7 +366,7 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
               {/* Manual Tab */}
               <TabsContent value="manual" className="space-y-4 mt-4">
                 {getFilteredLinks('manual').map((link) => (
-                  <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-gray-800 rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
+                  <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-[#43586C] rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-3 mb-2">
@@ -477,16 +463,6 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
                       >
                         <Share2 className="w-4 h-4" />
                       </Button>
-                      {link.status !== 'expired' && link.status !== 'completed' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => { e.stopPropagation(); onDeactivateLink(link.id); }}
-                          className={link.status === 'active' ? 'text-[#D9C370] hover:text-[#D9C370] hover:border-[#D9C370] rounded-full' : 'text-[#7DD069] hover:text-[#7DD069] hover:border-[#7DD069] rounded-full'}
-                        >
-                          {link.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                        </Button>
-                      )}
                       <Button
                         variant="outline"
                         size="sm"
@@ -508,7 +484,7 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
               {/* API Tab */}
               <TabsContent value="api" className="space-y-4 mt-4">
                 {getFilteredLinks('api').map((link) => (
-                  <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-gray-800 rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
+                  <div key={link.id} className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-[#43586C] rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer">
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-3 mb-2">
@@ -605,16 +581,6 @@ const PaymentLinksDashboard: React.FC<PaymentLinksDashboardProps> = ({
                       >
                         <Share2 className="w-4 h-4" />
                       </Button>
-                      {link.status !== 'expired' && link.status !== 'completed' && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => { e.stopPropagation(); onDeactivateLink(link.id); }}
-                          className={link.status === 'active' ? 'text-[#D9C370] hover:text-[#D9C370] hover:border-[#D9C370] rounded-full' : 'text-[#7DD069] hover:text-[#7DD069] hover:border-[#7DD069] rounded-full'}
-                        >
-                          {link.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                        </Button>
-                      )}
                       <Button
                         variant="outline"
                         size="sm"

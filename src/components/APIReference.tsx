@@ -447,11 +447,6 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                       <span className="text-muted-foreground">string - Fiat currency code (USD, EUR, GBP, etc.)</span>
                     </div>
                     <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">description</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">string - Description of the payment</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
                       <code className="text-[#07D7FF] min-w-[140px]">expiresAt</code>
                       <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
                       <span className="text-muted-foreground">number - Minutes until the payment link expires (e.g., 60 for 1 hour, 1440 for 24 hours)</span>
@@ -563,7 +558,6 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "name": "Premium Subscription",
-    "description": "Monthly premium plan subscription",
     "price": "29.99",
     "currency": "USD",
     "status": "completed",
@@ -594,7 +588,6 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "name": "Premium Subscription",
-    "description": "Monthly premium plan subscription",
     "price": "29.99",
     "currency": "USD",
     "status": "completed",
@@ -1720,7 +1713,6 @@ curl -X POST https://api.pymstr.com/v1/payment-links \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Product Purchase",
-    "description": "Premium widget",
     "price": "49.99",
     "currency": "USD",
     "acceptedTokens": ["USDC", "USDT"],
@@ -1744,7 +1736,6 @@ curl -X POST https://api.pymstr.com/v1/payment-links \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Product Purchase",
-    "description": "Premium widget",
     "price": "49.99",
     "currency": "USD",
     "acceptedTokens": ["USDC", "USDT"],

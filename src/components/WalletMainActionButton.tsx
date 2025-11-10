@@ -55,14 +55,14 @@ export const WalletMainActionButton: React.FC<WalletMainActionButtonProps> = ({
     <button
       onClick={handleCopy}
       className={`
-        px-8 py-3 min-h-12 
+        inline-flex items-center justify-center px-6 h-10
         bg-[#1E88E5] text-white 
         hover:bg-[#1565C0] hover:shadow-sm 
         active:scale-[0.98] 
         focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 focus:outline-none
-        transition-all duration-[900ms]
+        transition-all duration-200
         rounded-full
-        flex items-center gap-2
+        gap-2
         ${className}
       `}
       aria-label={`Copy wallet address ${address}`}

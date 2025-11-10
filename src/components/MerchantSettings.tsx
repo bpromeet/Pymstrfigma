@@ -244,14 +244,15 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
           
           Left: Edit/Save button (grey tonal when Edit, black when Save)
           Right: Reset to Default button
+          Mobile: Stack vertically, Desktop: Side by side
           ======================================== */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
         {/* Left: Edit/Save Button */}
         {!isEditMode ? (
           <Button
             onClick={handleEditClick}
             size={undefined}
-            className="inline-flex items-center justify-center px-6 h-10 bg-[#303030] text-[#F6F7F9] hover:bg-[#2E3C49] transition-all duration-200 rounded-full"
+            className="inline-flex items-center justify-center px-6 h-10 bg-[#303030] text-[#F6F7F9] hover:bg-[#2E3C49] transition-all duration-200 rounded-full w-full sm:w-auto"
           >
             <Edit className="w-[18px] h-[18px] mr-2" />
             Edit
@@ -261,7 +262,7 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
             onClick={handleSave}
             disabled={!hasChanges}
             size={undefined}
-            className="inline-flex items-center justify-center px-6 h-10 bg-black text-white hover:bg-[#1a1a1a] disabled:bg-[#43586C] disabled:text-[#798A9B] disabled:opacity-38 transition-all duration-200 rounded-full"
+            className="inline-flex items-center justify-center px-6 h-10 bg-black text-white hover:bg-[#1a1a1a] disabled:bg-[#43586C] disabled:text-[#798A9B] disabled:opacity-38 transition-all duration-200 rounded-full w-full sm:w-auto"
           >
             <Save className="w-[18px] h-[18px] mr-2" />
             Save
@@ -274,10 +275,11 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
           disabled={!isEditMode}
           size={undefined}
           variant="outline"
-          className="inline-flex items-center justify-center px-6 h-10 rounded-full disabled:opacity-38 disabled:cursor-not-allowed transition-all duration-200"
+          className="inline-flex items-center justify-center px-6 h-10 rounded-full disabled:opacity-38 disabled:cursor-not-allowed transition-all duration-200 w-full sm:w-auto"
         >
           <RotateCcw className="w-[18px] h-[18px] mr-2" />
-          Reset to Default
+          <span className="hidden sm:inline">Reset to Default</span>
+          <span className="sm:hidden">Reset</span>
         </Button>
       </div>
 
@@ -291,29 +293,31 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
         <CardContent className="space-y-6">
           {AVAILABLE_TOKENS.map((token) => (
             <div key={token} className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    {getTokenIcon(token)}
-                    <span className="text-gray-900 dark:text-white">{token}</span>
-                    <Badge
-                      className={`${
-                        getEnabledCount(token) > 0
-                          ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
-                      } rounded-full`}
-                    >
-                      {getEnabledCount(token)} / {AVAILABLE_CHAINS.length} chains
-                    </Badge>
-                  </div>
+              {/* Token header - Stack on mobile, row on desktop */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                {/* Token name and badge */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  {getTokenIcon(token)}
+                  <span className="text-gray-900 dark:text-white">{token}</span>
+                  <Badge
+                    className={`${
+                      getEnabledCount(token) > 0
+                        ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
+                    } rounded-full text-[11px]`}
+                  >
+                    {getEnabledCount(token)}/{AVAILABLE_CHAINS.length} chains
+                  </Badge>
                 </div>
-                <div className="flex items-center gap-3">
+                
+                {/* Enable/Disable buttons - Full width on mobile, auto on desktop */}
+                <div className="flex items-center gap-2 sm:gap-3">
                   <Button
                     onClick={() => toggleAllChains(token, true)}
                     disabled={!isEditMode}
                     variant="outline"
                     size="sm"
-                    className="rounded-full disabled:opacity-38 disabled:cursor-not-allowed"
+                    className="flex-1 sm:flex-initial rounded-full disabled:opacity-38 disabled:cursor-not-allowed text-xs sm:text-sm px-3 sm:px-4"
                   >
                     Enable All
                   </Button>
@@ -322,18 +326,19 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
                     disabled={!isEditMode}
                     variant="outline"
                     size="sm"
-                    className="rounded-full disabled:opacity-38 disabled:cursor-not-allowed"
+                    className="flex-1 sm:flex-initial rounded-full disabled:opacity-38 disabled:cursor-not-allowed text-xs sm:text-sm px-3 sm:px-4"
                   >
-                    Disable All
+                    Disable
                   </Button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pl-4">
+              {/* Chain toggles - Single column on mobile, 2 cols on tablet, 3 cols on desktop */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {AVAILABLE_CHAINS.map((chain) => (
                   <div
                     key={`${token}-${chain}`}
-                    className={`flex items-center justify-between p-4 rounded-3xl border ${
+                    className={`flex items-center justify-between p-3 sm:p-4 rounded-3xl border ${
                       isChainEnabled(token, chain)
                         ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900"
                         : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800"
@@ -341,22 +346,22 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
                   >
                     <Label
                       htmlFor={`${token}-${chain}`}
-                      className="flex items-center gap-2 cursor-pointer"
+                      className="flex items-center gap-2 cursor-pointer flex-1 min-w-0"
                     >
                       {isChainEnabled(token, chain) ? (
-                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                       ) : (
-                        <X className="w-4 h-4 text-gray-400" />
+                        <X className="w-4 h-4 text-gray-400 flex-shrink-0" />
                       )}
                       {getChainIcon(chain)}
-                      <span className="text-gray-900 dark:text-white">{chain}</span>
+                      <span className="text-gray-900 dark:text-white text-sm sm:text-base truncate">{chain}</span>
                     </Label>
                     <Switch
                       id={`${token}-${chain}`}
                       checked={isChainEnabled(token, chain)}
                       onCheckedChange={() => toggleChain(token, chain)}
                       disabled={!isEditMode}
-                      className="disabled:opacity-38 disabled:cursor-not-allowed"
+                      className="disabled:opacity-38 disabled:cursor-not-allowed flex-shrink-0 ml-2"
                     />
                   </div>
                 ))}
@@ -384,9 +389,10 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
           {config.acceptedPayments.map((payment) => (
             <div
               key={payment.token}
-              className="flex items-center justify-between p-4 rounded-3xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 rounded-3xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
             >
-              <div className="flex items-center gap-3">
+              {/* Token info */}
+              <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                 {getTokenIcon(payment.token)}
                 <span className="text-gray-900 dark:text-white">{payment.token}</span>
                 <Badge
@@ -394,25 +400,28 @@ const MerchantSettings: React.FC<MerchantSettingsProps> = ({
                     payment.chains.length > 0
                       ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400"
                       : "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-400"
-                  } rounded-full`}
+                  } rounded-full text-[11px]`}
                 >
                   {payment.chains.length > 0 ? "Enabled" : "Disabled"}
                 </Badge>
               </div>
-              <div className="flex flex-wrap gap-2 justify-end">
+              
+              {/* Chain badges */}
+              <div className="flex flex-wrap gap-2">
                 {payment.chains.length > 0 ? (
                   payment.chains.map((chain) => (
                     <Badge
                       key={chain}
                       variant="outline"
-                      className="rounded-full bg-white dark:bg-gray-800 flex items-center gap-1.5"
+                      className="rounded-full bg-white dark:bg-gray-800 flex items-center gap-1.5 text-xs"
                     >
                       {getChainIcon(chain)}
-                      {chain}
+                      <span className="hidden sm:inline">{chain}</span>
+                      <span className="sm:hidden">{chain.slice(0, 3)}</span>
                     </Badge>
                   ))
                 ) : (
-                  <span className="text-muted-foreground">No chains enabled</span>
+                  <span className="text-muted-foreground text-sm">No chains enabled</span>
                 )}
               </div>
             </div>

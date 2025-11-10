@@ -7,8 +7,7 @@ Welcome to PYMSTR! This guide will help you integrate Web3 stablecoin payments i
 PYMSTR is a Web3 stablecoin payment processor that enables merchants to accept crypto payments across multiple chains with a simple API.
 
 **Supported Stablecoins:** USDC, USDT, DAI  
-**Supported Chains:** Ethereum, Polygon, Arbitrum, Optimism, Base  
-**Infrastructure:** Web3Auth + Pimlico Account Abstraction
+**Supported Chains:** Ethereum, Polygon, Arbitrum, Optimism, Base
 
 ---
 

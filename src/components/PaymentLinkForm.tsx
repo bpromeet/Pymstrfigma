@@ -11,7 +11,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from './ui/utils';
 
 interface PaymentLinkFormProps {
-  onLinkGenerated: (link: { id: string; price: number; description: string; status: 'active'; clicks: number; chain: string; currency: string; availableCurrencies: string[]; availableChains: string[] }) => void;
+  onLinkGenerated: (link: { id: string; price: number; description: string; status: 'active'; chain: string; currency: string; availableCurrencies: string[]; availableChains: string[] }) => void;
 }
 
 const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) => {
@@ -148,7 +148,6 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
       price: parseFloat(formData.price),
       description: formData.title,
       status: 'active' as const,
-      clicks: 0,
       chain: formData.chains[0], // Using first selected chain for display purposes
       currency: formData.currencies[0], // Using first selected currency for display purposes
       availableCurrencies: formData.currencies,

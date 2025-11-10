@@ -239,10 +239,6 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
               <span className="font-semibold min-w-[180px]">Supported Chains:</span>
               <span className="text-muted-foreground">Ethereum, Polygon, Arbitrum, Optimism, Base</span>
             </div>
-            <div className="flex items-start space-x-2">
-              <span className="font-semibold min-w-[180px]">Infrastructure:</span>
-              <span className="text-muted-foreground">Web3Auth + Pimlico Account Abstraction</span>
-            </div>
           </div>
         </CardContent>
       </Card>

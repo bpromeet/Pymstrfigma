@@ -247,7 +247,7 @@
   }
 }
 
-/* PYMSTR 900ms Transition Standard - Universal Override */
+/* PYMSTR 1500ms (1.5s) Transition Standard - Universal Override */
 /* Place OUTSIDE @layer to ensure highest specificity and override ALL Tailwind utilities */
 *,
 *::before,
@@ -295,7 +295,7 @@ path,
 [data-*],
 [data-slot] {
   transition-property: background-color, border-color, color, fill, stroke, background, border !important;
-  transition-duration: 900ms !important;
+  transition-duration: 1500ms !important;
   transition-timing-function: ease-out !important;
 }
 

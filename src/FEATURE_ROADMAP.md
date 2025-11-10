@@ -247,8 +247,8 @@ for immediate launch.
 **Improvement Needed:**
 - Conversion funnel visualization
 - Customer segmentation analytics
-- Geographic distribution heat map
-- Payment method breakdown
+- Network activity metrics (transaction volume per chain)
+- Payment method breakdown (chain + token combinations)
 - Average transaction value trends
 - Customer lifetime value calculation
 - Cohort analysis

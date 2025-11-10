@@ -473,7 +473,6 @@ curl -X POST https://api.pymstr.com/v1/payment-links \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Product Purchase",
-    "description": "Premium widget",
     "price": "49.99",
     "currency": "USD",
     "acceptedTokens": ["USDC", "USDT", "EURC"],
@@ -497,7 +496,6 @@ curl -X POST https://api.pymstr.com/v1/payment-links \\
   -H "Content-Type: application/json" \\
   -d '{
     "name": "Product Purchase",
-    "description": "Premium widget",
     "price": "49.99",
     "currency": "USD",
     "acceptedTokens": ["USDC", "USDT", "EURC"],

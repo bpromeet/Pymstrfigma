@@ -2,6 +2,17 @@
 
 **Design Philosophy:** PYMSTR follows Material Design 3 (Material You) principles with full compliance to MD3 specifications. This system combines MD3's structured approach to color, elevation, motion, and typography with PYMSTR's unique navy-cyan-magenta palette and Web3-focused brand identity.
 
+## ⚠️ IMPORTANT: Layout Bug Prevention
+
+**Before making any layout changes, consult `/LAYOUT_CHECKLIST.md`** - This checklist contains critical rules to prevent common layout bugs like content overflow, navigation rail conflicts, and responsive breakpoints issues.
+
+**Common mistakes to avoid:**
+- Missing `mx-auto` on containers with `max-w-*`
+- Static padding when nav rail expands/collapses
+- Missing `min-w-0` and `truncate` on flex children
+- Using fixed widths instead of responsive utilities
+- Wrong transition speeds (200ms for buttons, 1500ms for layouts)
+
 ## MD3 Compliance Overview
 
 PYMSTR achieves **100% Material Design 3 compliance** across all components:
@@ -354,85 +365,147 @@ All typography is pre-configured in `styles/globals.css` following MD3 scale.
 
 Material Design 3 defines specific easing curves for natural, responsive animations.
 
-**PYMSTR ANIMATION STANDARD: All transitions use 900ms (0.9s) duration for consistent, smooth animations**
+**PYMSTR TWO-SPEED TRANSITION SYSTEM: Fast interactions (200ms) + Smooth theme transitions (1500ms)**
+
+PYMSTR uses a **dual-speed transition architecture** for optimal user experience:
+
+1. **Button Interactions (200ms)**: Instant, responsive feedback for clicks, hovers, and interactive elements
+2. **Theme Transitions (1500ms)**: Smooth, elegant transitions for dark/light mode and background color changes
+
+This creates the perfect balance: **snappy interactions** + **luxurious theme switching**.
+
+#### Speed Categories
+
+**FAST TRANSITIONS (200ms) - Interactive Elements:**
+* **Button hover states**: Background, border, text color changes
+* **Button press states**: Scale effects, active states
+* **Icon button interactions**: Hover, click feedback
+* **FAB interactions**: Hover scale, shadow changes
+* **Toggle switches**: State changes
+* **Checkbox/Radio interactions**: Check/uncheck
+* **Tab switching**: Active state changes
+* **Dropdown menu items**: Hover states
+* **List item hovers**: Background highlights
+* **Tailwind**: `transition-all duration-200`
+
+**SLOW TRANSITIONS (1500ms) - Global Theme Changes:**
+* **Dark/light mode switching**: All background colors, text colors, borders
+* **Navigation rail expansion**: Width, padding changes
+* **Page layout shifts**: Content repositioning
+* **Modal/Dialog backdrops**: Fade in/out
+* **Global color scheme changes**: Entire app theme transitions
+* **CSS Universal Selector**: Set in `styles/globals.css`
 
 #### Easing Curves
 
-**Standard Easing (Default):**
-* Curve: cubic-bezier(0.2, 0.0, 0, 1.0)
-* Duration: **900ms** (PYMSTR standard)
-* Use for: Most transitions (buttons, cards, hover states)
-* Tailwind: `transition-all duration-[900ms] ease-out`
+**Standard Easing (Interactive - 200ms):**
+* Curve: ease-out
+* Duration: **200ms**
+* Use for: Button hovers, clicks, interactive feedback
+* Tailwind: `transition-all duration-200`
 
-**Emphasized Easing (Layout Changes):**
+**Standard Easing (Theme - 1500ms):**
+* Curve: ease-out
+* Duration: **1500ms**
+* Use for: Dark/light mode, background transitions
+* CSS: Set globally in `globals.css`
+
+**Emphasized Easing (Layout Changes - 1500ms):**
 * Curve: cubic-bezier(0.05, 0.7, 0.1, 1.0)
-* Duration: **900ms** (PYMSTR standard)
-* Use for: Large layout changes, page transitions, modals, navigation rail expansion
-* Tailwind: `transition-all duration-[900ms]` with CSS easing
-
-**Decelerated Easing (Enter):**
-* Curve: cubic-bezier(0.0, 0.0, 0, 1.0)
-* Duration: **900ms** (PYMSTR standard)
-* Use for: Elements entering the screen
-* Tailwind: `transition-all duration-[900ms] ease-out`
-
-**Accelerated Easing (Exit):**
-* Curve: cubic-bezier(0.3, 0.0, 0.8, 0.15)
-* Duration: **900ms** (PYMSTR standard)
-* Use for: Elements exiting the screen
-* Tailwind: `transition-all duration-[900ms] ease-in`
+* Duration: **1500ms**
+* Use for: Navigation rail expansion, large layout changes
+* Inline CSS: `style={{transition: 'width 1500ms ease-out'}}`
 
 #### PYMSTR Animation Standards
 
-**ALL animations use 900ms duration unless specified otherwise**
-
-**Button Interactions:**
-* Hover: `transition-all duration-[900ms]` (standard easing)
-* Press: `active:scale-[0.98] transition-transform duration-[900ms]`
+**Button Interactions (ALWAYS 200ms):**
+* Hover: `transition-all duration-200` (fast feedback)
+* Press: `active:scale-[0.98] transition-transform duration-200`
 * Focus: Instant ring appearance (no transition)
+* Background changes: `transition-all duration-200`
+* Border changes: `transition-all duration-200`
+* Shadow changes: `transition-all duration-200`
 
-**Card/Dialog Animations:**
-* Enter: `transition-all duration-[900ms] ease-out`
-* Exit: `transition-all duration-[900ms] ease-in`
+**Theme Transitions (ALWAYS 1500ms - Global):**
+* Dark/light mode: Universal selector in `globals.css`
+* Background colors: Automatic 1500ms from globals
+* Text colors: Automatic 1500ms from globals
+* Border colors: Automatic 1500ms from globals
+* All surface colors: Automatic 1500ms from globals
 
-**Floating Action Buttons (FAB):**
-* Hover: `transition-all duration-[900ms] hover:scale-105`
-* Press: `active:scale-95 transition-transform duration-[900ms]`
+**Navigation & Layout (1500ms):**
+* Navigation rail expansion: `transition-all duration-[1500ms]` or inline style
+* Content layout shifts: `transition-all duration-[1500ms]`
+* Modal backdrops: `transition: opacity 1500ms ease-out`
 
-**Navigation Rail:**
-* Expansion/Collapse: `transition-all duration-[900ms]`
-* Width changes: `transition-all duration-[900ms]`
-* Hover states: `transition-all duration-[900ms]`
-
-**Layout Shifts:**
-* Content shift for nav rail: `transition-all duration-[900ms]`
-* Responsive breakpoint changes: `transition-all duration-[900ms]`
+**FABs (200ms for interactions):**
+* Hover scale: `transition-all duration-200 hover:scale-105`
+* Press: `active:scale-95 transition-transform duration-200`
+* Shadow: `transition-all duration-200`
 
 **Example Implementation:**
 ```tsx
-// Standard button transition (PYMSTR 900ms standard)
-<button className="transition-all duration-[900ms] ease-out hover:bg-[#1565C0]">
+// ✅ CORRECT: Button with 200ms interaction (fast & snappy)
+<button className="bg-[#1E88E5] hover:bg-[#1565C0] transition-all duration-200 rounded-full">
+  Click Me
+</button>
 
-// Navigation rail expansion (PYMSTR 900ms standard)
-<nav className="transition-all duration-[900ms] w-20 hover:w-64">
+// ✅ CORRECT: FAB with 200ms interaction (instant feedback)
+<button className="bg-[#07D7FF] hover:scale-105 active:scale-95 transition-all duration-200 rounded-full">
+  <Plus className="w-6 h-6" />
+</button>
 
-// Modal entrance (PYMSTR 900ms standard)
-<dialog className="transition-all duration-[900ms] ease-[cubic-bezier(0.05,0.7,0.1,1)]">
+// ✅ CORRECT: Navigation rail with 1500ms layout change (smooth expansion)
+<nav 
+  className="w-20 hover:w-64"
+  style={{transition: 'width 1500ms ease-out, padding 1500ms ease-out'}}
+>
+  {/* Nav items */}
+</nav>
 
-// FAB with scale animation (PYMSTR 900ms standard)
-<button className="transition-all duration-[900ms] hover:scale-105 active:scale-95">
+// ✅ CORRECT: Theme toggle (backgrounds transition at 1500ms automatically via globals.css)
+<button 
+  onClick={toggleDarkMode}
+  className="transition-all duration-200 rounded-full"
+>
+  {/* Button interaction at 200ms, background theme change at 1500ms */}
+</button>
 
-// Content layout shift (PYMSTR 900ms standard)
-<div className="transition-all duration-[900ms] md:pl-20">
+// ✅ CORRECT: Modal backdrop (1500ms fade for elegance)
+<div 
+  className={showModal ? 'opacity-100' : 'opacity-0'}
+  style={{transition: 'opacity 1500ms ease-out'}}
+/>
+
+// ❌ WRONG: Button with slow 1500ms interaction (feels sluggish)
+<button className="transition-all duration-[1500ms] hover:bg-[#1565C0]">
+  Don't do this
+</button>
+
+// ❌ WRONG: FAB with slow transition (poor UX)
+<button className="transition-all duration-[1500ms] hover:scale-105">
+  Too slow
+</button>
 ```
 
 **Key Points:**
-* ✅ **Always use `duration-[900ms]`** for all transitions
-* ✅ **Consistent animation speed** across entire application
-* ✅ **Smooth, natural feeling** with 0.9 second timing
-* ✅ **Applies to**: buttons, navigation, modals, layouts, hover states, FABs
-* ❌ **Never use**: `duration-200`, `duration-300`, `duration-500` (old standards)
-* ❌ **Exception**: Extremely fast feedback like ripples can use shorter durations if needed
+* ✅ **Always use `duration-200`** for button interactions, hovers, clicks
+* ✅ **Always use `1500ms`** for navigation rail, layout changes, modal backdrops
+* ✅ **Theme transitions happen automatically** at 1500ms via `globals.css` universal selector
+* ✅ **Two-speed system creates perfect UX**: Fast interactions + Smooth theme changes
+* ✅ **Payment Settings is the gold standard**: 200ms buttons + 1500ms backgrounds
+* ❌ **Never use `duration-[1500ms]` on buttons** - feels sluggish and unresponsive
+* ❌ **Never use `duration-200` on nav rail expansion** - feels jarring and abrupt
+
+**Implementation Strategy:**
+1. **For buttons/interactions**: Always add `transition-all duration-200` inline
+2. **For themes/backgrounds**: Let `globals.css` universal selector handle at 1500ms
+3. **For nav rail/layouts**: Use inline styles with `1500ms` for smooth expansion
+4. **For modals/backdrops**: Use inline styles with `1500ms` for elegant fades
+5. **For Card components**: Built-in `duration-[1500ms]` transition in `/components/ui/card.tsx` provides smooth theme transitions automatically
+
+**Card Component Note:**
+The ShadCN Card component (`/components/ui/card.tsx`) has a built-in `transition-all duration-[1500ms]` that makes all card backgrounds, borders, and colors transition smoothly during dark/light mode changes. This creates the signature PYMSTR smooth theme transition feel seen in Payment Settings and Webhooks sections. You don't need to add transitions to Cards - they're automatic!
 
 ---
 
@@ -914,39 +987,45 @@ Compact button for secondary actions.
 * Maintain adequate spacing between stacked buttons (e.g., `space-y-3`)
 * Consider full-width buttons on mobile for primary actions: `w-full sm:w-auto`
 
-**Example Implementation (MD3 + PYMSTR):**
+**Example Implementation (MD3 + PYMSTR Two-Speed System):**
 ```tsx
 // Filled Button (Primary) - MD3 Filled Button
+// ✅ 200ms for button interaction, 1500ms for theme (automatic via globals.css)
 <Button className="px-8 py-3 min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 rounded-full">
   <Plus className="w-5 h-5 mr-2" />
   Create Payment Link
 </Button>
 
 // Outlined Button (Secondary) - MD3 Outlined Button
+// ✅ 200ms for instant hover feedback
 <Button className="px-6 py-2.5 min-h-10 bg-transparent border border-[#1E88E5] text-[#1E88E5] hover:bg-[#E3F2FD] active:bg-[#E3F2FD]/80 focus:ring-2 focus:ring-[#1E88E5] transition-all duration-200 rounded-full">
   <Save className="w-5 h-5 mr-2" />
   Save Changes
 </Button>
 
 // Text Button (Tertiary) - MD3 Text Button
+// ✅ 200ms for snappy interaction
 <Button className="px-6 py-2.5 min-h-10 bg-transparent border border-[#43586C] text-[#F6F7F9] hover:bg-white/[0.08] hover:border-[#757575] hover:text-[#757575] transition-all duration-200 rounded-full">
   <Settings className="w-5 h-5 mr-2" />
   Settings
 </Button>
 
 // Filled Tonal (Secondary Button) - MD3 Filled Tonal Button
+// ✅ 200ms for responsive feel
 <Button className="px-6 py-2.5 min-h-10 bg-[#303030] text-[#F6F7F9] hover:bg-[#2E3C49] hover:shadow-sm transition-all duration-200 rounded-full">
   <Edit className="w-5 h-5 mr-2" />
   Edit
 </Button>
 
 // Small Button with Mobile Touch Target (MD3 compliant)
+// ✅ 200ms for instant scale feedback
 <Button className="px-4 py-2 min-h-12 sm:min-h-8 rounded-full bg-[#757575] text-white hover:bg-[#959FA8] hover:scale-105 transition-all duration-200">
   <Edit className="w-4 h-4 mr-2" />
   Edit
 </Button>
 
 // Icon Button (FAB) - MD3 Floating Action Button
+// ✅ 200ms for snappy scale and shadow transitions
 <Button className="w-12 h-12 rounded-full bg-[#07D7FF] text-white hover:scale-105 hover:shadow-lg active:scale-95 transition-all duration-200 shadow-md">
   <Plus className="w-5 h-5" />
 </Button>
@@ -1037,24 +1116,28 @@ Circular icon-only buttons for quick actions following Material Design 3 FAB spe
 * Press: `active:scale-95 transition-transform duration-100`
 * Focus: `focus:ring-2 focus:ring-[color] focus:ring-offset-2`
 
-**Example Implementation:**
+**Example Implementation (PYMSTR Two-Speed System):**
 ```tsx
 // Primary FAB (Cyan) - MD3 Standard
+// ✅ 200ms for snappy scale/shadow feedback
 <button className="w-14 h-14 rounded-full bg-[#07D7FF] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#07D7FF] focus:ring-offset-2 transition-all duration-200 flex items-center justify-center">
   <Plus className="w-6 h-6" />
 </button>
 
 // Secondary FAB (Magenta)
+// ✅ 200ms for instant interaction
 <button className="w-14 h-14 rounded-full bg-[#F90BD5] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center">
   <Video className="w-6 h-6" />
 </button>
 
 // Surface FAB (Gray)
+// ✅ 200ms for responsive feel
 <button className="w-14 h-14 rounded-full bg-[#303030] text-[#F6F7F9] shadow-lg hover:bg-[#43586C] hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center">
   <Calendar className="w-6 h-6" />
 </button>
 
 // Large FAB
+// ✅ 200ms for smooth interaction
 <button className="w-16 h-16 rounded-full bg-[#07D7FF] text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center">
   <Plus className="w-8 h-8" />
 </button>
@@ -1229,21 +1312,24 @@ Pill-shaped buttons for semantic actions following Material Design 3 color roles
 * Add transition: `transition-all duration-200`
 * Ensure 48px minimum touch target on mobile
 
-**Example Implementation:**
+**Example Implementation (PYMSTR Two-Speed System):**
 ```tsx
 // Error/Delete Button (MD3 Error Role)
+// ✅ 200ms for immediate destructive action feedback
 <Button className="px-6 py-2.5 min-h-12 bg-transparent border border-[#DD6B6B] text-[#DD6B6B] hover:bg-[#DD6B6B] hover:text-white hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#DD6B6B] focus:ring-offset-2 transition-all duration-200 rounded-full">
   <Trash2 className="w-5 h-5 mr-2" />
   Delete
 </Button>
 
 // Success/Confirm Button (MD3 Success Role)
+// ✅ 200ms for snappy confirmation
 <Button className="px-8 py-3 min-h-12 bg-transparent border border-[#7DD069] text-[#7DD069] hover:bg-[#7DD069] hover:text-white hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#7DD069] focus:ring-offset-2 transition-all duration-200 rounded-full">
   <Check className="w-5 h-5 mr-2" />
   Continue
 </Button>
 
 // Warning Button (MD3 Warning Role)
+// ✅ 200ms for responsive caution feedback
 <Button className="px-6 py-2.5 min-h-12 bg-transparent border border-[#D9C370] text-[#D9C370] hover:bg-[#D9C370] hover:text-[#2E3C49] hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#D9C370] focus:ring-offset-2 transition-all duration-200 rounded-full">
   <AlertTriangle className="w-5 h-5 mr-2" />
   Archive
