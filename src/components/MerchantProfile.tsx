@@ -123,8 +123,21 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
+    try {
+      document.execCommand('copy');
+      toast.success("Copied to clipboard");
+    } catch (err) {
+      toast.error("Failed to copy to clipboard");
+    } finally {
+      document.body.removeChild(textarea);
+    }
   };
 
   const handleDeleteAccount = () => {

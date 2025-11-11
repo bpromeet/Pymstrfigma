@@ -169,6 +169,8 @@ import { NavigationRail } from "./components/NavigationRail";
 import PaymentLinksDashboard from "./components/PaymentLinksDashboard";
 import PageLayout from "./components/PageLayout";
 import { WalletMainActionButton } from "./components/WalletMainActionButton";
+import { NetworkSelector, type NetworkOption } from "./components/NetworkSelector";
+import { CryptoSelector, type CryptoOption, type CryptoSelectorOption } from "./components/CryptoSelector";
 import {
   INITIAL_PAYMENT_LINKS,
   INITIAL_WALLETS,
@@ -212,6 +214,8 @@ const App = () => {
     useState(false);
   const [showQRFunding, setShowQRFunding] = useState(false);
   const [qrFundingBalance, setQrFundingBalance] = useState(0);
+  const [isCheckingFunds, setIsCheckingFunds] = useState(false);
+  const [checkFundsClickCount, setCheckFundsClickCount] = useState(0);
   const [showOnRamper, setShowOnRamper] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] =
     useState(false);
@@ -559,26 +563,31 @@ const App = () => {
       id: "ethereum",
       name: "Ethereum",
       icon: <ChainIcon chain="ethereum" size="w-5 h-5" />,
+      logo: ethLogo,
     },
     {
       id: "polygon",
       name: "Polygon",
       icon: <ChainIcon chain="polygon" size="w-5 h-5" />,
+      logo: polygonLogo,
     },
     {
       id: "arbitrum",
       name: "Arbitrum",
       icon: <ChainIcon chain="arbitrum" size="w-5 h-5" />,
+      logo: arbitrumLogo,
     },
     {
       id: "optimism",
       name: "Optimism",
       icon: <ChainIcon chain="optimism" size="w-5 h-5" />,
+      logo: optimismLogo,
     },
     {
       id: "base",
       name: "Base",
       icon: <ChainIcon chain="base" size="w-5 h-5" />,
+      logo: baseLogo,
     },
   ];
 
@@ -647,6 +656,40 @@ const App = () => {
       setShowCryptoSelection(true);
       toast(`Connected with ${provider}!`);
     }, 2000);
+  };
+
+  const handleCheckFunds = () => {
+    setIsCheckingFunds(true);
+    
+    // Increment click counter
+    const currentClickCount = checkFundsClickCount;
+    setCheckFundsClickCount(currentClickCount + 1);
+    
+    // Simulate blockchain check (2-3 seconds)
+    setTimeout(() => {
+      const requiredAmount = parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto));
+      
+      // Alternate scenarios: odd clicks = not arrived, even clicks = arrived
+      const fundsArrived = currentClickCount % 2 === 1;
+      
+      if (fundsArrived || qrFundingBalance >= requiredAmount) {
+        // Funds detected - update balance and navigate to next screen
+        if (fundsArrived && qrFundingBalance < requiredAmount) {
+          setQrFundingBalance(requiredAmount);
+        }
+        
+        setShowQRFunding(false);
+        setShowCryptoSelection(false);
+        setShowFundingOptions(false);
+        setShowPaymentForm(true);
+        toast("Wallet funded successfully!");
+      } else {
+        // Funds not found - show toast
+        toast("Funds not arrived, check again in a few seconds");
+      }
+      
+      setIsCheckingFunds(false);
+    }, 2500);
   };
 
   const handlePayment = () => {
@@ -1900,9 +1943,10 @@ const App = () => {
               />
             )}
 
+            {/* Desktop Back Button */}
             {showingCurrency && (
-              <div className="flex items-center justify-between">
-                <Button variant="outline" onClick={backToList}>
+              <div className="hidden md:flex items-center justify-between">
+                <Button variant="outline" onClick={backToList} className="rounded-full">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
@@ -1915,10 +1959,11 @@ const App = () => {
             <Card className="bg-white dark:bg-[#303030] shadow-sm">
             <CardContent className="pt-6">
               <div className="space-y-4">
-                <div className="bg-white dark:bg-[#303030] border border-[#43586C] rounded-3xl p-4">
+                {/* Wallet Header - MD3 Nested Section (Medium radius 12px) with subtle styling */}
+                <div className="bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl p-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <h3>{mainWallet.name}</h3>
-                    <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400 rounded-full">
+                    <Badge className="bg-[#7DD069]/10 text-[#7DD069] dark:bg-[#7DD069]/20 dark:text-[#7DD069] rounded-full border-0">
                       Active
                     </Badge>
                   </div>
@@ -1931,7 +1976,7 @@ const App = () => {
                       <div
                         key={crypto}
                         onClick={() => selectCurrency(crypto)}
-                        className="cursor-pointer border border-[#43586C] hover:border-blue-500 rounded-3xl p-4 transition-all hover:shadow-md bg-white dark:bg-[#303030]"
+                        className="cursor-pointer shadow-sm hover:shadow-md rounded-2xl p-4 transition-all bg-white dark:bg-[#303030]"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
@@ -1971,7 +2016,7 @@ const App = () => {
                 </div>
 
                 {/* Desktop View - Table */}
-                <div className="hidden md:block border rounded-3xl overflow-hidden">
+                <div className="hidden md:block shadow-sm rounded-2xl overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -2113,8 +2158,9 @@ const App = () => {
           </>
         )}
 
+        {/* Desktop: Inline Card - Hidden on Mobile */}
         {showingCurrency && (
-          <Card className="bg-white dark:bg-[#303030] shadow-sm">
+          <Card className="hidden md:block bg-white dark:bg-[#303030] shadow-sm">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -2146,7 +2192,7 @@ const App = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <Button
                   onClick={() => setManageView("breakdown")}
                   style={{
@@ -2159,8 +2205,8 @@ const App = () => {
                   }}
                   className={
                     manageView === "breakdown"
-                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200"
-                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] dark:hover:text-[#757575]"
+                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200 min-h-10 px-3 text-sm"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] dark:hover:text-[#757575] min-h-10 px-3 text-sm"
                   }
                   onMouseEnter={(e) => {
                     if (manageView !== "breakdown") {
@@ -2174,7 +2220,7 @@ const App = () => {
                   }}
                   variant={manageView === "breakdown" ? "default" : "outline"}
                 >
-                  <Activity className="w-4 h-4 mr-2 md:mr-2 mr-1" />
+                  <Activity className="w-4 h-4 mr-1.5" />
                   Chains
                 </Button>
                 <Button
@@ -2194,12 +2240,12 @@ const App = () => {
                   }}
                   className={
                     manageView === "deposit"
-                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200"
-                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] dark:hover:text-[#757575]"
+                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200 min-h-10 px-3 text-sm"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] hover:text-[#757575] dark:hover:text-[#757575] min-h-10 px-3 text-sm"
                   }
                   onMouseEnter={(e) => {
                     if (manageView !== "deposit") {
-                      e.currentTarget.style.backgroundColor = "rgba(117, 117, 117, 0.1)";
+                      e.currentTarget.style.backgroundColor = "rgba(117, 117, 117, 0.08)";
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -2209,7 +2255,7 @@ const App = () => {
                   }}
                   variant={manageView === "deposit" ? "default" : "outline"}
                 >
-                  <Download className="w-4 h-4 mr-2 md:mr-2 mr-1" />
+                  <Download className="w-4 h-4 mr-1.5" />
                   Deposit
                 </Button>
                 <Button
@@ -2229,12 +2275,12 @@ const App = () => {
                   }}
                   className={
                     manageView === "send"
-                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200"
-                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] dark:hover:text-[#757575]"
+                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200 min-h-10 px-3 text-sm"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] hover:text-[#757575] dark:hover:text-[#757575] min-h-10 px-3 text-sm"
                   }
                   onMouseEnter={(e) => {
                     if (manageView !== "send") {
-                      e.currentTarget.style.backgroundColor = "rgba(117, 117, 117, 0.1)";
+                      e.currentTarget.style.backgroundColor = "rgba(117, 117, 117, 0.08)";
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -2244,7 +2290,7 @@ const App = () => {
                   }}
                   variant={manageView === "send" ? "default" : "outline"}
                 >
-                  <Send className="w-4 h-4 mr-2 md:mr-2 mr-1" />
+                  <Send className="w-4 h-4 mr-1.5" />
                   Send
                 </Button>
               </div>
@@ -2254,7 +2300,7 @@ const App = () => {
                   <h4 className="text-gray-900 dark:text-white mb-4">Balance by Chain</h4>
                   
                   {/* Desktop View - Table */}
-                  <div className="hidden md:block border rounded-3xl overflow-hidden">
+                  <div className="hidden md:block shadow-sm rounded-2xl overflow-hidden">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -2372,91 +2418,38 @@ const App = () => {
 
               {manageView === "deposit" && (
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Select Blockchain Network</Label>
-                    <Select value={selectedNetwork} onValueChange={setSelectedNetwork}>
-                      <SelectTrigger>
-                        <SelectValue>
-                          <div className="flex items-center space-x-2">
-                            <img src={getNetworkIcon(selectedNetwork)} alt={selectedNetwork} className="w-5 h-5" />
-                            <span>{getNetworkName(selectedNetwork)}</span>
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ethereum">
-                          <div className="flex items-center space-x-2">
-                            <img src={ethLogo} alt="Ethereum" className="w-5 h-5" />
-                            <span>Ethereum</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="polygon">
-                          <div className="flex items-center space-x-2">
-                            <img src={polygonLogo} alt="Polygon" className="w-5 h-5" />
-                            <span>Polygon</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="arbitrum">
-                          <div className="flex items-center space-x-2">
-                            <img src={arbitrumLogo} alt="Arbitrum" className="w-5 h-5" />
-                            <span>Arbitrum</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="optimism">
-                          <div className="flex items-center space-x-2">
-                            <img src={optimismLogo} alt="Optimism" className="w-5 h-5" />
-                            <span>Optimism</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                  {/* Info Box - Addresses are the same across all EVM chains */}
+                  <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-1">
+                          Multi-Chain Address
+                        </p>
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                          Your wallet address works across all supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base). Send {selectedCrypto} from any of these networks to the address below.
+                        </p>
+                      </div>
+                    </div>
                   </div>
 
+                  {/* Wallet Address - Using WalletMainActionButton */}
                   <div className="space-y-2">
                     <Label>
                       Wallet Address ({selectedCrypto})
                     </Label>
-                    <div className="flex space-x-2">
-                      <Input
-                        value={mainWallet.address}
-                        readOnly
-                        className="font-mono text-sm rounded bg-white dark:bg-[#2E3C49]"
-                      />
-                      <Button
-                        variant="outline"
-                        onClick={() =>
-                          copyToClipboard(mainWallet.address)
-                        }
-                        className="rounded-full"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          if (navigator.share) {
-                            navigator
-                              .share({
-                                title: `${selectedCrypto} Wallet Address`,
-                                text: `Send ${selectedCrypto} to: ${mainWallet.address}`,
-                              })
-                              .catch(() => {});
-                          } else {
-                            copyToClipboard(mainWallet.address);
-                          }
-                        }}
-                        className="rounded-full"
-                      >
-                        <Share2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                    <WalletMainActionButton 
+                      address={mainWallet.address}
+                      showIcon={true}
+                    />
                   </div>
 
-                  <div className="bg-white dark:bg-[#303030] p-8 md:p-4 rounded-3xl border border-[#43586C] text-center space-y-4 md:space-y-2">
-                    <p className="text-gray-900 dark:text-white md:text-sm">
+                  {/* QR Code */}
+                  <div className="bg-white dark:bg-[#303030] p-6 rounded-2xl border border-[#43586C] text-center space-y-4">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       Scan QR Code to Deposit
                     </p>
-                    <div className="w-64 md:w-40 h-64 md:h-40 mx-auto bg-white dark:bg-[#0a0a0a] p-4 md:p-2 rounded-2xl border-4 md:border-2 border-[#EEEEEE] dark:border-[#43586C] flex items-center justify-center">
+                    <div className="w-48 h-48 mx-auto bg-white dark:bg-[#0a0a0a] p-4 rounded-2xl border-2 border-[#EEEEEE] dark:border-[#43586C] flex items-center justify-center">
                       {qrCode ? (
                         <img
                           src={qrCode}
@@ -2464,28 +2457,29 @@ const App = () => {
                           className="w-full h-full object-contain"
                         />
                       ) : (
-                        <div className="flex flex-col items-center space-y-2 md:space-y-1">
-                          <QrCode className="w-16 md:w-10 h-16 md:h-10 text-gray-400 animate-pulse" />
-                          <p className="text-gray-500 md:text-xs">
+                        <div className="flex flex-col items-center space-y-2">
+                          <QrCode className="w-12 h-12 text-gray-400 animate-pulse" />
+                          <p className="text-gray-500 text-sm">
                             Loading...
                           </p>
                         </div>
                       )}
                     </div>
-                    <p className="text-muted-foreground md:text-xs">
+                    <p className="text-muted-foreground text-sm">
                       Use your wallet app to scan
                     </p>
                   </div>
 
-                  <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-3xl border border-orange-200 dark:border-orange-900">
+                  {/* Warning */}
+                  <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-2xl border border-orange-200 dark:border-orange-900">
                     <div className="flex items-start space-x-2">
-                      <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                      <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium text-orange-800 dark:text-orange-400 mb-1">
                           Important
                         </p>
                         <p className="text-sm text-orange-700 dark:text-orange-300">
-                          Only send {selectedCrypto} on the {selectedNetwork.charAt(0).toUpperCase() + selectedNetwork.slice(1)} network to this address. This EVM-compatible address works across all supported chains.
+                          Only send {selectedCrypto} to this address. This EVM-compatible address works across all supported chains (Ethereum, Polygon, Arbitrum, Optimism, Base).
                         </p>
                       </div>
                     </div>
@@ -2494,136 +2488,101 @@ const App = () => {
               )}
 
               {manageView === "send" && (
-                <div className="border border-orange-200 dark:border-orange-900 bg-orange-50 dark:bg-orange-950/20 rounded-3xl p-6 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-gray-900 dark:text-white">
-                      Send {selectedCrypto}
-                    </h4>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Select Blockchain Network</Label>
+                <div className="space-y-6">
+                  {/* Network Selection */}
+                  <div className="space-y-3">
+                    <Label htmlFor="desktop-send-network" className="text-gray-900 dark:text-white font-medium">
+                      Select Network
+                    </Label>
                     <Select value={sendNetwork} onValueChange={setSendNetwork}>
-                      <SelectTrigger className="rounded bg-white dark:bg-[#2E3C49]">
-                        <SelectValue>
-                          <div className="flex items-center space-x-2">
-                            <img src={getNetworkIcon(sendNetwork)} alt={sendNetwork} className="w-5 h-5" />
-                            <span>{getNetworkName(sendNetwork)}</span>
-                          </div>
-                        </SelectValue>
+                      <SelectTrigger id="desktop-send-network" className="w-full h-14 bg-white dark:bg-[#2E3C49] rounded border border-[#43586C] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] transition-all duration-200">
+                        <SelectValue placeholder="Choose network" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ethereum">
-                          <div className="flex items-center space-x-2">
-                            <img src={ethLogo} alt="Ethereum" className="w-5 h-5" />
-                            <span>Ethereum</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="polygon">
-                          <div className="flex items-center space-x-2">
-                            <img src={polygonLogo} alt="Polygon" className="w-5 h-5" />
-                            <span>Polygon</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="arbitrum">
-                          <div className="flex items-center space-x-2">
-                            <img src={arbitrumLogo} alt="Arbitrum" className="w-5 h-5" />
-                            <span>Arbitrum</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="optimism">
-                          <div className="flex items-center space-x-2">
-                            <img src={optimismLogo} alt="Optimism" className="w-5 h-5" />
-                            <span>Optimism</span>
-                          </div>
-                        </SelectItem>
+                      <SelectContent className="bg-white dark:bg-[#262626] rounded-xl shadow-lg">
+                        {supportedChains.map((chain) => (
+                          <SelectItem key={chain.id} value={chain.id} className="h-12 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08]">
+                            <div className="flex items-center space-x-3">
+                              <img src={chain.logo} alt={chain.name} className="w-6 h-6" />
+                              <span className="text-gray-900 dark:text-white">{chain.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Amount ({selectedCrypto})</Label>
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={sendAmt}
-                      onChange={(e) =>
-                        setSendAmt(e.target.value)
-                      }
-                      className="text-lg"
-                    />
-                  </div>
-
-                  <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-3xl">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-muted-foreground">
-                        Available
-                      </p>
-                      <p className="text-sm font-mono text-gray-900 dark:text-white">
-                        {mainWallet.balance[
-                          selectedCrypto
-                        ]?.toFixed(2) || 0}{" "}
-                        {selectedCrypto}
-                      </p>
+                  {/* Available Balance Info */}
+                  {sendNetwork && (
+                    <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-blue-900 dark:text-blue-200">
+                          Available on {getNetworkName(sendNetwork)}
+                        </span>
+                        <span className="font-mono font-medium text-blue-900 dark:text-blue-200">
+                          {mainWallet.chainBalances && mainWallet.chainBalances[selectedCrypto] && mainWallet.chainBalances[selectedCrypto][sendNetwork] 
+                            ? mainWallet.chainBalances[selectedCrypto][sendNetwork].toFixed(2) 
+                            : "0.00"} {selectedCrypto}
+                        </span>
+                      </div>
                     </div>
-                    {sendAmt &&
-                      parseFloat(sendAmt) > 0 && (
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-gray-800">
-                          <p className="text-sm text-muted-foreground">
-                            After
-                          </p>
-                          <p className="text-sm font-mono text-gray-900 dark:text-white">
-                            {(
-                              (mainWallet.balance[
-                                selectedCrypto
-                              ] || 0) - parseFloat(sendAmt)
-                            ).toFixed(2)}{" "}
-                            {selectedCrypto}
-                          </p>
-                        </div>
-                      )}
+                  )}
+
+                  {/* Amount Input */}
+                  <div className="space-y-3">
+                    <Label htmlFor="desktop-send-amount" className="text-gray-900 dark:text-white font-medium">
+                      Amount
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="desktop-send-amount"
+                        type="number"
+                        placeholder="0.00"
+                        value={sendAmt}
+                        onChange={(e) => setSendAmt(e.target.value)}
+                        className="w-full h-14 px-4 py-3 pr-24 font-mono text-lg rounded bg-white dark:bg-[#2E3C49] border-2 border-[#43586C] text-gray-900 dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-gray-900 dark:text-[#F6F7F9] pointer-events-none">
+                        {selectedCrypto}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Destination Address</Label>
+                  {/* Destination Address */}
+                  <div className="space-y-3">
+                    <Label htmlFor="desktop-send-address" className="text-gray-900 dark:text-white font-medium">
+                      Destination Address
+                    </Label>
                     <Input
+                      id="desktop-send-address"
                       placeholder="0x..."
                       value={sendAddr}
-                      onChange={(e) =>
-                        setSendAddr(e.target.value)
-                      }
-                      className="font-mono text-sm bg-[#EEEEEE] dark:bg-gray-950"
+                      onChange={(e) => setSendAddr(e.target.value)}
+                      className="w-full h-14 px-4 py-3 font-mono rounded bg-white dark:bg-[#2E3C49] border-2 border-[#43586C] text-gray-900 dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
                     />
                   </div>
 
-                  {sendAmt &&
-                    parseFloat(sendAmt) >
-                      (mainWallet.balance[selectedCrypto] ||
-                        0) && (
-                      <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-3xl border border-red-200 dark:border-red-900">
-                        <div className="flex items-start space-x-2">
-                          <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
-                          <p className="text-sm text-red-700 dark:text-red-300">
-                            Insufficient balance
-                          </p>
-                        </div>
+                  {/* Error Message */}
+                  {sendAmt && sendNetwork && parseFloat(sendAmt) > (mainWallet.chainBalances?.[selectedCrypto]?.[sendNetwork] || 0) && (
+                    <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-2xl border border-red-200 dark:border-red-900">
+                      <div className="flex items-start space-x-2">
+                        <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                        <p className="font-medium text-red-700 dark:text-red-300">
+                          Insufficient balance on {getNetworkName(sendNetwork)}
+                        </p>
                       </div>
-                    )}
+                    </div>
+                  )}
 
+                  {/* Send Button */}
                   <Button
                     onClick={doSend}
-                    disabled={
-                      !sendAmt ||
-                      !sendAddr ||
-                      parseFloat(sendAmt) >
-                        (mainWallet.balance[selectedCrypto] ||
-                          0)
-                    }
-                    className="bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 disabled:bg-[#43586C] disabled:text-[#798A9B] disabled:opacity-70 w-full rounded-full"
+                    disabled={!sendAmt || !sendAddr || !sendNetwork || parseFloat(sendAmt) > (mainWallet.chainBalances?.[selectedCrypto]?.[sendNetwork] || 0)}
+                    className="w-full min-h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 disabled:bg-[#43586C] disabled:text-[#798A9B] disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
                   >
-                    <Send className="w-4 h-4 mr-2" />
-                    Send {sendAmt || "0"}{" "}
-                    {selectedCrypto}
+                    <Send className="w-[18px] h-[18px] mr-2" />
+                    <span className="font-medium">
+                      Send {sendAmt || "0"} {selectedCrypto}
+                    </span>
                   </Button>
                 </div>
               )}
@@ -2632,6 +2591,316 @@ const App = () => {
         )}
           </div>
         </PageLayout.Content>
+
+        {/* Mobile: Full Screen View for Manage Crypto */}
+        {showingCurrency && (
+          <div className="md:hidden fixed inset-0 bg-white dark:bg-[#0A0A0A] z-50 overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-[#0A0A0A] p-4 z-10">
+              {/* Back Button */}
+              <Button
+                onClick={backToList}
+                variant="ghost"
+                className="mb-4 px-3 py-2 min-h-10 rounded-full text-gray-900 dark:text-[#F6F7F9] hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-all duration-200"
+              >
+                <ArrowLeft className="w-[18px] h-[18px] mr-2" />
+                Back to Wallets
+              </Button>
+              
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <CryptoIcon symbol={selectedCrypto} />
+                  <div>
+                    <h2 className="text-xl font-medium">Manage {selectedCrypto}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {getCryptoName(selectedCrypto)}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-muted-foreground">Total Balance</p>
+                  <p className="font-mono text-gray-900 dark:text-white">
+                    {mainWallet.balance[selectedCrypto]?.toFixed(2) || "0.00"} {selectedCrypto}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ≈ ${mainWallet.balance[selectedCrypto]?.toFixed(2) || "0.00"} USD
+                  </p>
+                </div>
+              </div>
+
+              {/* Tab Buttons */}
+              <div className="grid grid-cols-3 gap-3">
+                <Button
+                  onClick={() => setManageView("breakdown")}
+                  style={{
+                    backgroundColor: manageView === "breakdown" ? "#757575" : "transparent",
+                    ...(manageView === "breakdown" && { borderColor: "#757575" }),
+                  }}
+                  className={
+                    manageView === "breakdown"
+                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200 min-h-10 px-3 text-sm"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] dark:hover:text-[#757575] min-h-10 px-3 text-sm"
+                  }
+                  variant={manageView === "breakdown" ? "default" : "outline"}
+                >
+                  <Activity className="w-4 h-4 mr-1.5" />
+                  Chains
+                </Button>
+                <Button
+                  onClick={() => {
+                    setManageView("deposit");
+                    setIsDeposit(true);
+                    setSendAmt("");
+                    setSendAddr("");
+                  }}
+                  style={{
+                    backgroundColor: manageView === "deposit" ? "#757575" : "transparent",
+                    ...(manageView === "deposit" && { borderColor: "#757575" }),
+                  }}
+                  className={
+                    manageView === "deposit"
+                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200 min-h-10 px-3 text-sm"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#1E88E5] hover:text-[#1E88E5] dark:hover:text-[#1E88E5] min-h-10 px-3 text-sm"
+                  }
+                  variant={manageView === "deposit" ? "default" : "outline"}
+                >
+                  <Download className="w-4 h-4 mr-1.5" />
+                  Deposit
+                </Button>
+                <Button
+                  onClick={() => {
+                    setManageView("send");
+                    setIsDeposit(false);
+                    setSendAmt("");
+                    setSendAddr("");
+                  }}
+                  style={{
+                    backgroundColor: manageView === "send" ? "#757575" : "transparent",
+                    ...(manageView === "send" && { borderColor: "#757575" }),
+                  }}
+                  className={
+                    manageView === "send"
+                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200 min-h-10 px-3 text-sm"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#1E88E5] hover:text-[#1E88E5] dark:hover:text-[#1E88E5] min-h-10 px-3 text-sm"
+                  }
+                  variant={manageView === "send" ? "default" : "outline"}
+                >
+                  <Send className="w-4 h-4 mr-1.5" />
+                  Send
+                </Button>
+              </div>
+            </div>
+
+            {/* Sheet Content - Scrollable */}
+            <div className="p-6 space-y-6">
+              {manageView === "breakdown" && (
+                <div>
+                  <h4 className="text-gray-900 dark:text-white mb-4">Balance by Chain</h4>
+                  
+                  {/* Mobile View - Cards Only in Sheet */}
+                  <div className="space-y-3">
+                    {mainWallet.chainBalances && mainWallet.chainBalances[selectedCrypto] && 
+                      Object.entries(mainWallet.chainBalances[selectedCrypto]).map(
+                        ([chain, balance]) => {
+                          const totalBalance = mainWallet.balance[selectedCrypto];
+                          const percentage = totalBalance > 0 ? ((balance / totalBalance) * 100).toFixed(1) : 0;
+                          return (
+                            <div
+                              key={chain}
+                              className="shadow-sm hover:shadow-md rounded-2xl p-4 bg-white dark:bg-[#303030] transition-all"
+                            >
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center space-x-3">
+                                  <img 
+                                    src={getNetworkIcon(chain)} 
+                                    alt={chain} 
+                                    className="w-8 h-8" 
+                                  />
+                                  <span className="text-gray-900 dark:text-white font-medium">
+                                    {getNetworkName(chain)}
+                                  </span>
+                                </div>
+                                <Badge variant="outline" className="rounded-full">
+                                  {percentage}%
+                                </Badge>
+                              </div>
+                              <div className="grid grid-cols-2 gap-3 pt-3">
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Balance</p>
+                                  <p className="font-mono text-gray-900 dark:text-white">
+                                    {balance.toFixed(2)}
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-sm text-muted-foreground">USD Value</p>
+                                  <p className="text-muted-foreground">
+                                    ≈ ${balance.toFixed(2)}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                      )}
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 mt-4">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
+                          Multi-Chain Distribution
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Your {selectedCrypto} is distributed across multiple blockchain networks for optimal flexibility.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {manageView === "deposit" && (
+                <div className="space-y-4">
+                  {/* Blue Info Box */}
+                  <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-1">
+                          Supported Networks
+                        </p>
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                          Send {selectedCrypto} on any supported network: Ethereum, Polygon, Arbitrum, Optimism, or Base.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Copy Address Button */}
+                  <Button
+                    className="w-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] rounded-full transition-all duration-200"
+                    onClick={() => {
+                      copyToClipboard(mainWallet.address);
+                    }}
+                  >
+                    <Copy className="w-[18px] h-[18px] mr-2" />
+                    Copy Address
+                  </Button>
+
+                  {/* QR Code */}
+                  <div className="bg-white dark:bg-[#2E3C49] shadow-sm rounded-2xl p-6 text-center">
+                    {qrCode && (
+                      <div className="inline-block bg-white p-4 rounded-2xl">
+                        <img src={qrCode} alt="Deposit QR" className="w-48 h-48" />
+                      </div>
+                    )}
+                    <p className="text-sm text-muted-foreground mt-4">Scan to deposit {selectedCrypto}</p>
+                  </div>
+                </div>
+              )}
+
+              {manageView === "send" && (
+                <div className="space-y-6">
+                  {/* Network Selection */}
+                  <div className="space-y-3">
+                    <Label htmlFor="send-network" className="text-gray-900 dark:text-white font-medium">
+                      Select Network
+                    </Label>
+                    <Select value={sendNetwork} onValueChange={setSendNetwork}>
+                      <SelectTrigger id="send-network" className="w-full h-14 bg-white dark:bg-[#2E3C49] rounded border border-[#43586C] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] transition-all duration-200">
+                        <SelectValue placeholder="Choose network" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white dark:bg-[#262626] rounded-xl shadow-lg">
+                        {supportedChains.map((chain) => (
+                          <SelectItem key={chain.id} value={chain.id} className="h-12 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08]">
+                            <div className="flex items-center space-x-3">
+                              <img src={chain.logo} alt={chain.name} className="w-6 h-6" />
+                              <span className="text-gray-900 dark:text-white">{chain.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Available Balance Info */}
+                  {sendNetwork && (
+                    <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-blue-900 dark:text-blue-200">
+                          Available on {getNetworkName(sendNetwork)}
+                        </span>
+                        <span className="font-mono font-medium text-blue-900 dark:text-blue-200">
+                          {mainWallet.chainBalances && mainWallet.chainBalances[selectedCrypto] && mainWallet.chainBalances[selectedCrypto][sendNetwork] 
+                            ? mainWallet.chainBalances[selectedCrypto][sendNetwork].toFixed(2) 
+                            : "0.00"} {selectedCrypto}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Amount Input */}
+                  <div className="space-y-3">
+                    <Label htmlFor="send-amount" className="text-gray-900 dark:text-white font-medium">
+                      Amount
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="send-amount"
+                        type="number"
+                        placeholder="0.00"
+                        value={sendAmt}
+                        onChange={(e) => setSendAmt(e.target.value)}
+                        className="w-full h-14 px-4 py-3 pr-24 font-mono text-lg rounded bg-white dark:bg-[#2E3C49] border-2 border-[#43586C] text-gray-900 dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-gray-900 dark:text-[#F6F7F9] pointer-events-none">
+                        {selectedCrypto}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Destination Address */}
+                  <div className="space-y-3">
+                    <Label htmlFor="send-address" className="text-gray-900 dark:text-white font-medium">
+                      Destination Address
+                    </Label>
+                    <Input
+                      id="send-address"
+                      placeholder="0x..."
+                      value={sendAddr}
+                      onChange={(e) => setSendAddr(e.target.value)}
+                      className="w-full h-14 px-4 py-3 font-mono rounded bg-white dark:bg-[#2E3C49] border-2 border-[#43586C] text-gray-900 dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
+                    />
+                  </div>
+
+                  {/* Error Message */}
+                  {sendAmt && sendNetwork && parseFloat(sendAmt) > (mainWallet.chainBalances?.[selectedCrypto]?.[sendNetwork] || 0) && (
+                    <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-2xl border border-red-200 dark:border-red-900">
+                      <div className="flex items-start space-x-2">
+                        <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                        <p className="font-medium text-red-700 dark:text-red-300">
+                          Insufficient balance on {getNetworkName(sendNetwork)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Send Button */}
+                  <Button
+                    onClick={doSend}
+                    disabled={!sendAmt || !sendAddr || !sendNetwork || parseFloat(sendAmt) > (mainWallet.chainBalances?.[selectedCrypto]?.[sendNetwork] || 0)}
+                    className="w-full min-h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 disabled:bg-[#43586C] disabled:text-[#798A9B] disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                  >
+                    <Send className="w-[18px] h-[18px] mr-2" />
+                    <span className="font-medium">
+                      Send {sendAmt || "0"} {selectedCrypto}
+                    </span>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </PageLayout>
     );
   };
@@ -3314,7 +3583,7 @@ const App = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#D1D9E1] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Google")}
                     >
                       <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
@@ -3328,7 +3597,7 @@ const App = () => {
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#D1D9E1] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Twitter")}
                     >
                       <Twitter className="w-5 h-5 flex-shrink-0" />
@@ -3337,7 +3606,7 @@ const App = () => {
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#D1D9E1] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Github")}
                     >
                       <Github className="w-5 h-5 flex-shrink-0" />
@@ -3346,7 +3615,7 @@ const App = () => {
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#D1D9E1] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("MetaMask")}
                     >
                       <Wallet className="w-5 h-5 flex-shrink-0" />
@@ -3355,7 +3624,7 @@ const App = () => {
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#D1D9E1] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("WalletConnect")}
                     >
                       <Wallet className="w-5 h-5 flex-shrink-0" />
@@ -3364,7 +3633,7 @@ const App = () => {
 
                     <Button
                       variant="outline"
-                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#43586C] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
+                      className="flex items-center justify-start gap-2 rounded-full min-h-12 px-4 border-[#D1D9E1] hover:bg-[#E3F2FD] hover:border-[#1E88E5] transition-all duration-200"
                       onClick={() => handleWalletConnect("Coinbase Wallet")}
                     >
                       <Wallet className="w-5 h-5 flex-shrink-0" />
@@ -3377,9 +3646,9 @@ const App = () => {
           ) : showCryptoSelection ? (
             <div className="flex flex-col h-full pt-4 pb-6 px-0 space-y-4">
               <div className="text-center space-y-2">
-                <div>
+                <h2 className="text-4xl">
                   ${currentPayment?.price || 156.78}
-                </div>
+                </h2>
                 <p className="text-muted-foreground">
                   {currentPayment
                     ? currentPayment.description
@@ -3393,51 +3662,38 @@ const App = () => {
               {/* Chain Selection */}
               <div className="space-y-2">
                 <Label>Network</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {supportedChains
-                    .filter(chain => {
-                      // First check merchant config - only show chains enabled for selected token
-                      const availableChains = getAvailableChainsForToken(selectedCrypto);
-                      const isEnabledByMerchant = availableChains.includes(chain.id);
-                      
-                      // Then check payment link restrictions (if any)
-                      const isAllowedByPaymentLink = !currentPayment?.availableChains || 
-                        currentPayment.availableChains.length === 0 || 
-                        currentPayment.availableChains.includes(chain.id);
-                      
-                      return isEnabledByMerchant && isAllowedByPaymentLink;
-                    })
-                    .map((chain) => (
-                      <div
-                        key={chain.id}
-                        className={`flex items-center justify-center gap-2 px-3 py-2 min-h-12 border rounded-xl cursor-pointer transition-all duration-200 ${
-                          selectedChain === chain.id
-                            ? "border-[#1E88E5] bg-[#E3F2FD] dark:border-[#1E88E5] dark:bg-[#1E88E5]/20"
-                            : "border-[#43586C] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
-                        }`}
-                        onClick={() => {
-                          setSelectedChain(chain.id);
-                          // Auto-adjust currency if current one is not available on new chain
-                          const availableTokens = getAvailableTokensForChain(chain.id);
-                          if (!availableTokens.includes(selectedCrypto)) {
-                            // Select first available token for this chain
-                            if (availableTokens.length > 0) {
-                              setSelectedCrypto(availableTokens[0]);
-                            }
-                          }
-                        }}
-                      >
-                        <div>{chain.icon}</div>
-                        <span>{chain.name}</span>
-                      </div>
-                    ))}
-                </div>
+                <NetworkSelector
+                  networks={supportedChains.filter(chain => {
+                    // First check merchant config - only show chains enabled for selected token
+                    const availableChains = getAvailableChainsForToken(selectedCrypto);
+                    const isEnabledByMerchant = availableChains.includes(chain.id);
+                    
+                    // Then check payment link restrictions (if any)
+                    const isAllowedByPaymentLink = !currentPayment?.availableChains || 
+                      currentPayment.availableChains.length === 0 || 
+                      currentPayment.availableChains.includes(chain.id);
+                    
+                    return isEnabledByMerchant && isAllowedByPaymentLink;
+                  })}
+                  selectedNetwork={selectedChain}
+                  onNetworkChange={(networkId) => {
+                    setSelectedChain(networkId);
+                    // Auto-adjust currency if current one is not available on new chain
+                    const availableTokens = getAvailableTokensForChain(networkId);
+                    if (!availableTokens.includes(selectedCrypto)) {
+                      // Select first available token for this chain
+                      if (availableTokens.length > 0) {
+                        setSelectedCrypto(availableTokens[0]);
+                      }
+                    }
+                  }}
+                />
               </div>
 
               <div className="space-y-2">
                 <Label>Currency</Label>
-                <div className="space-y-2">
-                  {supportedCryptos
+                <CryptoSelector
+                  options={supportedCryptos
                     .filter(crypto => {
                       // First check merchant config - only show tokens enabled for selected chain
                       const availableTokens = getAvailableTokensForChain(selectedChain);
@@ -3455,62 +3711,35 @@ const App = () => {
                       
                       return isEnabledByMerchant && isAllowedByPaymentLink;
                     })
-                    .map((crypto) => (
-                    <div
-                      key={crypto.symbol}
-                      className={`p-3 min-h-12 border rounded-xl cursor-pointer transition-all duration-200 ${
-                        selectedCrypto === crypto.symbol
-                          ? "border-[#1E88E5] bg-[#E3F2FD] dark:border-[#1E88E5] dark:bg-[#1E88E5]/20"
-                          : "border-[#43586C] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
-                      }`}
-                      onClick={() => {
-                        setSelectedCrypto(crypto.symbol);
-                        // Auto-adjust chain if current one is not available for new token
-                        const availableChains = getAvailableChainsForToken(crypto.symbol);
-                        if (!availableChains.includes(selectedChain)) {
-                          // Select first available chain for this token
-                          if (availableChains.length > 0) {
-                            setSelectedChain(availableChains[0]);
-                          }
-                        }
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div>{crypto.logo}</div>
-                          <div>
-                            <p>{crypto.name}</p>
-                            <p className="text-muted-foreground">
-                              {crypto.symbol}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right flex items-center gap-3">
-                          <div>
-                            <p>
-                              {calculateCryptoAmount(
-                                currentPayment?.price || 156.78,
-                                crypto.symbol,
-                              )}{" "}
-                              {crypto.symbol}
-                            </p>
-                            <p className="text-muted-foreground">
-                              Bal: {getWalletBalance(
-                                crypto.symbol,
-                                selectedChain
-                              ).toFixed(2)}
-                            </p>
-                          </div>
-                          {hasSufficientBalance(crypto.symbol) ? (
-                            <CheckCircle className="w-5 h-5 text-[#7DD069] flex-shrink-0" />
-                          ) : (
-                            <AlertCircle className="w-5 h-5 text-[#DD6B6B] flex-shrink-0" />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    .map((crypto) => ({
+                      crypto: {
+                        symbol: crypto.symbol,
+                        name: crypto.name,
+                        logo: crypto.logo,
+                      },
+                      amount: calculateCryptoAmount(
+                        currentPayment?.price || 156.78,
+                        crypto.symbol,
+                      ),
+                      balance: getWalletBalance(
+                        crypto.symbol,
+                        selectedChain
+                      ).toFixed(2),
+                      hasSufficientBalance: hasSufficientBalance(crypto.symbol),
+                    }))}
+                  selectedCrypto={selectedCrypto}
+                  onCryptoChange={(cryptoSymbol) => {
+                    setSelectedCrypto(cryptoSymbol);
+                    // Auto-adjust chain if current one is not available for new token
+                    const availableChains = getAvailableChainsForToken(cryptoSymbol);
+                    if (!availableChains.includes(selectedChain)) {
+                      // Select first available chain for this token
+                      if (availableChains.length > 0) {
+                        setSelectedChain(availableChains[0]);
+                      }
+                    }
+                  }}
+                />
               </div>
 
               <Button
@@ -3579,9 +3808,9 @@ const App = () => {
             ) : (
               <div className="space-y-6">
                 <div className="text-center space-y-2">
-                  <div>
+                  <h2 className="text-4xl">
                     ${currentPayment?.price || 156.78}
-                  </div>
+                  </h2>
                   <p className="text-muted-foreground">
                     {currentPayment
                       ? currentPayment.description
@@ -3590,21 +3819,19 @@ const App = () => {
                   <p className="text-[#7DD069]">
                     ✓ Connected with {connectedWallet}
                   </p>
-                  <p className="text-[#D9C370]">
-                    Insufficient {selectedCrypto} {getChainName(selectedChain)} balance
-                  </p>
                 </div>
 
-                <Separator className="bg-[#43586C]" />
+                <Separator className="bg-[#D1D9E1]" />
 
+                {/* MD3 Warning Container - Yellow background with proper text contrast */}
                 <div className="bg-[#D9C370]/10 p-6 rounded-2xl border border-[#D9C370]/30">
                   <div className="flex items-center gap-3 mb-3">
                     <AlertCircle className="w-5 h-5 text-[#D9C370]" />
-                    <span className="text-[#D9C370]">
+                    <span className="text-[#1C1B1F] dark:text-[#F6F7F9] font-medium">
                       Add Funds Required
                     </span>
                   </div>
-                  <p className="text-[#D9C370]">
+                  <p className="text-[#1C1B1F] dark:text-[#F6F7F9]">
                     Add{" "}
                     {parseFloat(
                       calculateCryptoAmount(
@@ -3624,7 +3851,7 @@ const App = () => {
                     className={`p-4 min-h-16 border rounded-2xl cursor-pointer transition-all duration-200 ${
                       fundingMethod === "qr"
                         ? "border-[#1E88E5] bg-[#E3F2FD] dark:border-[#1E88E5] dark:bg-[#1E88E5]/20"
-                        : "border-[#43586C] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
+                        : "border-[#D1D9E1] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
                     }`}
                     onClick={() => {
                       setFundingMethod("qr");
@@ -3671,9 +3898,9 @@ const App = () => {
           ) : !showPaymentForm ? (
             <div className="flex flex-col justify-center h-full space-y-8">
               <div className="text-center space-y-3">
-                <div>
+                <h1 className="text-5xl">
                   ${currentPayment?.price || 156.78}
-                </div>
+                </h1>
                 <p className="text-muted-foreground">
                   {currentPayment
                     ? currentPayment.description
@@ -3701,9 +3928,9 @@ const App = () => {
           ) : (
             <div className="space-y-6">
               <div className="text-center space-y-2">
-                <div>
+                <h2 className="text-4xl">
                   ${currentPayment?.price || 156.78}
-                </div>
+                </h2>
                 <p className="text-muted-foreground">
                   {currentPayment
                     ? currentPayment.description
@@ -3717,7 +3944,7 @@ const App = () => {
                 </p>
               </div>
 
-              <Separator className="bg-[#43586C]" />
+              <Separator className="bg-[#D1D9E1]" />
 
               {paymentStatus === "pending" && (
                 <div className="space-y-6">
@@ -3813,7 +4040,7 @@ const App = () => {
         </CardContent>
 
         {/* Secure Footer */}
-        <div className="p-6 border-t border-[#43586C]">
+        <div className="p-6 border-t border-[#D1D9E1]">
           <div className="flex items-center justify-center gap-3">
             <Shield className="w-5 h-5 text-[#7DD069] fill-[#7DD069]" />
             <span className="whitespace-nowrap">
@@ -3847,7 +4074,7 @@ const App = () => {
             </div>
             
             {/* OnRamper iframe */}
-            <div className="rounded-2xl overflow-hidden border border-[#43586C]">
+            <div className="rounded-2xl overflow-hidden border border-[#D1D9E1]">
               <iframe
                 src={`https://widget.onramper.com?apiKey=pk_prod_01JA8K7NMCXHXQZYNT22V3FPJ8&defaultCrypto=${selectedCrypto}&defaultAmount=${calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)}&networks=${getOnRamperNetwork(selectedChain)}&wallets=${selectedCrypto}:${walletAddress}&isAddressEditable=false`}
                 title="OnRamper Widget"
@@ -4018,6 +4245,9 @@ const App = () => {
 
   // User Dashboard - End user transaction history and account management
   const UserDashboard = () => {
+    // Header visibility state for mobile scroll behavior
+    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+    
     // Mock user transaction data
     const [userTransactions] = useState([
       {
@@ -4492,7 +4722,7 @@ const App = () => {
                           <div
                             key={crypto}
                             onClick={() => selectCurrency(crypto)}
-                            className="cursor-pointer border-2 border-gray-200 dark:border-gray-800 hover:border-blue-500 rounded-3xl p-4 transition-all hover:shadow-md bg-white dark:bg-gray-950"
+                            className="cursor-pointer shadow-sm hover:shadow-md rounded-2xl p-4 transition-all bg-white dark:bg-[#303030]"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-3">
@@ -4525,7 +4755,7 @@ const App = () => {
                       </div>
 
                       {/* Desktop View - Table */}
-                      <div className="hidden md:block border rounded-3xl overflow-hidden">
+                      <div className="hidden md:block shadow-sm rounded-2xl overflow-hidden">
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -4650,20 +4880,20 @@ const App = () => {
                   }}
                   style={{
                     backgroundColor: manageView === "deposit"
-                      ? "#757575"
+                      ? "#1E88E5"
                       : "transparent",
                     ...(manageView === "deposit" && {
-                      borderColor: "#757575",
+                      borderColor: "#1E88E5",
                     }),
                   }}
                   className={
                     manageView === "deposit"
-                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200"
-                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] dark:hover:text-[#757575]"
+                      ? "hover:bg-[#1565C0] text-white rounded-full transition-all duration-200"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#1E88E5] hover:text-[#1E88E5] dark:hover:text-[#1E88E5]"
                   }
                   onMouseEnter={(e) => {
                     if (manageView !== "deposit") {
-                      e.currentTarget.style.backgroundColor = "rgba(117, 117, 117, 0.1)";
+                      e.currentTarget.style.backgroundColor = "rgba(30, 136, 229, 0.08)";
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -4684,16 +4914,16 @@ const App = () => {
                   }}
                   style={{
                     backgroundColor: manageView === "send"
-                      ? "#757575"
+                      ? "#1E88E5"
                       : "transparent",
                     ...(manageView === "send" && {
-                      borderColor: "#757575",
+                      borderColor: "#1E88E5",
                     }),
                   }}
                   className={
                     manageView === "send"
-                      ? "hover:bg-[#959FA8] text-white rounded-full transition-all duration-200"
-                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#757575] dark:hover:text-[#757575]"
+                      ? "hover:bg-[#1565C0] text-white rounded-full transition-all duration-200"
+                      : "text-gray-900 dark:text-[#F6F7F9] rounded-full transition-all duration-200 hover:border-[#1E88E5] hover:text-[#1E88E5] dark:hover:text-[#1E88E5]"
                   }
                   onMouseEnter={(e) => {
                     if (manageView !== "send") {
@@ -4717,7 +4947,7 @@ const App = () => {
                   <h4 className="text-gray-900 dark:text-white mb-4">Balance by Chain</h4>
 
                   {/* Desktop View - Table */}
-                  <div className="hidden md:block border rounded-3xl overflow-hidden">
+                  <div className="hidden md:block shadow-sm rounded-2xl overflow-hidden">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -4782,7 +5012,7 @@ const App = () => {
                           return (
                             <div
                               key={chain}
-                              className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-4 bg-white dark:bg-gray-950"
+                              className="shadow-sm hover:shadow-md rounded-2xl p-4 bg-white dark:bg-[#303030] transition-all"
                             >
                               <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center space-x-3">
@@ -4799,7 +5029,7 @@ const App = () => {
                                   {percentage}%
                                 </Badge>
                               </div>
-                              <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-200 dark:border-gray-800">
+                              <div className="grid grid-cols-2 gap-3 pt-3">
                                 <div>
                                   <p className="text-sm text-muted-foreground">Balance</p>
                                   <p className="font-mono text-gray-900 dark:text-white">
@@ -6248,25 +6478,22 @@ const App = () => {
             {/* Action Buttons */}
             <div className="mt-4 space-y-2">
               <Button
-                className={`w-full rounded-full transition-all duration-200 ${
-                  qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
-                    ? "bg-black text-white hover:bg-[#757575] dark:bg-white dark:text-black dark:hover:bg-[#757575] dark:hover:text-white"
-                    : ""
-                }`}
-                variant={qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)) ? undefined : "default"}
-                disabled={qrFundingBalance < parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))}
-                onClick={() => {
-                  // Close QR dialog and show Confirm Payment screen
-                  setShowQRFunding(false);
-                  setShowCryptoSelection(false);
-                  setShowFundingOptions(false);
-                  setShowPaymentForm(true);
-                  toast("Wallet funded successfully!");
-                }}
+                className="w-full rounded-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200"
+                disabled={isCheckingFunds}
+                onClick={handleCheckFunds}
               >
-                {qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
-                  ? `Pay ${parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)).toFixed(2)} ${selectedCrypto}`
-                  : "Waiting for Funds..."}
+                {isCheckingFunds ? (
+                  <span className="flex items-center justify-center gap-2">
+                    Check for Funds
+                    <span className="inline-flex gap-0.5">
+                      <span className="animate-bounce" style={{ animationDelay: '0ms', animationDuration: '1s' }}>.</span>
+                      <span className="animate-bounce" style={{ animationDelay: '150ms', animationDuration: '1s' }}>.</span>
+                      <span className="animate-bounce" style={{ animationDelay: '300ms', animationDuration: '1s' }}>.</span>
+                    </span>
+                  </span>
+                ) : (
+                  "Check for Funds"
+                )}
               </Button>
 
               {/* Test Buttons - Collapsible */}

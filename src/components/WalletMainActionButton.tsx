@@ -32,9 +32,16 @@ export const WalletMainActionButton: React.FC<WalletMainActionButtonProps> = ({
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  const handleCopy = async () => {
+  const handleCopy = () => {
+    const textarea = document.createElement('textarea');
+    textarea.value = address;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    
     try {
-      await navigator.clipboard.writeText(address);
+      document.execCommand('copy');
       setCopied(true);
       toast('Copied', {
         duration: 1000,
@@ -45,9 +52,11 @@ export const WalletMainActionButton: React.FC<WalletMainActionButtonProps> = ({
         setCopied(false);
       }, 1000);
     } catch (error) {
-      toast('Copied', {
+      toast('Failed to copy', {
         duration: 1000,
       });
+    } finally {
+      document.body.removeChild(textarea);
     }
   };
 

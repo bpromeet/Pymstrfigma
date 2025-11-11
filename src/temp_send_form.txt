@@ -1,0 +1,99 @@
+              {manageView === "send" && (
+                <div className="space-y-6">
+                  {/* Network Selection */}
+                  <div className="space-y-3">
+                    <Label htmlFor="send-network" className="text-gray-900 dark:text-white font-medium">
+                      Select Network
+                    </Label>
+                    <Select value={sendNetwork} onValueChange={setSendNetwork}>
+                      <SelectTrigger id="send-network" className="w-full h-14 bg-white dark:bg-[#2E3C49] rounded border border-[#43586C] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] transition-all duration-200">
+                        <SelectValue placeholder="Choose network" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white dark:bg-[#262626] rounded-xl shadow-lg">
+                        {supportedChains.map((chain) => (
+                          <SelectItem key={chain.id} value={chain.id} className="h-12 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08]">
+                            <div className="flex items-center space-x-3">
+                              <img src={chain.logo} alt={chain.name} className="w-6 h-6" />
+                              <span className="text-gray-900 dark:text-white">{chain.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Available Balance Info */}
+                  {sendNetwork && (
+                    <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-blue-900 dark:text-blue-200">
+                          Available on {getNetworkName(sendNetwork)}
+                        </span>
+                        <span className="font-mono font-medium text-blue-900 dark:text-blue-200">
+                          {mainWallet.chainBalances && mainWallet.chainBalances[selectedCrypto] && mainWallet.chainBalances[selectedCrypto][sendNetwork] 
+                            ? mainWallet.chainBalances[selectedCrypto][sendNetwork].toFixed(2) 
+                            : "0.00"} {selectedCrypto}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Amount Input */}
+                  <div className="space-y-3">
+                    <Label htmlFor="send-amount" className="text-gray-900 dark:text-white font-medium">
+                      Amount
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="send-amount"
+                        type="number"
+                        placeholder="0.00"
+                        value={sendAmt}
+                        onChange={(e) => setSendAmt(e.target.value)}
+                        className="w-full h-14 px-4 py-3 pr-24 font-mono text-lg rounded bg-white dark:bg-[#2E3C49] border-2 border-[#43586C] text-gray-900 dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 font-medium text-gray-900 dark:text-[#F6F7F9] pointer-events-none">
+                        {selectedCrypto}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Destination Address */}
+                  <div className="space-y-3">
+                    <Label htmlFor="send-address" className="text-gray-900 dark:text-white font-medium">
+                      Destination Address
+                    </Label>
+                    <Input
+                      id="send-address"
+                      placeholder="0x..."
+                      value={sendAddr}
+                      onChange={(e) => setSendAddr(e.target.value)}
+                      className="w-full h-14 px-4 py-3 font-mono rounded bg-white dark:bg-[#2E3C49] border-2 border-[#43586C] text-gray-900 dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
+                    />
+                  </div>
+
+                  {/* Error Message */}
+                  {sendAmt && sendNetwork && parseFloat(sendAmt) > (mainWallet.chainBalances?.[selectedCrypto]?.[sendNetwork] || 0) && (
+                    <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-2xl border border-red-200 dark:border-red-900">
+                      <div className="flex items-start space-x-2">
+                        <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                        <p className="font-medium text-red-700 dark:text-red-300">
+                          Insufficient balance on {getNetworkName(sendNetwork)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Send Button */}
+                  <Button
+                    onClick={doSend}
+                    disabled={!sendAmt || !sendAddr || !sendNetwork || parseFloat(sendAmt) > (mainWallet.chainBalances?.[selectedCrypto]?.[sendNetwork] || 0)}
+                    className="w-full min-h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 disabled:bg-[#43586C] disabled:text-[#798A9B] disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                  >
+                    <Send className="w-[18px] h-[18px] mr-2" />
+                    <span className="font-medium">
+                      Send {sendAmt || "0"} {selectedCrypto}
+                    </span>
+                  </Button>
+                </div>
+              )}

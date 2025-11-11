@@ -62,6 +62,8 @@ const SheetContent = React.forwardRef<
       <SheetPrimitive.Content
         ref={ref}
         data-slot="sheet-content"
+        aria-describedby={undefined}
+        aria-labelledby={undefined}
         className={cn(
           "glass-strong bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition-all ease-out data-[state=closed]:duration-[900ms] data-[state=open]:duration-[900ms]",
           side === "right" &&
