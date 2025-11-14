@@ -926,7 +926,7 @@ app.post('/webhooks/pymstr', (req, res) => {
               <>
                 <DialogHeader>
                   <DialogTitle className="flex items-center space-x-2">
-                    <Webhook className="w-5 h-5" />
+                    <Webhook className="w-[18px] h-[18px]" />
                     <span>{webhook.description || 'Webhook Endpoint'}</span>
                   </DialogTitle>
                   <DialogDescription>
@@ -941,7 +941,7 @@ app.post('/webhooks/pymstr', (req, res) => {
                     variant={webhook.enabled ? "default" : "secondary"}
                     className={`rounded-full ${
                       webhook.enabled
-                        ? 'bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]'
+                        ? 'bg-[#7DD069] text-white'
                         : 'bg-[#43586C]/20 text-[#798A9B]'
                     }`}
                   >
@@ -959,81 +959,6 @@ app.post('/webhooks/pymstr', (req, res) => {
                 </div>
                 
                 <div className="space-y-6 py-4">
-                  {/* Action Buttons Row - Under Subtitle */}
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pb-4 border-b border-gray-200 dark:border-gray-800 overflow-hidden">
-                    {/* Activate/Deactivate */}
-                    <Button
-                      onClick={() => toggleWebhook(webhook.id)}
-                      size="sm"
-                      className={`rounded-full transition-all duration-200 w-full sm:w-auto flex-shrink-0 ${
-                        webhook.enabled
-                          ? 'bg-transparent border border-gray-400 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                          : 'bg-green-600 text-white hover:bg-green-700'
-                      }`}
-                    >
-                      <span className="truncate">{webhook.enabled ? 'Deactivate' : 'Activate'}</span>
-                    </Button>
-
-                    {/* Regenerate Secret */}
-                    <Button
-                      onClick={() => {
-                        handleRegenerateSecret(webhook.id);
-                        setVisibleSecrets(new Set([...visibleSecrets, webhook.id]));
-                      }}
-                      size="sm"
-                      variant="outline"
-                      className="rounded-full w-full sm:w-auto flex-shrink-0"
-                    >
-                      <RefreshCw className="w-4 h-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">Regenerate</span>
-                    </Button>
-
-                    {/* Send Test */}
-                    <Button
-                      onClick={() => handleTestWebhook(webhook)}
-                      size="sm"
-                      variant="outline"
-                      className="rounded-full w-full sm:w-auto flex-shrink-0"
-                    >
-                      <TestTube className="w-4 h-4 mr-2 flex-shrink-0" />
-                      <span className="truncate">Test</span>
-                    </Button>
-
-                    {/* Delete Button */}
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="rounded-full border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white transition-all duration-200 w-full sm:w-auto flex-shrink-0"
-                        >
-                          <Trash2 className="w-4 h-4 mr-2 flex-shrink-0" />
-                          <span className="truncate">Delete</span>
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Webhook Endpoint?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. You will stop receiving webhook notifications at this endpoint.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => {
-                              handleDeleteWebhook(webhook.id);
-                              setShowDetailDialog(false);
-                            }}
-                            className="bg-[#FF5914] text-white hover:bg-[#E64D0F] rounded-full"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-
                   {/* Webhook Info */}
                   <div className="space-y-4">
                     <div>
@@ -1154,6 +1079,81 @@ app.post('/webhooks/pymstr', (req, res) => {
                           : 'Never'}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Action Buttons Row - Moved to Bottom */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-4 border-t border-[#43586C] overflow-hidden">
+                    {/* Activate/Deactivate */}
+                    <Button
+                      onClick={() => toggleWebhook(webhook.id)}
+                      size="sm"
+                      className={`rounded-full transition-all duration-200 w-full sm:w-auto flex-shrink-0 ${
+                        webhook.enabled
+                          ? 'bg-transparent border border-[#43586C] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          : 'bg-[#7DD069] text-white hover:bg-[#6BC05D]'
+                      }`}
+                    >
+                      <span className="truncate">{webhook.enabled ? 'Deactivate' : 'Activate'}</span>
+                    </Button>
+
+                    {/* Regenerate Secret */}
+                    <Button
+                      onClick={() => {
+                        handleRegenerateSecret(webhook.id);
+                        setVisibleSecrets(new Set([...visibleSecrets, webhook.id]));
+                      }}
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full transition-all duration-200 w-full sm:w-auto flex-shrink-0"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">Regenerate</span>
+                    </Button>
+
+                    {/* Send Test */}
+                    <Button
+                      onClick={() => handleTestWebhook(webhook)}
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full transition-all duration-200 w-full sm:w-auto flex-shrink-0"
+                    >
+                      <TestTube className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">Test</span>
+                    </Button>
+
+                    {/* Delete Button */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white transition-all duration-200 w-full sm:w-auto flex-shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">Delete</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Webhook Endpoint?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. You will stop receiving webhook notifications at this endpoint.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              handleDeleteWebhook(webhook.id);
+                              setShowDetailDialog(false);
+                            }}
+                            className="bg-[#FF5914] text-white hover:bg-[#E64D0F] rounded-full transition-all duration-200"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </div>
               </>
