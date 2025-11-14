@@ -56,6 +56,212 @@ While fully MD3-compliant, PYMSTR maintains unique identity through:
 
 ---
 
+## Layout Architecture (Universal Pattern)
+
+**CRITICAL: PYMSTR uses ONE unified layout pattern for both merchants and end users.**
+
+**⚠️ MANDATORY PAGE STRUCTURE:**
+All pages MUST use the `PageLayout` compound component pattern:
+- `<PageLayout>` → Root container
+- `<PageLayout.Header>` → Icon, title, subtitle, action button
+- `<PageLayout.Content>` → Main content area
+
+**DO NOT** use `title` and `subtitle` as direct props on `<PageLayout>`! This is wrong and will not work.
+
+### Universal Navigation Pattern
+
+All users (merchants and end users) experience the **same layout structure**:
+
+**Desktop Layout:**
+* **Navigation Rail** (left side, collapsible)
+  * Width: 80px collapsed, 256px expanded
+  * Contains navigation menu items
+  * Toggle button to expand/collapse
+  * Logo at top
+  * User avatar/profile at bottom
+  
+* **Top App Bar** (header)
+  * Page title and breadcrumbs
+  * Action buttons (right-aligned)
+  * Search (if applicable)
+  
+* **Main Content Area**
+  * Page content with appropriate padding
+  * Responsive max-width containers
+  * Follows MD3 grid system
+
+**Mobile Layout:**
+* **Top App Bar** (sticky header)
+  * Back button (left)
+  * Page title (center)
+  * Actions (right)
+  
+* **Main Content Area**
+  * Scrollable content
+  * Mobile-optimized padding
+  
+* **Bottom Navigation Bar** (sticky footer)
+  * 4-5 primary navigation items
+  * Active state indicators
+  * Icon + label format
+
+**Floating Action Button (FAB):**
+* Primary action for the current screen
+* Position: `fixed bottom-6 right-6` (or `bottom-24` if bottom nav exists)
+* Mobile only (`md:hidden`)
+* Desktop uses toolbar buttons instead
+
+### Navigation Menu Differences
+
+**The ONLY difference between merchant and end user is the navigation menu items:**
+
+**Merchant Navigation Items:**
+* Dashboard
+* Payment Links
+* Wallets
+* Reports
+* API Keys
+* Webhooks
+* Team
+* Documents (Quick Start, API Reference, Code Examples)
+* Settings
+* Help
+* Legal
+
+**End User Navigation Items:**
+* Dashboard
+* Wallets
+* Transactions
+* Settings
+* Help
+* Legal
+
+**Everything else is identical:**
+* Same navigation rail component
+* Same top app bar component
+* Same content area structure
+* Same responsive behavior
+* Same mobile bottom navigation component
+* Same FAB patterns
+* Same page layout wrapper (`PageLayout.tsx`)
+
+### Implementation Guidelines
+
+**DO:**
+* ✅ Use `PageLayout` component for ALL pages (merchant and end user)
+* ✅ Use `NavigationRail` component for ALL desktop navigation
+* ✅ Use `BottomNavigation` component for ALL mobile navigation
+* ✅ Pass different `menuItems` prop based on user type
+* ✅ Share all layout components between merchant and end user
+* ✅ Apply same responsive breakpoints for both user types
+* ✅ Use same padding, spacing, and grid system
+
+**DON'T:**
+* ❌ Create separate layout components for merchant vs end user
+* ❌ Use different navigation patterns for different user types
+* ❌ Apply different responsive behavior based on user type
+* ❌ Create "standalone" page layouts that bypass the unified pattern
+* ❌ Use simple back button headers instead of full navigation (exception: checkout flow only)
+
+### Page Layout Example
+
+```tsx
+// ✅ CORRECT: Unified layout for both merchant and end user
+import { PageLayout } from '../components/PageLayout';
+import { Scale } from 'lucide-react';
+
+export const LegalPage = () => {
+  return (
+    <PageLayout>
+      <PageLayout.Header
+        icon={<Scale className="w-6 h-6 text-[#07D7FF]" />}
+        title="Legal"
+        subtitle="Terms, privacy, and policies"
+      />
+      <PageLayout.Content>
+        {/* Page content - cards, tabs, forms, etc. */}
+      </PageLayout.Content>
+    </PageLayout>
+  );
+};
+
+// ❌ WRONG: Standalone layout bypassing navigation
+export const LegalPage = () => {
+  return (
+    <div className="min-h-screen p-4">
+      <button onClick={() => navigate(-1)}>Back</button>
+      <h1>Legal</h1>
+      {/* This breaks the unified pattern */}
+    </div>
+  );
+};
+```
+
+### Layout Wrapper Component
+
+All pages MUST use the `PageLayout` component located at `/components/PageLayout.tsx`:
+
+**⚠️ CRITICAL: PageLayout uses a compound component pattern. Do NOT use title/subtitle as direct props!**
+
+```tsx
+import { PageLayout } from '../components/PageLayout';
+import { IconName } from 'lucide-react';
+
+<PageLayout>
+  <PageLayout.Header
+    icon={<IconName className="w-6 h-6 text-[#07D7FF]" />}  // Required: Page icon
+    title="Page Title"                                        // Required: Page title
+    subtitle="Page description"                               // Optional: Subtitle
+    action={<Button>Action</Button>}                          // Optional: Right-aligned action button
+  />
+  <PageLayout.Content>
+    {/* Your page content here */}
+    {/* Use Cards, Tabs, Forms, etc. */}
+  </PageLayout.Content>
+</PageLayout>
+```
+
+**PageLayout Component Structure:**
+* **`PageLayout`** (root): Provides page background (white light / #0A0A0A dark)
+* **`PageLayout.Header`**: Consistent header with icon, title, subtitle, and optional action button
+* **`PageLayout.Content`**: Main content area with consistent padding and max-width (1280px)
+
+The `PageLayout` component automatically handles:
+* Navigation rail integration
+* Responsive padding based on rail state
+* Mobile bottom navigation spacing
+* Top app bar with title/subtitle
+* Action button positioning
+* Content area max-width and centering
+
+### User Type Detection
+
+The app detects user type and shows appropriate navigation items:
+
+```tsx
+// In App.tsx or navigation components
+const userType = getUserType(); // 'merchant' | 'enduser'
+
+const menuItems = userType === 'merchant' 
+  ? merchantNavigationItems 
+  : endUserNavigationItems;
+
+<NavigationRail menuItems={menuItems} />
+<BottomNavigation menuItems={menuItems} />
+```
+
+### Summary
+
+**Key Principle: One Layout, Different Menu Items**
+
+* Same design system → Same components → Same layout → Different navigation menu items
+* Merchants and end users share 100% of layout code
+* Only difference: Which menu items appear in NavigationRail and BottomNavigation
+* Maintains unified PYMSTR brand experience across all user types
+* Simpler to maintain, consistent UX, better code reuse
+
+---
+
 ## Material Design 3 Foundation
 
 ### Color System (MD3 Roles)
@@ -138,9 +344,9 @@ PYMSTR's color palette is mapped to Material Design 3 semantic roles for consist
   * Dark mode: `#798A9B` (Blue-gray)
 
 #### Error, Success, Warning (Semantic Colors)
-* **Error**: `#DD6B6B` (Coral red)
+* **Error**: `#FF5914` (PYMSTR Orange)
   * On-Error: `#FFFFFF`
-  * Error Container: `rgba(221, 107, 107, 0.12)`
+  * Error Container: `rgba(255, 89, 20, 0.12)`
   
 * **Success**: `#7DD069` (Green)
   * On-Success: `#FFFFFF`
@@ -1232,24 +1438,24 @@ Pill-shaped buttons for semantic actions following Material Design 3 color roles
 **MD3 Error Role:**
 * **Normal State:**
   * Background: Transparent
-  * Border: `1px solid #DD6B6B` (error color)
-  * Text: `#DD6B6B` (error)
-  * Icon: `#DD6B6B`
+  * Border: `1px solid #FF5914` (error color)
+  * Text: `#FF5914` (error)
+  * Icon: `#FF5914`
   * Border radius: `rounded-full`
   
 * **Hover State:**
-  * Background: `#DD6B6B` (error - filled on hover)
-  * Border: `1px solid #DD6B6B`
+  * Background: `#FF5914` (error - filled on hover)
+  * Border: `1px solid #FF5914`
   * Text: `#FFFFFF` (on-error)
   * Elevation: Level 1 (`shadow-sm`)
   * Transition: `transition-all duration-200`
   
 * **Pressed State:**
-  * Background: `#DD6B6B` with 12% black state layer
+  * Background: `#FF5914` with 12% black state layer
   * Scale: `scale-[0.98]`
   
 * **Focus State:**
-  * Ring: `ring-2 ring-[#DD6B6B] ring-offset-2`
+  * Ring: `ring-2 ring-[#FF5914] ring-offset-2`
 
 ### Success Button (Confirmatory Actions)
 
@@ -1304,7 +1510,7 @@ Pill-shaped buttons for semantic actions following Material Design 3 color roles
 
 ### Usage Guidelines
 
-* **Delete/Remove**: Use Error button (coral red `#DD6B6B`)
+* **Delete/Remove**: Use Error button (PYMSTR orange `#FF5914`)
 * **Confirm/Proceed**: Use Success button (green `#7DD069`)
 * **Caution/Archive**: Use Warning button (gold `#D9C370`)
 * Always pair with appropriate icons from Lucide React
@@ -1316,7 +1522,7 @@ Pill-shaped buttons for semantic actions following Material Design 3 color roles
 ```tsx
 // Error/Delete Button (MD3 Error Role)
 // ✅ 200ms for immediate destructive action feedback
-<Button className="px-6 py-2.5 min-h-12 bg-transparent border border-[#DD6B6B] text-[#DD6B6B] hover:bg-[#DD6B6B] hover:text-white hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#DD6B6B] focus:ring-offset-2 transition-all duration-200 rounded-full">
+<Button className="px-6 py-2.5 min-h-12 bg-transparent border border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#FF5914] focus:ring-offset-2 transition-all duration-200 rounded-full">
   <Trash2 className="w-5 h-5 mr-2" />
   Delete
 </Button>
@@ -1502,7 +1708,7 @@ Badges follow Material Design 3 principles with PYMSTR pill-shaped styling.
   * Background: `#7DD069` (success)
   * Text: `#FFFFFF` (on-success)
 * Error/Inactive:
-  * Background: `#DD6B6B` (error)
+  * Background: `#FF5914` (error)
   * Text: `#FFFFFF` (on-error)
 * Warning/Pending:
   * Background: `#D9C370` (warning)
@@ -1512,7 +1718,7 @@ Badges follow Material Design 3 principles with PYMSTR pill-shaped styling.
 * Typography: Label Small (11px / 16px line-height, 500 weight)
 
 **Count Badge (Notification):**
-* Background: `#DD6B6B` (error - for urgency)
+* Background: `#FF5914` (error - for urgency)
 * Text: `#FFFFFF`
 * Shape: Circular `w-6 h-6` (24px) for small counts, pill for larger
 * Border radius: `rounded-full`
@@ -1535,12 +1741,12 @@ Badges follow Material Design 3 principles with PYMSTR pill-shaped styling.
 </span>
 
 // Error Badge
-<span className="inline-flex items-center px-3 py-1 rounded-full bg-[#DD6B6B] text-white text-[11px] font-medium">
+<span className="inline-flex items-center px-3 py-1 rounded-full bg-[#FF5914] text-white text-[11px] font-medium">
   Inactive
 </span>
 
 // Count Badge (Notification)
-<span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#DD6B6B] text-white text-[11px] font-medium">
+<span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#FF5914] text-white text-[11px] font-medium">
   3
 </span>
 
@@ -1566,7 +1772,7 @@ Input fields follow Material Design 3 text field specifications with standard MD
 * Height: `h-12` (48px) or `h-14` (56px - MD3 standard)
 * Padding: `px-4 py-3` (16px horizontal)
 * Focus: Border `2px solid #1E88E5`, ring `ring-2 ring-[#1E88E5]`
-* Error: Border `2px solid #DD6B6B`, ring `ring-2 ring-[#DD6B6B]`
+* Error: Border `2px solid #FF5914`, ring `ring-2 ring-[#FF5914]`
 
 **Filled Text Field (MD3 Standard):**
 * Background: `#303030` (surface level 1 - dark mode) or `#FAFAFA` (light mode)
@@ -1575,7 +1781,7 @@ Input fields follow Material Design 3 text field specifications with standard MD
 * Height: `h-14` (56px - MD3 standard)
 * Padding: `px-4 py-4` (16px)
 * Focus: Bottom border `2px solid #1E88E5`, no ring
-* Error: Bottom border `2px solid #DD6B6B`
+* Error: Bottom border `2px solid #FF5914`
 
 ### Input States (MD3)
 
@@ -1594,9 +1800,9 @@ Input fields follow Material Design 3 text field specifications with standard MD
 * Label color: `#1E88E5`
 
 **Error State:**
-* Border: `#DD6B6B` (error) at 2px width
-* Ring: `ring-2 ring-[#DD6B6B]`
-* Helper text: `#DD6B6B`
+* Border: `#FF5914` (error) at 2px width
+* Ring: `ring-2 ring-[#FF5914]`
+* Helper text: `#FF5914`
 
 **Disabled State:**
 * Border: `#43586C` at 38% opacity
@@ -1618,7 +1824,7 @@ Input fields follow Material Design 3 text field specifications with standard MD
 <input 
   type="text"
   placeholder="Enter price"
-  className="w-full h-12 px-4 py-3 rounded bg-transparent border-2 border-[#DD6B6B] text-[#F6F7F9] placeholder:text-[#798A9B] focus:ring-2 focus:ring-[#DD6B6B] focus:outline-none transition-all duration-200"
+  className="w-full h-12 px-4 py-3 rounded bg-transparent border-2 border-[#FF5914] text-[#F6F7F9] placeholder:text-[#798A9B] focus:ring-2 focus:ring-[#FF5914] focus:outline-none transition-all duration-200"
 />
 
 // Filled Input (MD3 Standard - Rounded top only)
@@ -1635,6 +1841,160 @@ Input fields follow Material Design 3 text field specifications with standard MD
   className="w-full h-14 px-4 py-4 rounded bg-transparent border border-[#43586C] text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
 />
 ```
+
+---
+
+## Tabs (MD3 Navigation)
+
+Material Design 3 defines two distinct tab patterns for different use cases. Choose the correct pattern based on your content type and number of options.
+
+### Tab Pattern Decision Tree
+
+**Use Primary Tabs (Scrollable with Underline) when:**
+- ✅ Content navigation with 3-7 sections
+- ✅ Legal/Help/Documentation pages
+- ✅ Settings with multiple categories
+- ✅ Page-level content switching
+- ✅ Mobile-friendly horizontal scrolling needed
+
+**Use Segmented Tabs (Pill Background) when:**
+- ✅ Filtering data (All / Manual / API)
+- ✅ Toggle between 2-3 views
+- ✅ Compact dashboard controls
+- ✅ Short labels (1-2 words maximum)
+- ✅ Equal visual weight for all options
+
+### Pattern 1: Primary Tabs (MD3 Content Navigation)
+
+**Scrollable horizontal tabs with underline indicator - for 3+ content sections**
+
+**Component Location:** `/components/ui/primary-tabs.tsx`
+
+**MD3 Specifications:**
+* **Layout**: Horizontal scrollable strip
+* **Container**: Transparent background (no border)
+* **Active Indicator**: 3px underline in primary color (`#1E88E5`)
+* **Border radius**: None (tabs are text-only)
+* **Typography**: Font medium weight
+* **Colors**:
+  * Inactive: `#798A9B` (muted text)
+  * Active: `#1E88E5` (primary blue)
+  * Hover: 8% state layer (`bg-black/[0.04]`)
+* **Touch targets**: Minimum 48px height
+* **Scrolling**: Hidden scrollbar (`scrollbar-hide`)
+
+**Use Cases:**
+* Legal page (Terms, Privacy, Cookies, Acceptable Use)
+* Help Center (FAQ, Guides, Contact)
+* Documentation sections
+* Settings categories
+
+**Example Implementation:**
+
+```tsx
+import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } from "../components/ui/primary-tabs";
+
+<PrimaryTabs defaultValue="terms" className="space-y-6">
+  <PrimaryTabsList>
+    <PrimaryTabsTrigger value="terms">Terms of Service</PrimaryTabsTrigger>
+    <PrimaryTabsTrigger value="privacy">Privacy Policy</PrimaryTabsTrigger>
+    <PrimaryTabsTrigger value="cookies">Cookie Policy</PrimaryTabsTrigger>
+    <PrimaryTabsTrigger value="acceptable">Acceptable Use</PrimaryTabsTrigger>
+  </PrimaryTabsList>
+
+  <PrimaryTabsContent value="terms">
+    <Card className="rounded-2xl">
+      {/* Terms content */}
+    </Card>
+  </PrimaryTabsContent>
+
+  <PrimaryTabsContent value="privacy">
+    <Card className="rounded-2xl">
+      {/* Privacy content */}
+    </Card>
+  </PrimaryTabsContent>
+</PrimaryTabs>
+```
+
+**Mobile Behavior:**
+* Tabs scroll horizontally (touch-swipe enabled)
+* No wrapping to multiple lines
+* Active tab auto-scrolls into view
+* Hidden scrollbar for clean appearance
+
+### Pattern 2: Segmented Tabs (MD3 Secondary Navigation)
+
+**Pill-shaped container with filled active state - for 2-3 filters/toggles**
+
+**Component Location:** `/components/ui/tabs.tsx` (existing ShadCN component)
+
+**MD3 Specifications:**
+* **Layout**: Grouped pill container
+* **Container**: Light background (`bg-muted`)
+* **Active State**: Filled pill with card background
+* **Border radius**: `rounded-full` (pill-shaped)
+* **Typography**: Font medium weight
+* **Colors**:
+  * Container: `bg-muted`
+  * Active: Card background with border
+  * Inactive: Transparent
+
+**Use Cases:**
+* Payment Links filtering (All / Manual / API)
+* Data view toggles (Table / Grid)
+* Time range selectors (Day / Week / Month)
+
+**Example Implementation:**
+
+```tsx
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+
+<Tabs value={filterTab} onValueChange={setFilterTab}>
+  <TabsList className="grid w-full grid-cols-3">
+    <TabsTrigger value="all">All</TabsTrigger>
+    <TabsTrigger value="manual">Manual</TabsTrigger>
+    <TabsTrigger value="api">API</TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="all">
+    {/* All items */}
+  </TabsContent>
+</Tabs>
+```
+
+**Mobile Behavior:**
+* Full width grid layout
+* Equal spacing for all tabs
+* Best for 2-3 options maximum
+* Cramped with 4+ options (use Primary Tabs instead)
+
+### Tab Pattern Comparison
+
+| Feature | Primary Tabs | Segmented Tabs |
+|---------|--------------|----------------|
+| **Visual Style** | Underline indicator | Filled pill background |
+| **Best For** | Content navigation | Filters / Toggles |
+| **Optimal Count** | 3-7 sections | 2-3 options |
+| **Mobile** | Scrollable horizontal | Full-width grid |
+| **Label Length** | Medium (2-4 words) | Short (1-2 words) |
+| **MD3 Pattern** | Primary Tabs | Secondary Tabs / Segmented Button |
+| **Use Case** | Legal, Help, Docs | Payment filters, View toggles |
+
+### Guidelines Summary
+
+**DO:**
+* ✅ Use Primary Tabs for Legal, Help, and multi-section content pages
+* ✅ Use Segmented Tabs for Payment Links filtering (All/Manual/API)
+* ✅ Keep Segmented Tab labels short (1-2 words)
+* ✅ Use Primary Tabs when you have 4+ options
+* ✅ Ensure 48px minimum touch targets on mobile
+
+**DON'T:**
+* ❌ Don't use Segmented Tabs for 4+ options (cramped on mobile)
+* ❌ Don't use Primary Tabs for simple 2-option toggles
+* ❌ Don't mix both patterns on the same page
+* ❌ Don't use long labels in Segmented Tabs
+* ❌ Don't force grid layout on Primary Tabs
 
 ---
 
@@ -1686,7 +2046,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "./component
       <Settings className="w-[18px] h-[18px] mr-2" />
       Settings
     </DropdownMenuItem>
-    <DropdownMenuItem className="h-12 px-4 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-colors duration-200 cursor-pointer text-[#DD6B6B]">
+    <DropdownMenuItem className="h-12 px-4 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-colors duration-200 cursor-pointer text-[#FF5914]">
       <LogOut className="w-[18px] h-[18px] mr-2" />
       Logout
     </DropdownMenuItem>
@@ -1723,7 +2083,7 @@ PYMSTR follows Material Design 3 accessibility standards and WCAG 2.1 Level AA c
 * `#1E88E5` (primary blue) on `#FFFFFF` (white): **4.54:1** ✓ AA
 * `#FFFFFF` (white) on `#1E88E5` (primary blue): **4.54:1** ✓ AA
 * `#F6F7F9` (light text) on `#2E3C49` (navy background): **10.5:1** ✓ AAA
-* `#DD6B6B` (error red) on `#FFFFFF`: **4.1:1** ✓ AA
+* `#FF5914` (error orange) on `#FFFFFF`: **4.1:1** ✓ AA
 * `#7DD069` (success green) on `#FFFFFF`: **3.2:1** ✓ AA (large text)
 
 ### Focus Indicators (MD3)
@@ -1902,6 +2262,64 @@ Only these five chains are supported:
 * Large icons: 24px (`w-6 h-6`)
 * Small icons: 16px (`w-4 h-4`)
 
+### Copy Buttons (Green Checkmark Pattern)
+
+All copy buttons across the application must follow this standard pattern for consistent visual feedback:
+
+**Required Pattern:**
+```tsx
+// 1. Add state at component level
+const [copiedItem, setCopiedItem] = useState<string | null>(null);
+
+// 2. Update copyToClipboard function
+const copyToClipboard = (text: string) => {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  
+  try {
+    document.execCommand('copy');
+    setCopiedItem(text);
+    toast('Copied to clipboard!');
+    setTimeout(() => setCopiedItem(null), 2000);
+  } catch (err) {
+    toast('Failed to copy to clipboard');
+  } finally {
+    document.body.removeChild(textarea);
+  }
+};
+
+// 3. Render button with conditional icon
+<Button onClick={() => copyToClipboard(textToCopy)}>
+  {copiedItem === textToCopy ? (
+    <Check className="w-4 h-4 text-green-600" />
+  ) : (
+    <Copy className="w-4 h-4" />
+  )}
+</Button>
+```
+
+**Key Features:**
+* ✅ **Green checkmark** (`<Check className="w-4 h-4 text-green-600" />`) on successful copy
+* ✅ **2-second display** before reverting to copy icon (`setTimeout 2000ms`)
+* ✅ **Toast notification** for accessibility
+* ✅ **Fallback method** using `document.execCommand` for cross-browser compatibility
+* ✅ **State tracking** to show checkmark only for the specific copied item
+* ✅ **Consistent sizing** (`w-4 h-4` for both Copy and Check icons)
+
+**Color Standard:**
+* Success checkmark color: `text-green-600` (matches PYMSTR success color `#7DD069` semantic)
+
+**Where Applied:**
+* API Key Management - Key copy buttons
+* Webhook Management - URL and secret copy buttons
+* Merchant Profile - Email copy button
+* All documentation code blocks
+* Any component with copy functionality
+
 ---
 
 ## Responsive Design (Mobile-First MD3)
@@ -1961,6 +2379,98 @@ Material Design 3 provides clear guidance for FAB (Floating Action Button) place
 * Icon: `w-6 h-6` (24px)
 * Hide on desktop: `md:hidden`
 * Shadow: `shadow-lg` at rest, `shadow-xl` on hover (MD3 Level 3-4)
+
+### ⚠️ CRITICAL: FAB + Bottom Navigation Conflict Prevention
+
+**ALWAYS check for bottom navigation before positioning FABs:**
+
+**Rule: If bottom navigation exists, FABs MUST clear the nav bar height**
+
+**Decision Tree:**
+1. **Does the screen have a bottom navigation bar?**
+   - ✅ **YES** → Use `bottom-20` (80px) or `bottom-24` (96px) minimum
+   - ❌ **NO** → Use standard `bottom-6` (24px)
+
+2. **Standard bottom nav bar heights:**
+   - Mobile bottom nav: **64-80px typical**
+   - Required FAB clearance: **nav height + 16px margin minimum**
+   - Safe default with bottom nav: `bottom-20` (80px) or `bottom-24` (96px)
+
+**Examples:**
+
+```tsx
+// ❌ WRONG: FAB with bottom navigation (will overlap nav bar)
+<button className="fixed bottom-6 right-6 z-50 ...">
+  <Plus />
+</button>
+{/* Bottom nav bar present at bottom-0 */}
+
+// ✅ CORRECT: FAB clears bottom navigation
+<button className="fixed bottom-24 right-6 z-50 ...">
+  {/* 96px from bottom clears 64-80px nav bar + 16px margin */}
+  <Plus />
+</button>
+
+// ✅ ALTERNATIVE: Use bottom sheet pattern (recommended for complex mobile layouts)
+<Sheet>
+  <SheetTrigger asChild>
+    <button className="fixed bottom-24 right-6 z-50 ...">
+      <Plus />
+    </button>
+  </SheetTrigger>
+  <SheetContent side="bottom">
+    {/* Form content */}
+  </SheetContent>
+</Sheet>
+```
+
+**Pre-Implementation Checklist:**
+
+Before adding a FAB to any mobile layout, verify:
+- [ ] Does this screen have bottom navigation? (Dashboard, Wallets, Reports, More bar)
+- [ ] If YES: Use `bottom-20` or `bottom-24` (NOT `bottom-6`)
+- [ ] If NO: Safe to use `bottom-6`
+- [ ] FAB z-index is `z-50` or higher
+- [ ] FAB doesn't overlap any interactive elements
+- [ ] Test on smallest mobile viewport (320px width)
+
+**Mobile Bottom Navigation Screens (Require Higher FAB Position):**
+- Dashboard
+- Wallets
+- Reports
+- Team Management
+- Any screen using the primary mobile nav bar
+
+**Desktop/No Bottom Nav Screens (Standard FAB Position):**
+- Settings pages (use side navigation rail, no bottom nav)
+- Modal overlays
+- Full-screen experiences without bottom nav
+
+**When in Doubt:**
+- Use `bottom-24` as safe default on mobile
+- Use `md:bottom-6` to revert to standard positioning on desktop
+- Consider bottom sheet pattern for complex forms/actions
+
+**FAB Positioning Formula:**
+
+Calculate FAB bottom position:
+```
+FAB bottom = (Bottom Nav Height) + (Desired Margin)
+
+Examples:
+- No bottom nav: 0px + 24px = bottom-6
+- With 64px bottom nav: 64px + 16px = 80px = bottom-20
+- With 80px bottom nav: 80px + 16px = 96px = bottom-24
+- Safe default with nav: bottom-24 (96px)
+```
+
+**Responsive Pattern:**
+```tsx
+// Responsive FAB that adapts to layout
+<button className="fixed bottom-24 md:bottom-6 right-6 z-50">
+  {/* High on mobile (clears nav), standard on desktop */}
+</button>
+```
 
 ### Multiple FABs (Vertical Stack)
 
@@ -2225,6 +2735,34 @@ Material Design 3 uses a responsive grid system.
 * Prefer 8px spacing increments: `space-y-2` (8px), `space-y-4` (16px), `space-y-6` (24px)
 * Container max-width: `max-w-7xl` (1280px) for desktop
 * Padding: Mobile `px-4` (16px), Desktop `px-6` (24px) or `px-8` (32px)
+
+### ⚠️ CRITICAL: Sticky Header Rules
+
+**NEVER add borders, dividers, or separators to sticky headers unless explicitly requested:**
+* ❌ **DO NOT** add `border-b`, `border-t`, or any border classes
+* ❌ **DO NOT** add separator lines between sticky header and content
+* ❌ **DO NOT** add visual dividers of any kind
+* ✅ **DO** use only background color and positioning
+* ✅ **DO** check Guidelines.md before adding any visual elements
+
+**Why this rule exists:**
+Sticky headers should feel seamless and integrated. Adding borders creates unnecessary visual clutter and breaks the clean Material Design 3 aesthetic. If a border or separator is needed, it must be explicitly specified in the design requirements.
+
+**Correct sticky header implementation:**
+```tsx
+// ✅ CORRECT - Clean sticky header without borders
+<div className="sticky top-0 bg-white dark:bg-[#0A0A0A] p-4 z-10">
+  {/* Header content */}
+</div>
+
+// ❌ WRONG - Never add borders without explicit request
+<div className="sticky top-0 bg-white dark:bg-[#0A0A0A] p-4 z-10 border-b border-gray-200">
+  {/* Header content */}
+</div>
+```
+
+**When in doubt:**
+If you're considering adding a border or separator to a sticky header, STOP and verify it's explicitly requested in Guidelines.md or user requirements. If not found, DO NOT add it.
 
 **Example Responsive Layout:**
 ```tsx

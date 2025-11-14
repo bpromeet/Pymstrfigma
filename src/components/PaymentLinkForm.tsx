@@ -9,6 +9,11 @@ import { toast } from 'sonner@2.0.3';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
 import { cn } from './ui/utils';
+import ethLogo from 'figma:asset/3f415cd75e8a755a032ae16a3406c41dcc2d667a.png';
+import polygonLogo from 'figma:asset/2a58e7908e32b2fe463112041ba6e2714512185b.png';
+import arbitrumLogo from 'figma:asset/f48bde656d2828d3f1e6a10c15f97b6bf98615d5.png';
+import optimismLogo from 'figma:asset/4f26997c993e11669528832115692d8c0b95f2e0.png';
+import baseLogo from 'figma:asset/5849f744e6f7cf933d5afd306639724467364170.png';
 
 interface PaymentLinkFormProps {
   onLinkGenerated: (link: { id: string; price: number; description: string; status: 'active'; chain: string; currency: string; availableCurrencies: string[]; availableChains: string[] }) => void;
@@ -25,6 +30,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
     expiryDate: ''
   });
   const [openBaseCurrency, setOpenBaseCurrency] = useState(false);
+  const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
   const currencies = [
     { value: 'USDC', label: 'USDC' },
@@ -43,49 +49,27 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
     { 
       value: 'ethereum', 
       label: 'Ethereum',
-      icon: (
-        <svg className="w-full h-full" viewBox="0 0 24 24" fill="none">
-          <path d="M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" fill="currentColor"/>
-        </svg>
-      )
+      icon: ethLogo
     },
     { 
       value: 'polygon', 
       label: 'Polygon',
-      icon: (
-        <svg className="w-full h-full" viewBox="0 0 24 24" fill="none">
-          <path d="M17.045 10.788a1.5 1.5 0 00-1.5 0l-2.545 1.47-1.727 1-2.545 1.47a1.5 1.5 0 01-1.5 0l-2-1.155a1.5 1.5 0 01-.75-1.3v-2.31a1.5 1.5 0 01.75-1.3l2-1.155a1.5 1.5 0 011.5 0l2 1.155a1.5 1.5 0 01.75 1.3v1.47l1.727-1v-1.47a1.5 1.5 0 00-.75-1.3l-3.727-2.155a1.5 1.5 0 00-1.5 0L3.478 7.663a1.5 1.5 0 00-.75 1.3v4.31a1.5 1.5 0 00.75 1.3l3.75 2.155a1.5 1.5 0 001.5 0l2.545-1.47 1.727-1 2.545-1.47a1.5 1.5 0 011.5 0l2 1.155a1.5 1.5 0 01.75 1.3v2.31a1.5 1.5 0 01-.75 1.3l-2 1.155a1.5 1.5 0 01-1.5 0l-2-1.155a1.5 1.5 0 01-.75-1.3v-1.47l-1.727 1v1.47a1.5 1.5 0 00.75 1.3l3.75 2.155a1.5 1.5 0 001.5 0l3.75-2.155a1.5 1.5 0 00.75-1.3v-4.31a1.5 1.5 0 00-.75-1.3l-3.75-2.155z" fill="currentColor"/>
-        </svg>
-      )
+      icon: polygonLogo
     },
     { 
       value: 'arbitrum', 
       label: 'Arbitrum',
-      icon: (
-        <svg className="w-full h-full" viewBox="0 0 24 24" fill="none">
-          <path d="M12 3l9 5.196v10.608L12 24l-9-5.196V8.196L12 3zm6.75 13.5l-2.25-3.9-2.25 3.9h4.5zm-9 0l2.25-3.9-2.25-3.9-2.25 3.9 2.25 3.9zm4.5-7.8L12 6.3l-2.25 2.4L12 11.1l2.25-2.4z" fill="currentColor"/>
-        </svg>
-      )
+      icon: arbitrumLogo
     },
     { 
       value: 'optimism', 
       label: 'Optimism',
-      icon: (
-        <svg className="w-full h-full" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.2"/>
-          <path d="M8.5 10.5c0-1.1.9-2 2-2s2 .9 2 2v3c0 1.1-.9 2-2 2s-2-.9-2-2v-3zm5 0c0-1.1.9-2 2-2s2 .9 2 2v3c0 1.1-.9 2-2 2s-2-.9-2-2v-3z" fill="currentColor"/>
-        </svg>
-      )
+      icon: optimismLogo
     },
     { 
       value: 'base', 
       label: 'Base',
-      icon: (
-        <svg className="w-full h-full" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" fill="currentColor" opacity="0.2"/>
-          <path d="M12 6c3.314 0 6 2.686 6 6s-2.686 6-6 6c-2.537 0-4.706-1.575-5.598-3.8h8.598v-4.4H6.402C7.294 7.575 9.463 6 12 6z" fill="currentColor"/>
-        </svg>
-      )
+      icon: baseLogo
     }
   ];
 
@@ -119,6 +103,8 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
     try {
       document.execCommand('copy');
       toast('Copied to clipboard!');
+      setCopiedItem(text);
+      setTimeout(() => setCopiedItem(null), 2000);
     } catch (err) {
       toast('Failed to copy to clipboard');
     } finally {
@@ -293,8 +279,12 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
                   onCheckedChange={() => handleChainToggle(network.value)}
                   className="hidden"
                 />
-                <div className="w-4 h-4">
-                  {network.icon}
+                <div className="w-4 h-4 flex-shrink-0">
+                  <img 
+                    src={network.icon} 
+                    alt={network.label}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
                 <span className="text-sm font-medium">{network.label}</span>
               </div>

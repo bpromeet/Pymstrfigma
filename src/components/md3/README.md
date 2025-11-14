@@ -157,7 +157,7 @@ Extra Small (4px)  → Input Fields ← NEW MD3 STANDARD
 Primary:    #1E88E5  // Blue - primary actions
 Secondary:  #07D7FF  // Cyan - FABs, accents
 Tertiary:   #F90BD5  // Magenta - special accents
-Error:      #DD6B6B  // Coral red - destructive
+Error:      #FF5914  // PYMSTR orange - destructive
 Success:    #7DD069  // Green - success states
 Warning:    #D9C370  // Gold - caution states
 ```
@@ -208,7 +208,7 @@ return (
             setError(false);
           }}
         />
-        <p className="text-xs text-[#DD6B6B]">Email is required</p>
+        <p className="text-xs text-[#FF5914]">Email is required</p>
       </>
     ) : (
       <MD3OutlinedInput

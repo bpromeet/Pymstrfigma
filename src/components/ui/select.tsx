@@ -47,7 +47,7 @@ function SelectTrigger({
         "data-[placeholder]:text-[#798A9B]",
         "[&_svg:not([class*='text-'])]:text-gray-900 dark:[&_svg:not([class*='text-'])]:text-[#F6F7F9]",
         "focus-visible:border-[#757575] focus-visible:ring-[3px] focus-visible:ring-[rgba(117,117,117,0.1)]",
-        "aria-invalid:ring-[#DD6B6B]/20 dark:aria-invalid:ring-[#DD6B6B]/40 aria-invalid:border-[#DD6B6B]",
+        "aria-invalid:ring-[#FF5914]/20 dark:aria-invalid:ring-[#FF5914]/40 aria-invalid:border-[#FF5914]",
         className,
       )}
       {...props}
@@ -71,7 +71,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          "relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-3xl border shadow-md",
+          "relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-xl border shadow-md",
           "bg-white dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9]",
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
           position === "popper" &&

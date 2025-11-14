@@ -1,19 +1,27 @@
 import React from 'react';
 import { LayoutDashboard, Link as LinkIcon, Key, Users, Webhook, Settings, Shield, FileText, User, Wallet, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 
+export interface NavigationItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
+
 interface NavigationRailProps {
   activeTab: string;
   onNavigate: (tab: string) => void;
   isExpanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
+  menuItems?: NavigationItem[];
 }
 
-export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNavigate, isExpanded, onExpandedChange }) => {
+export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNavigate, isExpanded, onExpandedChange, menuItems }) => {
 
   // Map admin tab to dashboard for display
   const normalizedActiveTab = activeTab === 'admin' ? 'dashboard' : activeTab;
 
-  const navItems = [
+  // Default merchant menu items
+  const defaultNavItems: NavigationItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'wallets', label: 'Wallets', icon: Wallet },
     { id: 'settings', label: 'Payment Settings', icon: Settings },
@@ -23,6 +31,8 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
     { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'documents', label: 'Documents', icon: BookOpen },
   ];
+
+  const navItems = menuItems || defaultNavItems;
 
   const handleNavClick = (itemId: string) => {
     // Map dashboard back to admin for the app
@@ -116,7 +126,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
         <div className="p-2">
           <button
             onClick={() => onExpandedChange(!isExpanded)}
-            className="flex items-center justify-center w-full h-12 rounded-full text-[#FF5914] hover:bg-[#FF5914]/12 transition-all duration-[900ms]"
+            className="flex items-center justify-center w-full h-12 rounded-full text-[#FF5914] hover:bg-[#FF5914]/12 transition-all duration-200"
             aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
           >
             {isExpanded ? (
@@ -129,7 +139,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
       </nav>
 
       {/* Spacer to prevent content from going under nav rail */}
-      <div className={`hidden md:block transition-all duration-[900ms] ${isExpanded ? 'w-64' : 'w-20'}`} />
+      <div className={`hidden md:block transition-all duration-[1500ms] ${isExpanded ? 'w-64' : 'w-20'}`} />
     </>
   );
 };

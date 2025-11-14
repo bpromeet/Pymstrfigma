@@ -69,9 +69,9 @@
   --md3-on-surface-variant: #49454F;
   
   /* Error, Success, Warning */
-  --md3-error: #DD6B6B;
+  --md3-error: #FF5914;
   --md3-on-error: #FFFFFF;
-  --md3-error-container: rgba(221, 107, 107, 0.12);
+  --md3-error-container: rgba(255, 89, 20, 0.12);
   
   --md3-success: #7DD069;
   --md3-on-success: #FFFFFF;
@@ -150,9 +150,9 @@
   --md3-on-surface-variant: #798A9B;
   
   /* Error, Success, Warning */
-  --md3-error: #DD6B6B;
+  --md3-error: #FF5914;
   --md3-on-error: #FFFFFF;
-  --md3-error-container: rgba(221, 107, 107, 0.12);
+  --md3-error-container: rgba(255, 89, 20, 0.12);
   
   --md3-success: #7DD069;
   --md3-on-success: #FFFFFF;
@@ -390,18 +390,13 @@ html {
     transition: background-color 900ms ease-out, border-color 900ms ease-out, box-shadow 900ms ease-out !important;
   }
 
-  .glass-hover {
-    transition: all 900ms ease-out !important;
+  /* Hide scrollbar for primary tabs (MD3) */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
-
-  .glass-hover:hover {
-    background: var(--color-card);
-    border-color: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 12px 48px 0 var(--color-glass-shadow);
-    transform: translateY(-2px);
-  }
-
-  .dark .glass-hover:hover {
-    border-color: rgba(255, 255, 255, 0.3);
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
   }
 }

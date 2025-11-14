@@ -16,21 +16,29 @@
    ======================================== */
 
 import React from 'react';
-import { LayoutDashboard, Link as LinkIcon, Key, MoreHorizontal, Wallet, FileText, LogOut, HelpCircle, Scale, BookOpen, Users } from 'lucide-react';
+import { LayoutDashboard, Link as LinkIcon, Key, MoreHorizontal, Wallet, FileText, LogOut, HelpCircle, Scale, BookOpen, Users, Settings, Shield, User } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from './ui/sheet';
-import { Webhook, Settings, Shield, User } from 'lucide-react';
+import { Webhook } from 'lucide-react';
+
+export interface BottomNavItem {
+  id: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+}
 
 interface BottomNavigationProps {
   activeTab: string;
   onNavigate: (tab: string) => void;
+  navItems?: BottomNavItem[];
+  moreItems?: BottomNavItem[];
 }
 
-export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onNavigate }) => {
+export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onNavigate, navItems: customNavItems, moreItems: customMoreItems }) => {
   const [showMoreSheet, setShowMoreSheet] = React.useState(false);
   const [touchStart, setTouchStart] = React.useState<number | null>(null);
   const [touchEnd, setTouchEnd] = React.useState<number | null>(null);
@@ -64,24 +72,30 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
     setTouchEnd(null);
   };
 
-  const navItems = [
+  // Default merchant nav items
+  const defaultNavItems: BottomNavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'wallets', label: 'Wallets', icon: Wallet },
     { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'more', label: 'More', icon: MoreHorizontal },
   ];
 
-  const moreItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'wallets', label: 'Wallets', icon: Wallet },
-    { id: 'settings', label: 'Payment Settings', icon: Settings },
-    { id: 'links', label: 'Links', icon: LinkIcon },
+  // Default merchant more items
+  const defaultMoreItems: BottomNavItem[] = [
+    { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'api', label: 'API Keys', icon: Key },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
-    { id: 'documents', label: 'Documents', icon: BookOpen },
+    { id: 'team', label: 'Team', icon: Users },
+    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'profile', label: 'Profile', icon: User },
+    { id: 'security', label: 'Security', icon: Shield },
+    { id: 'documents', label: 'Documentation', icon: BookOpen },
     { id: 'help', label: 'Help', icon: HelpCircle },
     { id: 'logout', label: 'Logout', icon: LogOut },
   ];
+
+  const navItems = customNavItems || defaultNavItems;
+  const moreItems = customMoreItems || defaultMoreItems;
 
   const handleNavClick = (itemId: string) => {
     if (itemId === 'more') {
@@ -127,7 +141,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
           - Touch targets: 48px minimum
           - Hidden on desktop: md:hidden
           ======================================== */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0a0a0a] border-t border-[#43586C] md:hidden shadow-md transition-all duration-[900ms] ease-out">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0a0a0a] border-t border-[#43586C] md:hidden shadow-md transition-all duration-[1500ms] ease-out">
         <div className="flex items-center justify-around h-20 px-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -137,7 +151,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`flex flex-col items-center justify-center min-w-[64px] h-16 px-3 rounded-full transition-all duration-[900ms] ease-out ${
+                className={`flex flex-col items-center justify-center min-w-[64px] h-16 px-3 rounded-full transition-all duration-200 ${
                   isActive
                     ? 'bg-[#FF5914]/12 text-[#FF5914]'
                     : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
@@ -160,7 +174,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
           
           Location: Opens from bottom when "More" tab (three horizontal dots) is clicked in Footer
           Trigger: Clicking "More" tab in bottom navigation
-          Content: Dashboard, Wallets, Payment Settings, Links, API Keys, Webhooks, Documents, Help, Logout
+          Content: Payment Links, API Keys, Webhooks, Team, Settings, Profile, Security, Documentation, Help, Logout
           Purpose: Access to all other app sections not in the main bottom nav
           DO NOT CONFUSE WITH: Avatar Menu (top right) or Footer (bottom navigation bar)
           
@@ -172,7 +186,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
       <Sheet open={showMoreSheet} onOpenChange={setShowMoreSheet}>
         <SheetContent 
           side="bottom" 
-          className="rounded-t-3xl bg-white dark:bg-[#0a0a0a] border-t border-[#43586C] transition-all duration-[900ms] ease-out" 
+          className="rounded-t-3xl bg-white dark:bg-[#0a0a0a] border-t border-[#43586C] transition-all duration-[1500ms] ease-out" 
           aria-describedby={undefined}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
@@ -192,7 +206,6 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
               const isActive = normalizedActiveTab === item.id;
               const isLogout = item.id === 'logout';
               const showSeparatorBeforeHelp = item.id === 'help'; // Add separator before Help (groups Help, Logout)
-              const showSeparatorBeforeLogout = item.id === 'logout'; // Add separator before Logout
               
               return (
                 <React.Fragment key={item.id}>
@@ -201,9 +214,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
                   )}
                   <button
                     onClick={() => handleMoreItemClick(item.id)}
-                    className={`flex items-center gap-4 h-14 px-4 rounded-2xl transition-all duration-[900ms] ease-out ${
+                    className={`flex items-center gap-4 h-14 px-4 rounded-2xl transition-all duration-200 ${
                       isLogout
-                        ? 'text-[#DD6B6B] hover:bg-[#DD6B6B]/12'
+                        ? 'text-[#FF5914] hover:bg-[#FF5914]/12'
                         : isActive
                         ? 'bg-[#FF5914]/12 text-[#FF5914]'
                         : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'

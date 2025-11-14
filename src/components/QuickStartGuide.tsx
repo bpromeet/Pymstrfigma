@@ -12,6 +12,7 @@ interface QuickStartGuideProps {
 const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
   const [activeSection, setActiveSection] = useState<string>('overview');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [copiedItem, setCopiedItem] = useState<string | null>(null);
 
   const sections = [
     { id: 'overview', label: 'Overview', icon: Globe },
@@ -86,6 +87,8 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
     try {
       document.execCommand('copy');
       toast('Copied to clipboard!');
+      setCopiedItem(text);
+      setTimeout(() => setCopiedItem(null), 2000);
     } catch (err) {
       toast('Failed to copy to clipboard');
     } finally {
@@ -165,7 +168,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
       )}
 
       {/* Mobile Sticky Header with Back Button and Menu */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-[#0a0a0a] border-b border-[#43586C] shadow-sm">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-[#0a0a0a] shadow-sm">
         <div className="flex items-center justify-between px-4 h-14">
           <button
             onClick={onBack}

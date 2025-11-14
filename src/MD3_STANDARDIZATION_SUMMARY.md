@@ -202,7 +202,7 @@ Extra Small (rounded) - 4px
 Primary: #1E88E5 (Blue)
 Secondary: #07D7FF (Cyan)
 Tertiary: #F90BD5 (Magenta)
-Error: #DD6B6B (Coral Red)
+Error: #FF5914 (PYMSTR Orange)
 Success: #7DD069 (Green)
 Warning: #D9C370 (Gold)
 

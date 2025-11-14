@@ -340,9 +340,9 @@ Disabled:  ████████  #43586C (38% opacity)
 ### Error Button (Red)
 
 ```
-Normal:    ▒▒▒▒▒▒▒▒  Transparent + #DD6B6B border
-Hover:     ████████  #DD6B6B (fills background)
-Pressed:   ████████  #DD6B6B + scale(0.98)
+Normal:    ▒▒▒▒▒▒▒▒  Transparent + #FF5914 border
+Hover:     ████████  #FF5914 (fills background)
+Pressed:   ████████  #FF5914 + scale(0.98)
 ```
 
 ### Success Badge (Green)
@@ -533,7 +533,7 @@ When reviewing your UI, check:
 
 ### Colors
 - [ ] Primary blue: `#1E88E5`
-- [ ] Error red: `#DD6B6B`
+- [ ] Error orange: `#FF5914`
 - [ ] Success green: `#7DD069`
 - [ ] Borders (dark): `#43586C`
 - [ ] Text (dark): `#F6F7F9`

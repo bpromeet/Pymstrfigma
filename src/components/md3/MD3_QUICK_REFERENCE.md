@@ -97,7 +97,7 @@ import {
 </MD3ErrorButton>
 ```
 - **Use for:** Delete, remove, destructive actions
-- **Color:** Coral red `#DD6B6B` border, fills on hover
+- **Color:** PYMSTR orange `#FF5914` border, fills on hover
 - **Hover:** Red background with white text
 
 ### Confirmatory Actions (Success Button)
@@ -205,7 +205,7 @@ import {
   onChange={(e) => setValue(e.target.value)}
 />
 ```
-- **Border:** Red `#DD6B6B` (2px)
+- **Border:** Orange `#FF5914` (2px)
 - **Ring:** Red focus ring
 - **Use for:** Validation errors
 
@@ -282,7 +282,7 @@ import {
 ```tsx
 <MD3ErrorBadge>Inactive</MD3ErrorBadge>
 ```
-- **Color:** Coral red `#DD6B6B`
+- **Color:** PYMSTR orange `#FF5914`
 - **Use for:** Error, inactive, failed states
 
 ### Warning Badge
@@ -340,7 +340,7 @@ import {
 | **On-Primary** | `#FFFFFF` | `#FFFFFF` | Text on primary color |
 | **Secondary** | `#07D7FF` | `#07D7FF` | FABs, accents |
 | **Tertiary** | `#F90BD5` | `#F90BD5` | Special accents |
-| **Error** | `#DD6B6B` | `#DD6B6B` | Destructive actions |
+| **Error** | `#FF5914` | `#FF5914` | Destructive actions |
 | **Success** | `#7DD069` | `#7DD069` | Success states |
 | **Warning** | `#D9C370` | `#D9C370` | Caution states |
 | **Surface** | `#FFFFFF` | `#394B5C` | Card backgrounds |
@@ -391,7 +391,7 @@ return (
             setError(false);
           }}
         />
-        <p className="text-xs text-[#DD6B6B]">Email is required</p>
+        <p className="text-xs text-[#FF5914]">Email is required</p>
       </>
     ) : (
       <MD3OutlinedInput

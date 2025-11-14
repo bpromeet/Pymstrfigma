@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
-import { Badge } from "./ui/badge";
-import { Checkbox } from "./ui/checkbox";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Switch } from "../components/ui/switch";
+import { Badge } from "../components/ui/badge";
+import { Checkbox } from "../components/ui/checkbox";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from "../components/ui/select";
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
+} from "../components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
+} from "../components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,10 +40,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "./ui/alert-dialog";
+} from "../components/ui/alert-dialog";
 import { Webhook, Plus, Trash2, Copy, Check, RefreshCw, TestTube, Eye, EyeOff, Key } from "lucide-react";
 import { toast } from "sonner@2.0.3";
-import PageLayout from "./PageLayout";
+import PageLayout from "../components/PageLayout";
+import { WebhookEndpoints } from "../components/WebhookEndpoints";
 
 interface APIKey {
   id: string;
@@ -92,7 +93,7 @@ const mockApiKeys: APIKey[] = [
   { id: "key_3", name: "Development API Key", environment: "test", status: "active" },
 ];
 
-export function WebhookManagement() {
+export default function WebhooksPage() {
   const [webhooks, setWebhooks] = useState<WebhookEndpoint[]>([
     {
       id: "wh_1",
@@ -155,18 +156,16 @@ export function WebhookManagement() {
     },
   ]);
 
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedWebhookId, setSelectedWebhookId] = useState<string | null>(null);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [selectedWebhook, setSelectedWebhook] = useState<Webhook | null>(null);
+  const [newWebhook, setNewWebhook] = useState({ url: "", description: "", events: [] as string[], apiKeyId: "" });
   const [editingWebhook, setEditingWebhook] = useState<WebhookEndpoint | null>(null);
-  const [newWebhook, setNewWebhook] = useState({
-    url: "",
-    description: "",
-    events: [] as string[],
-    apiKeyId: "",
-  });
-
+  const [selectedDelivery, setSelectedDelivery] = useState<WebhookDelivery | null>(null);
   const [copiedSecret, setCopiedSecret] = useState<string | null>(null);
   const [visibleSecrets, setVisibleSecrets] = useState<Set<string>>(new Set());
-  const [selectedDelivery, setSelectedDelivery] = useState<WebhookDelivery | null>(null);
 
   const generateSecret = () => {
     return "whsec_" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -196,7 +195,7 @@ export function WebhookManagement() {
 
     setWebhooks([...webhooks, webhook]);
     setNewWebhook({ url: "", description: "", events: [], apiKeyId: "" });
-    setIsAddDialogOpen(false);
+    setShowCreateDialog(false);
     toast.success("Webhook endpoint added successfully");
   };
 
@@ -218,11 +217,13 @@ export function WebhookManagement() {
   };
 
   const toggleWebhook = (id: string) => {
-    setWebhooks(
-      webhooks.map((wh) =>
-        wh.id === id ? { ...wh, enabled: !wh.enabled } : wh
-      )
-    );
+    setWebhooks(webhooks.map(webhook => 
+      webhook.id === id ? { ...webhook, enabled: !webhook.enabled } : webhook
+    ));
+    const webhook = webhooks.find(w => w.id === id);
+    if (webhook) {
+      toast.success(webhook.enabled ? 'Webhook deactivated' : 'Webhook activated');
+    }
   };
 
   const handleCopySecret = (secret: string) => {
@@ -334,7 +335,7 @@ export function WebhookManagement() {
           Hidden on mobile (md:hidden) - mobile uses FAB instead
           ======================================== */}
       <Button 
-        onClick={() => setIsAddDialogOpen(true)}
+        onClick={() => setShowCreateDialog(true)}
         size={undefined}
         className="hidden md:inline-flex items-center justify-center px-6 h-10 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
       >
@@ -343,7 +344,7 @@ export function WebhookManagement() {
       </Button>
       
       {/* Add Webhook Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add Webhook Endpoint</DialogTitle>
@@ -366,12 +367,7 @@ export function WebhookManagement() {
                       .filter((key) => key.status === "active")
                       .map((key) => (
                         <SelectItem key={key.id} value={key.id}>
-                          <div className="flex items-center gap-2">
-                            <span>{key.name}</span>
-                            <Badge variant={key.environment === "live" ? "default" : "secondary"} className="rounded-full text-xs">
-                              {key.environment}
-                            </Badge>
-                          </div>
+                          {key.name} ({key.environment})
                         </SelectItem>
                       ))}
                   </SelectContent>
@@ -424,7 +420,7 @@ export function WebhookManagement() {
             <DialogFooter className="flex-col sm:flex-row gap-2">
               <Button
                 variant="outline"
-                onClick={() => setIsAddDialogOpen(false)}
+                onClick={() => setShowCreateDialog(false)}
                 className="rounded-full w-full sm:w-auto"
               >
                 Cancel
@@ -450,268 +446,131 @@ export function WebhookManagement() {
             {webhooks.map((webhook) => (
               <div
                 key={webhook.id}
-                className="p-4 border rounded-3xl space-y-4"
+                onClick={() => {
+                  setSelectedWebhook(webhook as any);
+                  setShowDetailDialog(true);
+                }}
+                className="bg-white dark:bg-[#303030] border border-gray-200 dark:border-[#43586C] rounded-3xl p-4 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer"
               >
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <code className="text-sm bg-muted px-3 py-1 rounded-full break-all">
-                        {webhook.url}
-                      </code>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={webhook.enabled ? "default" : "secondary"}
-                          className="rounded-full"
-                        >
-                          {webhook.enabled ? "Active" : "Disabled"}
-                        </Badge>
-                        <div className="sm:hidden">
-                          <Switch
-                            checked={webhook.enabled}
-                            onCheckedChange={() => toggleWebhook(webhook.id)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    {webhook.description && (
-                      <p className="text-sm text-muted-foreground">{webhook.description}</p>
-                    )}
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Key className="w-3 h-3" />
-                        <span>{mockApiKeys.find((k) => k.id === webhook.apiKeyId)?.name}</span>
-                        <Badge 
-                          variant={mockApiKeys.find((k) => k.id === webhook.apiKeyId)?.environment === "live" ? "default" : "secondary"} 
-                          className="rounded-full text-xs"
-                        >
-                          {mockApiKeys.find((k) => k.id === webhook.apiKeyId)?.environment}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {webhook.events.map((event) => (
-                        <Badge key={event} variant="outline" className="rounded-full text-xs">
-                          {WEBHOOK_EVENTS.find((e) => e.value === event)?.label}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="hidden sm:flex items-center gap-2">
-                    <Switch
-                      checked={webhook.enabled}
-                      onCheckedChange={() => toggleWebhook(webhook.id)}
-                    />
-                  </div>
-                </div>
-
-                {/* Secret */}
-                <div className="bg-muted p-3 rounded-2xl space-y-2">
-                  <div className="flex-1">
-                    <p className="text-xs text-muted-foreground mb-1">Signing Secret</p>
-                    <code className="text-sm break-all">
-                      {visibleSecrets.has(webhook.id) ? webhook.secret : maskSecret(webhook.secret)}
-                    </code>
-                  </div>
-                  <div className="flex items-center gap-1 flex-wrap">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleSecretVisibility(webhook.id)}
-                      className="rounded-full"
-                    >
-                      {visibleSecrets.has(webhook.id) ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleCopySecret(webhook.secret)}
-                      className="rounded-full"
-                    >
-                      {copiedSecret === webhook.secret ? (
-                        <Check className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <Copy className="w-4 h-4" />
-                      )}
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="sm" className="rounded-full">
-                          <RefreshCw className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="max-w-[95vw] sm:max-w-lg">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Regenerate Webhook Secret?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will generate a new signing secret. You'll need to update your
-                            application with the new secret to verify webhook signatures.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-                          <AlertDialogCancel className="rounded-full m-0">Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleRegenerateSecret(webhook.id)}
-                            className="bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full m-0"
-                          >
-                            Regenerate
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleTestWebhook(webhook)}
-                    className="rounded-full"
+                {/* All Badges Row (TOP - Left aligned) */}
+                <div className="flex items-center gap-2 flex-wrap mb-3">
+                  <Badge
+                    variant={webhook.enabled ? "default" : "secondary"}
+                    className={`rounded-full whitespace-nowrap ${
+                      webhook.enabled
+                        ? 'bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]'
+                        : 'bg-[#43586C]/20 text-[#798A9B]'
+                    }`}
                   >
-                    <TestTube className="w-4 h-4 mr-2" />
-                    Send Test
+                    {webhook.enabled ? "Active" : "Inactive"}
+                  </Badge>
+                  <Badge 
+                    variant="outline" 
+                    className="rounded-full whitespace-nowrap"
+                  >
+                    {mockApiKeys.find((k) => k.id === webhook.apiKeyId)?.environment}
+                  </Badge>
+                  {webhook.events.slice(0, 2).map((event) => (
+                    <Badge key={event} variant="outline" className="rounded-full text-xs">
+                      {WEBHOOK_EVENTS.find((e) => e.value === event)?.label}
+                    </Badge>
+                  ))}
+                  {webhook.events.length > 2 && (
+                    <Badge variant="outline" className="rounded-full text-xs">
+                      +{webhook.events.length - 2} more
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Icon + Title Row */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-950 flex items-center justify-center flex-shrink-0">
+                    <Webhook className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-gray-900 dark:text-white truncate">
+                      {webhook.description || 'Webhook Endpoint'}
+                    </h4>
+                    {/* Subtitle: Key + API Key name + badge */}
+                    <div className="flex items-center gap-2 mt-1">
+                      <Key className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                        {mockApiKeys.find((k) => k.id === webhook.apiKeyId)?.name}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* URL Preview */}
+                <div className="flex items-center gap-2 mb-3 bg-[#FAFAFA] dark:bg-[#2E3C49] p-3 rounded-2xl border border-gray-200 dark:border-[#43586C]">
+                  <code className="text-sm text-gray-900 dark:text-white truncate flex-1">
+                    {webhook.url}
+                  </code>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => { 
+                      e.stopPropagation();
+                      const textarea = document.createElement('textarea');
+                      textarea.value = webhook.url;
+                      textarea.style.position = 'fixed';
+                      textarea.style.opacity = '0';
+                      document.body.appendChild(textarea);
+                      textarea.select();
+                      try {
+                        document.execCommand('copy');
+                        setCopiedSecret(webhook.url);
+                        toast.success('URL copied to clipboard');
+                        setTimeout(() => setCopiedSecret(null), 2000);
+                      } catch (err) {
+                        toast.error('Failed to copy URL');
+                      } finally {
+                        document.body.removeChild(textarea);
+                      }
+                    }}
+                    className="rounded-full h-8 w-8 p-0 flex-shrink-0"
+                  >
+                    {copiedSecret === webhook.url ? (
+                      <Check className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <Copy className="w-4 h-4" />
+                    )}
                   </Button>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingWebhook(webhook)}
-                        className="rounded-full"
-                      >
-                        Edit
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Edit Webhook Endpoint</DialogTitle>
-                        <DialogDescription>
-                          Update your webhook endpoint configuration
-                        </DialogDescription>
-                      </DialogHeader>
-                      {editingWebhook && (
-                        <div className="space-y-4 py-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="edit-webhook-api-key">API Key</Label>
-                            <Select
-                              value={editingWebhook.apiKeyId}
-                              onValueChange={(value) =>
-                                setEditingWebhook({ ...editingWebhook, apiKeyId: value })
-                              }
-                            >
-                              <SelectTrigger className="rounded-full">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {mockApiKeys
-                                  .filter((key) => key.status === "active")
-                                  .map((key) => (
-                                    <SelectItem key={key.id} value={key.id}>
-                                      <div className="flex items-center gap-2">
-                                        <span>{key.name}</span>
-                                        <Badge variant={key.environment === "live" ? "default" : "secondary"} className="rounded-full text-xs">
-                                          {key.environment}
-                                        </Badge>
-                                      </div>
-                                    </SelectItem>
-                                  ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="edit-webhook-url">Endpoint URL</Label>
-                            <Input
-                              id="edit-webhook-url"
-                              value={editingWebhook.url}
-                              onChange={(e) =>
-                                setEditingWebhook({ ...editingWebhook, url: e.target.value })
-                              }
-                              className="rounded-full"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="edit-webhook-description">Description</Label>
-                            <Input
-                              id="edit-webhook-description"
-                              value={editingWebhook.description}
-                              onChange={(e) =>
-                                setEditingWebhook({
-                                  ...editingWebhook,
-                                  description: e.target.value,
-                                })
-                              }
-                              className="rounded-full"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Events to Subscribe</Label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 border rounded-3xl">
-                              {WEBHOOK_EVENTS.map((event) => (
-                                <div key={event.value} className="flex items-center space-x-2">
-                                  <Checkbox
-                                    id={`edit-event-${event.value}`}
-                                    checked={editingWebhook.events.includes(event.value)}
-                                    onCheckedChange={() => toggleEventSelection(event.value, true)}
-                                  />
-                                  <label
-                                    htmlFor={`edit-event-${event.value}`}
-                                    className="text-sm cursor-pointer"
-                                  >
-                                    {event.label}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      <DialogFooter className="flex-col sm:flex-row gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => setEditingWebhook(null)}
-                          className="rounded-full w-full sm:w-auto"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          onClick={handleUpdateWebhook}
-                          className="bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full w-full sm:w-auto"
-                        >
-                          Update Webhook
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="rounded-full">
-                        <Trash2 className="w-4 h-4 text-[#DD6B6B]" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="max-w-[95vw] sm:max-w-lg">
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Webhook?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will permanently delete this webhook endpoint. This action cannot be
-                          undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-                        <AlertDialogCancel className="rounded-full m-0">Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDeleteWebhook(webhook.id)}
-                          className="rounded-full bg-destructive hover:bg-destructive/90 m-0"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                </div>
+
+                {/* Statistics Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400">Created</p>
+                    <p className="text-gray-900 dark:text-white">
+                      {new Date(webhook.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400">Last Triggered</p>
+                    <p className="text-gray-900 dark:text-white">
+                      {deliveries.find((d) => d.webhookId === webhook.id) 
+                        ? new Date(deliveries.find((d) => d.webhookId === webhook.id)!.timestamp).toLocaleDateString()
+                        : 'Never'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400">Total Deliveries</p>
+                    <p className="text-gray-900 dark:text-white">
+                      {deliveries.filter((d) => d.webhookId === webhook.id).length}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400">Success Rate</p>
+                    <p className="text-gray-900 dark:text-white">
+                      {(() => {
+                        const webhookDeliveries = deliveries.filter((d) => d.webhookId === webhook.id);
+                        if (webhookDeliveries.length === 0) return 'N/A';
+                        const successful = webhookDeliveries.filter((d) => d.status === 'success').length;
+                        return `${Math.round((successful / webhookDeliveries.length) * 100)}%`;
+                      })()}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -1041,13 +900,267 @@ app.post('/webhooks/pymstr', (req, res) => {
           Opens Add Webhook dialog
           ======================================== */}
       <button
-        onClick={() => setIsAddDialogOpen(true)}
+        onClick={() => setShowCreateDialog(true)}
         aria-label="Add webhook"
         style={{ backgroundColor: '#1E88E5' }}
         className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 focus:outline-none transition-all duration-200 flex items-center justify-center md:hidden"
       >
         <Plus className="w-6 h-6" />
       </button>
+
+      {/* Webhook Detail Modal */}
+      <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedWebhook && (() => {
+            const webhook = webhooks.find(w => w.id === (selectedWebhook as any).id);
+            if (!webhook) return null;
+            
+            const associatedKey = mockApiKeys.find(k => k.id === webhook.apiKeyId);
+            const webhookDeliveries = deliveries.filter(d => d.webhookId === webhook.id);
+            const successfulDeliveries = webhookDeliveries.filter(d => d.status === 'success').length;
+            const successRate = webhookDeliveries.length > 0 
+              ? Math.round((successfulDeliveries / webhookDeliveries.length) * 100) 
+              : 0;
+
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="flex items-center space-x-2">
+                    <Webhook className="w-5 h-5" />
+                    <span>{webhook.description || 'Webhook Endpoint'}</span>
+                  </DialogTitle>
+                  <DialogDescription>
+                    <Key className="w-3 h-3 text-gray-600 dark:text-gray-400 inline mr-2" />
+                    {associatedKey?.name}
+                  </DialogDescription>
+                </DialogHeader>
+                
+                {/* Badges moved outside DialogDescription to fix HTML nesting */}
+                <div className="flex items-center gap-2 flex-wrap mt-4">
+                  <Badge
+                    variant={webhook.enabled ? "default" : "secondary"}
+                    className={`rounded-full ${
+                      webhook.enabled
+                        ? 'bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]'
+                        : 'bg-[#43586C]/20 text-[#798A9B]'
+                    }`}
+                  >
+                    {webhook.enabled ? "Active" : "Inactive"}
+                  </Badge>
+                  <Badge variant="outline" className="rounded-full">
+                    {associatedKey?.environment}
+                  </Badge>
+                  {/* Subscribed Events Badges */}
+                  {webhook.events.map((event) => (
+                    <Badge key={event} variant="outline" className="rounded-full">
+                      {WEBHOOK_EVENTS.find(e => e.value === event)?.label}
+                    </Badge>
+                  ))}
+                </div>
+                
+                <div className="space-y-6 py-4">
+                  {/* Action Buttons Row - Under Subtitle */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pb-4 border-b border-gray-200 dark:border-gray-800 overflow-hidden">
+                    {/* Activate/Deactivate */}
+                    <Button
+                      onClick={() => toggleWebhook(webhook.id)}
+                      size="sm"
+                      className={`rounded-full transition-all duration-200 w-full sm:w-auto flex-shrink-0 ${
+                        webhook.enabled
+                          ? 'bg-transparent border border-gray-400 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                          : 'bg-green-600 text-white hover:bg-green-700'
+                      }`}
+                    >
+                      <span className="truncate">{webhook.enabled ? 'Deactivate' : 'Activate'}</span>
+                    </Button>
+
+                    {/* Regenerate Secret */}
+                    <Button
+                      onClick={() => {
+                        handleRegenerateSecret(webhook.id);
+                        setVisibleSecrets(new Set([...visibleSecrets, webhook.id]));
+                      }}
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full w-full sm:w-auto flex-shrink-0"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">Regenerate</span>
+                    </Button>
+
+                    {/* Send Test */}
+                    <Button
+                      onClick={() => handleTestWebhook(webhook)}
+                      size="sm"
+                      variant="outline"
+                      className="rounded-full w-full sm:w-auto flex-shrink-0"
+                    >
+                      <TestTube className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">Test</span>
+                    </Button>
+
+                    {/* Delete Button */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="rounded-full border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white transition-all duration-200 w-full sm:w-auto flex-shrink-0"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">Delete</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="max-w-[95vw] sm:max-w-md">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Webhook Endpoint?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. You will stop receiving webhook notifications at this endpoint.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              handleDeleteWebhook(webhook.id);
+                              setShowDetailDialog(false);
+                            }}
+                            className="bg-[#FF5914] text-white hover:bg-[#E64D0F] rounded-full"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+
+                  {/* Webhook Info */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-xs text-gray-600 dark:text-gray-400">API Key</Label>
+                      <div className="flex items-center gap-2 mt-1 p-3 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-2xl border border-gray-200 dark:border-[#43586C] overflow-hidden min-w-0">
+                        <Key className="w-4 h-4 text-gray-600 dark:text-gray-400 flex-shrink-0" />
+                        <span className="text-sm text-gray-900 dark:text-white truncate flex-1 min-w-0">
+                          {associatedKey?.name}
+                        </span>
+                        <Badge variant="outline" className="rounded-full text-xs flex-shrink-0">
+                          {associatedKey?.environment}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs text-gray-600 dark:text-gray-400">Endpoint URL</Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex-1 min-w-0 p-3 bg-[#2E3C49] dark:bg-[#2E3C49] rounded-2xl border border-[#43586C] dark:border-[#43586C] overflow-hidden">
+                          <code className="text-sm text-white dark:text-white break-all">
+                            {webhook.url}
+                          </code>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => { 
+                            e.stopPropagation();
+                            const textarea = document.createElement('textarea');
+                            textarea.value = webhook.url;
+                            textarea.style.position = 'fixed';
+                            textarea.style.opacity = '0';
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            try {
+                              document.execCommand('copy');
+                              setCopiedSecret(webhook.url);
+                              toast.success('URL copied to clipboard');
+                              setTimeout(() => setCopiedSecret(null), 2000);
+                            } catch (err) {
+                              toast.error('Failed to copy URL');
+                            } finally {
+                              document.body.removeChild(textarea);
+                            }
+                          }}
+                          className="rounded-full h-10 w-10 p-0 flex-shrink-0"
+                        >
+                          {copiedSecret === webhook.url ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs text-gray-600 dark:text-gray-400">Signing Secret</Label>
+                      <div className="flex items-center gap-2 mt-1 min-w-0 overflow-hidden">
+                        <div className="flex-1 min-w-0 p-3 bg-[#2E3C49] dark:bg-[#2E3C49] rounded-2xl border border-[#43586C] dark:border-[#43586C] overflow-hidden">
+                          <code className="text-sm text-white dark:text-white break-all">
+                            {visibleSecrets.has(webhook.id) ? webhook.secret : maskSecret(webhook.secret)}
+                          </code>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleSecretVisibility(webhook.id)}
+                          className="rounded-full h-10 w-10 p-0 flex-shrink-0"
+                        >
+                          {visibleSecrets.has(webhook.id) ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleCopySecret(webhook.secret)}
+                          className="rounded-full h-10 w-10 p-0 flex-shrink-0"
+                        >
+                          {copiedSecret === webhook.secret ? (
+                            <Check className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Statistics */}
+                  <div className="grid grid-cols-2 gap-4 p-4 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-2xl border border-gray-200 dark:border-[#43586C]">
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Total Deliveries</p>
+                      <p className="text-xl text-gray-900 dark:text-white mt-1">
+                        {webhookDeliveries.length}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Success Rate</p>
+                      <p className="text-xl text-gray-900 dark:text-white mt-1">
+                        {webhookDeliveries.length > 0 ? `${successRate}%` : 'N/A'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Created</p>
+                      <p className="text-sm text-gray-900 dark:text-white mt-1">
+                        {new Date(webhook.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Last Triggered</p>
+                      <p className="text-sm text-gray-900 dark:text-white mt-1">
+                        {webhookDeliveries.length > 0 
+                          ? new Date(webhookDeliveries[0].timestamp).toLocaleDateString()
+                          : 'Never'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
         </div>
       </PageLayout.Content>
     </PageLayout>

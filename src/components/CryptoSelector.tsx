@@ -111,7 +111,7 @@ export const CryptoSelector: React.FC<CryptoSelectorProps> = ({
                 <AlertCircle className={`w-5 h-5 flex-shrink-0 ${
                   selectedCrypto === option.crypto.symbol
                     ? "text-white"
-                    : "text-[#DD6B6B]"
+                    : "text-[#FF5914]"
                 }`} />
               )}
             </div>

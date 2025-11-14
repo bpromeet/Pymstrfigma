@@ -162,7 +162,7 @@ MD3_COLORS = {
   primary: '#1E88E5',
   secondary: '#07D7FF',
   tertiary: '#F90BD5',
-  error: '#DD6B6B',
+  error: '#FF5914',
   success: '#7DD069',
   warning: '#D9C370',
   // ... and more
@@ -224,7 +224,7 @@ MD3_TRANSITIONS = {
   --md3-tertiary: #F90BD5;
   --md3-surface: #FFFFFF;
   --md3-surface-dim: #FAFAFA;
-  --md3-error: #DD6B6B;
+  --md3-error: #FF5914;
   --md3-success: #7DD069;
   --md3-warning: #D9C370;
   /* ... */

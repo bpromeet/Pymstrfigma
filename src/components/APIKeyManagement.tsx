@@ -11,7 +11,7 @@ import { Separator } from './ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Alert, AlertDescription } from './ui/alert';
-import { Key, Plus, Copy, CheckCircle, AlertCircle, Shield, Pause, Play, Trash2, Globe, Lock, Activity, ExternalLink } from 'lucide-react';
+import { Key, Plus, Copy, CheckCircle, AlertCircle, Shield, Pause, Play, Trash2, Globe, Lock, Activity, ExternalLink, Check } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import PageLayout from './PageLayout';
 
@@ -52,6 +52,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
   });
   const [showApiKeySecret, setShowApiKeySecret] = useState<string | null>(null);
   const [apiKeyDetailsTab, setApiKeyDetailsTab] = useState('info');
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const handleCreateApiKey = () => {
     if (!newApiKey.name) {
@@ -113,7 +114,9 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
   };
 
   const formatKey = (key: string) => {
-    return `${key.substring(0, 12)}••••••••••••${key.substring(key.length - 4)}`;
+    // Show first 6 chars ... last 4 chars (standard pattern)
+    if (key.length <= 10) return key;
+    return `${key.substring(0, 6)}...${key.substring(key.length - 4)}`;
   };
 
   const copyToClipboard = (text: string) => {
@@ -127,7 +130,9 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
     
     try {
       document.execCommand('copy');
+      setCopiedKey(text);
       toast('Copied to clipboard!');
+      setTimeout(() => setCopiedKey(null), 2000);
     } catch (err) {
       toast('Failed to copy to clipboard');
     } finally {
@@ -175,7 +180,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="bg-white dark:bg-gray-950 rounded-3xl p-4 border-2 border-green-300 dark:border-green-800">
+            <div className="bg-white dark:bg-gray-950 rounded-2xl p-4 border-2 border-green-300 dark:border-green-800">
               <Label className="text-gray-900 dark:text-white mb-2">Your New API Key</Label>
               <div className="flex space-x-2 mt-2">
                 <Input 
@@ -188,7 +193,11 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                   onClick={() => copyToClipboard(showApiKeySecret)}
                   className="rounded-full"
                 >
-                  <Copy className="w-4 h-4" />
+                  {copiedKey === showApiKeySecret ? (
+                    <Check className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -352,32 +361,31 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                   className="border rounded-3xl p-4 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors cursor-pointer"
                   onClick={() => setSelectedApiKey(key.id)}
                 >
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center flex-shrink-0">
-                          <Key className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div className="min-w-0">
-                          <h4 className="text-gray-900 dark:text-white truncate">{key.name}</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">{formatKey(key.key)}</p>
-                        </div>
-                      </div>
+                  {/* Badges at top left */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge 
+                      variant={key.status === 'active' ? 'default' : 'secondary'}
+                      className={`rounded-full whitespace-nowrap ${
+                        key.status === 'active' 
+                          ? 'bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]' 
+                          : 'bg-[#43586C]/20 text-[#798A9B]'
+                      }`}
+                    >
+                      {key.status}
+                    </Badge>
+                    <Badge variant="outline" className="rounded-full whitespace-nowrap">
+                      {key.environment}
+                    </Badge>
+                  </div>
+
+                  {/* Title and API key below badges */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-950 flex items-center justify-center flex-shrink-0">
+                      <Key className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap justify-end flex-shrink-0">
-                      <Badge 
-                        variant={key.status === 'active' ? 'default' : 'secondary'}
-                        className={`rounded-full whitespace-nowrap ${
-                          key.status === 'active' 
-                            ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
-                        }`}
-                      >
-                        {key.status}
-                      </Badge>
-                      <Badge variant="outline" className="rounded-full whitespace-nowrap">
-                        {key.environment}
-                      </Badge>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-gray-900 dark:text-white truncate">{key.name}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 font-mono truncate">{formatKey(key.key)}</p>
                     </div>
                   </div>
                   
@@ -441,7 +449,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                   <TabsTrigger value="activity">Activity</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="info" className="space-y-4 mt-4">
+                <TabsContent value="info" className="space-y-4 mt-4 min-h-[500px]">
                   <div className="space-y-2">
                     <Label>API Key</Label>
                     <div className="flex space-x-2">
@@ -455,7 +463,11 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                         onClick={() => copyToClipboard(selectedKey.key)}
                         className="rounded-full"
                       >
-                        <Copy className="w-4 h-4" />
+                        {copiedKey === selectedKey.key ? (
+                          <Check className="w-4 h-4 text-green-600" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
                       </Button>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -476,8 +488,8 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                         variant={selectedKey.status === 'active' ? 'default' : 'secondary'}
                         className={`rounded-full ${
                           selectedKey.status === 'active' 
-                            ? 'bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-400' 
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
+                            ? 'bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]' 
+                            : 'bg-[#43586C]/20 text-[#798A9B]'
                         }`}
                       >
                         {selectedKey.status}
@@ -519,7 +531,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                   </div>
                 </TabsContent>
 
-                <TabsContent value="security" className="space-y-4 mt-4">
+                <TabsContent value="security" className="space-y-4 mt-4 min-h-[500px]">
                   <div className="space-y-2">
                     <Label>IP Whitelist</Label>
                     <Textarea
@@ -556,7 +568,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                   </Alert>
                 </TabsContent>
 
-                <TabsContent value="activity" className="space-y-4 mt-4">
+                <TabsContent value="activity" className="space-y-4 mt-4 min-h-[500px]">
                   <div className="space-y-4">
                     <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
                       <h4 className="text-gray-900 dark:text-white mb-4">Recent Activity</h4>

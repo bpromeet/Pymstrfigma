@@ -235,7 +235,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onSave }) => {
                   <div className="flex items-center gap-2 flex-wrap">
                     <p>Authenticator App (TOTP)</p>
                     {twoFactorEnabled && (
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400 rounded-full">
+                      <Badge className="bg-[#032e15] text-[#05df72] rounded-full">
                         Enabled
                       </Badge>
                     )}
@@ -407,7 +407,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onSave }) => {
                             <div>
                               <p>{session.device}</p>
                               {session.isCurrent && (
-                                <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400 rounded-full text-xs">
+                                <Badge className="bg-[#032e15] text-[#05df72] rounded-full text-xs">
                                   Current
                                 </Badge>
                               )}
@@ -435,7 +435,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onSave }) => {
                               variant="ghost"
                               size="sm"
                               onClick={() => handleRevokeSession(session.id)}
-                              className="rounded-full text-[#DD6B6B] hover:text-[#DD6B6B] hover:bg-[#DD6B6B]/10"
+                              className="rounded-full text-[#FF5914] hover:text-[#FF5914] hover:bg-[#FF5914]/10"
                             >
                               <Trash2 className="w-4 h-4 mr-1" />
                               Revoke
@@ -458,7 +458,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onSave }) => {
                         <div>
                           <p>{session.device}</p>
                           {session.isCurrent && (
-                            <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400 rounded-full text-xs mt-1">
+                            <Badge className="bg-[#032e15] text-[#05df72] rounded-full text-xs mt-1">
                               Current
                             </Badge>
                           )}
@@ -483,7 +483,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onSave }) => {
                         variant="outline"
                         size="sm"
                         onClick={() => handleRevokeSession(session.id)}
-                        className="rounded-full w-full text-[#DD6B6B] hover:text-[#DD6B6B] hover:bg-[#DD6B6B]/10 border-[#DD6B6B]"
+                        className="rounded-full w-full text-[#FF5914] hover:text-[#FF5914] hover:bg-[#FF5914]/10 border-[#FF5914]"
                       >
                         <Trash2 className="w-4 h-4 mr-1" />
                         Revoke Session
@@ -540,7 +540,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onSave }) => {
                         </TableCell>
                         <TableCell>
                           {login.status === "success" ? (
-                            <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400 rounded-full">
+                            <Badge className="bg-[#032e15] text-[#05df72] rounded-full">
                               <CheckCircle className="w-3 h-3 mr-1" />
                               Success
                             </Badge>
@@ -572,7 +572,7 @@ const SecuritySettings: React.FC<SecuritySettingsProps> = ({ onSave }) => {
                         </div>
                       </div>
                       {login.status === "success" ? (
-                        <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400 rounded-full">
+                        <Badge className="bg-[#032e15] text-[#05df72] rounded-full">
                           <CheckCircle className="w-3 h-3 mr-1" />
                           Success
                         </Badge>

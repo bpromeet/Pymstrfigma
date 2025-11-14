@@ -64,7 +64,7 @@ export const copyToClipboard = (
   
   try {
     document.execCommand('copy');
-    toast("Copied to clipboard!");
+    // Toast removed - visual feedback provided by green checkmark in UI
 
     if (tooltipId && setShowCopyTooltip) {
       setShowCopyTooltip(tooltipId);
@@ -73,6 +73,7 @@ export const copyToClipboard = (
       }, 1000);
     }
   } catch (err) {
+    // Only show toast on error
     toast("Failed to copy to clipboard");
   } finally {
     document.body.removeChild(textarea);

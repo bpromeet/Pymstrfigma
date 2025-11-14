@@ -167,7 +167,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
       )}
 
       {/* Mobile Sticky Header with Back Button and Menu */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-[#0a0a0a] border-b border-[#43586C] shadow-sm">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-[#0a0a0a] shadow-sm">
         <div className="flex items-center justify-between px-4 h-14">
           <button
             onClick={onBack}

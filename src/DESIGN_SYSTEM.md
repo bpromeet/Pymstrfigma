@@ -54,7 +54,7 @@ All MD3 color roles are now available as CSS variables:
 --md3-surface: #FFFFFF;
 --md3-surface-dim: #FAFAFA;
 --md3-outline: #43586C;
---md3-error: #DD6B6B;
+--md3-error: #FF5914;
 --md3-success: #7DD069;
 --md3-warning: #D9C370;
 /* ... and more */
@@ -287,7 +287,7 @@ MD3_COLORS = {
   onSurface: '#1C1B1F',
   
   // Semantic
-  error: '#DD6B6B',
+  error: '#FF5914',
   success: '#7DD069',
   warning: '#D9C370',
   

@@ -209,7 +209,7 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-muted-foreground">Verification Status</span>
                     {profile.kybStatus === "verified" ? (
-                      <Badge className="bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-400 rounded-full">
+                      <Badge className="bg-[#032e15] text-[#05df72] rounded-full">
                         <CheckCircle className="w-3 h-3 mr-1" />
                         Verified
                       </Badge>
@@ -537,9 +537,9 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
           </Card>
 
           {/* Danger Zone - Delete Account */}
-          <Card className="rounded-2xl overflow-hidden border-[#DD6B6B] dark:border-[#DD6B6B]">
+          <Card className="rounded-2xl overflow-hidden border-[#FF5914] dark:border-[#FF5914]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-[#DD6B6B]">
+              <CardTitle className="flex items-center gap-2 text-[#FF5914]">
                 <AlertCircle className="w-5 h-5" />
                 Danger Zone
               </CardTitle>
@@ -548,7 +548,7 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="p-4 border border-[#DD6B6B] dark:border-[#DD6B6B] rounded-xl bg-[#DD6B6B]/5">
+              <div className="p-4 border border-[#FF5914] dark:border-[#FF5914] rounded-xl bg-[#FF5914]/5">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div className="space-y-1">
                     <p className="font-medium text-gray-900 dark:text-white">Delete Account</p>
@@ -560,7 +560,7 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                     <AlertDialogTrigger asChild>
                       <Button
                         variant="outline"
-                        className="min-h-12 sm:min-h-10 px-6 py-2.5 rounded-full border-[#DD6B6B] text-[#DD6B6B] hover:bg-[#DD6B6B] hover:text-white hover:shadow-sm transition-all duration-200 flex-shrink-0"
+                        className="min-h-12 sm:min-h-10 px-6 py-2.5 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white hover:shadow-sm transition-all duration-200 flex-shrink-0"
                       >
                         <Trash2 className="w-[18px] h-[18px] mr-2" />
                         Delete Account
@@ -568,13 +568,13 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                     </AlertDialogTrigger>
                     <AlertDialogContent className="bg-white dark:bg-[#303030] rounded-3xl p-6 shadow-2xl max-w-md">
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-[#DD6B6B]">
+                        <AlertDialogTitle className="flex items-center gap-2 text-[#FF5914]">
                           <AlertCircle className="w-6 h-6" />
                           Delete Account Permanently?
                         </AlertDialogTitle>
                         <AlertDialogDescription className="space-y-3 pt-2">
                           <p>
-                            This action will <span className="font-semibold text-[#DD6B6B]">permanently delete</span> your PYMSTR account and all associated data, including:
+                            This action will <span className="font-semibold text-[#FF5914]">permanently delete</span> your PYMSTR account and all associated data, including:
                           </p>
                           <ul className="list-disc list-inside space-y-1 text-sm">
                             <li>All payment links and transaction history</li>
@@ -582,8 +582,8 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                             <li>API keys and webhook configurations</li>
                             <li>Team members and access permissions</li>
                           </ul>
-                          <div className="p-3 bg-[#DD6B6B]/10 border border-[#DD6B6B] rounded-lg mt-4">
-                            <p className="text-sm font-semibold text-[#DD6B6B] flex items-center gap-2">
+                          <div className="p-3 bg-[#FF5914]/10 border border-[#FF5914] rounded-lg mt-4">
+                            <p className="text-sm font-semibold text-[#FF5914] flex items-center gap-2">
                               <AlertCircle className="w-4 h-4" />
                               Legal Notice: Non-Recoverable Operation
                             </p>
@@ -599,7 +599,7 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={handleDeleteAccount}
-                          className="min-h-12 sm:min-h-10 px-6 py-2.5 rounded-full bg-[#DD6B6B] text-white hover:bg-[#DD6B6B]/90 hover:shadow-sm transition-all duration-200 w-full sm:w-auto"
+                          className="min-h-12 sm:min-h-10 px-6 py-2.5 rounded-full bg-[#FF5914] text-white hover:bg-[#FF5914]/90 hover:shadow-sm transition-all duration-200 w-full sm:w-auto"
                         >
                           <Trash2 className="w-[18px] h-[18px] mr-2" />
                           Yes, Delete Permanently

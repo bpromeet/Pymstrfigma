@@ -47,9 +47,9 @@ export const MD3_COLORS = {
   onSurfaceVariantDark: '#798A9B',
   
   // Error, Success, Warning
-  error: '#DD6B6B',
+  error: '#FF5914',
   onError: '#FFFFFF',
-  errorContainer: 'rgba(221, 107, 107, 0.12)',
+  errorContainer: 'rgba(255, 89, 20, 0.12)',
   
   success: '#7DD069',
   onSuccess: '#FFFFFF',
