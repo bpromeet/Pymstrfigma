@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Copy, Check } from "lucide-react";
 import { toast } from "sonner@2.0.3";
+import { SendCryptoDialog } from "./SendCryptoDialog";
+import { ReceiveCryptoDialog } from "./ReceiveCryptoDialog";
 
 interface UserWalletsSectionProps {
   copiedItem: string | null;
@@ -19,8 +21,11 @@ interface UserWalletsSectionProps {
  * - Receive/Send actions
  */
 const UserWalletsSection: React.FC<UserWalletsSectionProps> = ({ copiedItem, onCopy }) => {
+  const [showSendDialog, setShowSendDialog] = useState(false);
+  const [showReceiveDialog, setShowReceiveDialog] = useState(false);
+
   // Mock wallet data
-  const walletAddress = "0x1234...5678";
+  const walletAddress = "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb5";
   const balances = {
     USDC: 500.00,
     USDT: 234.56,
@@ -87,13 +92,32 @@ const UserWalletsSection: React.FC<UserWalletsSectionProps> = ({ copiedItem, onC
 
       {/* Actions */}
       <div className="flex gap-4">
-        <Button className="flex-1 min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] rounded-full">
+        <Button
+          className="flex-1 min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] rounded-full"
+          onClick={() => setShowReceiveDialog(true)}
+        >
           Receive
         </Button>
-        <Button className="flex-1 min-h-12 bg-transparent border border-[#1E88E5] text-[#1E88E5] hover:bg-[#E3F2FD] rounded-full">
+        <Button
+          className="flex-1 min-h-12 bg-transparent border border-[#1E88E5] text-[#1E88E5] hover:bg-[#E3F2FD] rounded-full"
+          onClick={() => setShowSendDialog(true)}
+        >
           Send
         </Button>
       </div>
+
+      {/* Dialogs */}
+      <SendCryptoDialog
+        open={showSendDialog}
+        onOpenChange={setShowSendDialog}
+      />
+      <ReceiveCryptoDialog
+        open={showReceiveDialog}
+        onOpenChange={setShowReceiveDialog}
+        walletAddress={walletAddress}
+        copiedItem={copiedItem}
+        onCopy={onCopy}
+      />
     </div>
   );
 };
