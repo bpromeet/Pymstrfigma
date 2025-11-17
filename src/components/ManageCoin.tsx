@@ -144,7 +144,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
                 <div key={chain} className="bg-white dark:bg-[#303030] rounded-2xl p-4 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-3">
-                      <img src={getNetworkIcon(chain)} alt={chain} className="w-8 h-8" />
+                      <ChainIcon chain={chain} size={32} />
                       <span className="text-gray-900 dark:text-white font-medium">
                         {getNetworkName(chain)}
                       </span>
@@ -255,7 +255,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
               <SelectTrigger>
                 <SelectValue>
                   <div className="flex items-center space-x-2">
-                    <img src={getNetworkIcon(selectedNetwork)} alt={selectedNetwork} className="w-5 h-5" />
+                    <ChainIcon chain={selectedNetwork} size={20} />
                     <span>{getNetworkName(selectedNetwork)}</span>
                   </div>
                 </SelectValue>
@@ -264,7 +264,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
                 {Object.keys(chainBalances || {}).map((network) => (
                   <SelectItem key={network} value={network}>
                     <div className="flex items-center space-x-2">
-                      <img src={getNetworkIcon(network)} alt={network} className="w-5 h-5" />
+                      <ChainIcon chain={network} size={20} />
                       <span>{getNetworkName(network)}</span>
                     </div>
                   </SelectItem>
