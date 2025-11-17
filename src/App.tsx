@@ -122,7 +122,6 @@ import {
   BookOpen,
   Save,
   Webhook,
-  LayoutGrid,
 } from "lucide-react";
 import { Alert, AlertDescription } from "./components/ui/alert";
 import {

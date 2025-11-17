@@ -1,40 +1,16 @@
-import { useState } from "react";
-import {
-  Wallet,
-  ArrowLeft,
-  ChevronRight,
-  Settings,
-  Save,
-} from "lucide-react";
+import React, { useState } from "react";
+import { PageLayout } from "../components/PageLayout";
+import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import {
-  Card,
-  CardContent,
-} from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../components/ui/table";
-import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import { Switch } from "../components/ui/switch";
-import { toast } from "sonner@2.0.3";
-import QRCode from "qrcode";
-import PageLayout from "../components/PageLayout";
+import { Badge } from "../components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
+import { Wallet, Settings, Save, ChevronRight, ArrowLeft } from "lucide-react";
 import { CryptoIcon } from "../components/CryptoIcon";
 import WalletMainActionButton from "../components/WalletMainActionButton";
 import { ManageCoin } from "../components/ManageCoin";
-
-// Import network logos
-import ethLogo from "./imports/eth.svg";
-import polygonLogo from "./imports/polygon.svg";
-import arbitrumLogo from "./imports/arbitrum.svg";
-import optimismLogo from "./imports/optimism.svg";
 
 interface WalletBalance {
   [crypto: string]: number;
@@ -79,34 +55,6 @@ export default function WalletsPage({
   const mainWallet = wallets.find((w) => w.isDefault);
   const [selectedCrypto, setSelectedCrypto] = useState<string>("");
   const [showingCurrency, setShowingCurrency] = useState(false);
-  const [manageView, setManageView] = useState("breakdown"); // "breakdown", "deposit", "send"
-  const [isDeposit, setIsDeposit] = useState(true);
-  const [qrCode, setQrCode] = useState("");
-  const [sendAmt, setSendAmt] = useState("");
-  const [sendAddr, setSendAddr] = useState("");
-  const [selectedNetwork, setSelectedNetwork] = useState("ethereum");
-  const [sendNetwork, setSendNetwork] = useState("ethereum");
-  const [walletTab, setWalletTab] = useState("overview"); // "overview" or "security"
-
-  const getNetworkIcon = (network: string) => {
-    const icons: { [key: string]: string } = {
-      ethereum: ethLogo,
-      polygon: polygonLogo,
-      arbitrum: arbitrumLogo,
-      optimism: optimismLogo,
-    };
-    return icons[network] || ethLogo;
-  };
-
-  const getNetworkName = (network: string) => {
-    const names: { [key: string]: string } = {
-      ethereum: "Ethereum",
-      polygon: "Polygon",
-      arbitrum: "Arbitrum",
-      optimism: "Optimism",
-    };
-    return names[network] || network;
-  };
 
   if (!mainWallet) {
     return (
@@ -138,168 +86,11 @@ export default function WalletsPage({
   const selectCurrency = (crypto: string) => {
     setSelectedCrypto(crypto);
     setShowingCurrency(true);
-    setManageView("breakdown");
-    setIsDeposit(true);
-    setSendAmt("");
-    setSendAddr("");
-    setSelectedNetwork("ethereum");
-    setSendNetwork("ethereum");
-
-    // Generate QR code
-    QRCode.toDataURL(mainWallet.address, {
-      width: 256,
-      margin: 2,
-      color: { dark: "#000000", light: "#FFFFFF" },
-    })
-      .then((url) => setQrCode(url))
-      .catch(() => {});
   };
 
   const backToList = () => {
     setShowingCurrency(false);
     setSelectedCrypto("");
-    setQrCode("");
-    setManageView("breakdown");
-    setIsDeposit(true);
-    setSendAmt("");
-    setSendAddr("");
-    setSelectedNetwork("ethereum");
-    setSendNetwork("ethereum");
-  };
-
-  const doSend = () => {
-    if (!sendAmt || !sendAddr) {
-      toast.error("Please fill all fields", {
-        description:
-          "Both amount and destination address are required",
-        style: {
-          background: theme === "dark" ? "#2E3C49" : "#ffffff",
-          border: `1px solid #FF5914`,
-          color: theme === "dark" ? "#F6F7F9" : "#1a1a1a",
-        },
-      });
-      return;
-    }
-    const amt = parseFloat(sendAmt);
-    if (
-      amt <= 0 ||
-      amt > mainWallet.balance[selectedCrypto]
-    ) {
-      toast.error("Invalid amount", {
-        description:
-          amt <= 0
-            ? "Amount must be greater than 0"
-            : `Insufficient balance. Available: ${mainWallet.balance[selectedCrypto]?.toFixed(2)} ${selectedCrypto}`,
-        style: {
-          background: theme === "dark" ? "#2E3C49" : "#ffffff",
-          border: `1px solid #FF5914`,
-          color: theme === "dark" ? "#F6F7F9" : "#1a1a1a",
-        },
-      });
-      return;
-    }
-
-    // Simulate API call - replace with actual backend call when ready
-    // For now, simulate success with occasional random failure for testing
-    const simulateSuccess = Math.random() > 0.1; // 90% success rate for demo
-
-    if (simulateSuccess) {
-      // Success case
-      setWallets((prev) =>
-        prev.map((w) =>
-          w.isDefault
-            ? {
-                ...w,
-                balance: {
-                  ...w.balance,
-                  [selectedCrypto]:
-                    w.balance[selectedCrypto] - amt,
-                },
-              }
-            : w,
-        ),
-      );
-      toast.success("Transaction sent successfully!", {
-        description: `Sent ${sendAmt} ${selectedCrypto} to ${sendAddr.slice(0, 6)}...${sendAddr.slice(-4)}`,
-        style: {
-          background: theme === "dark" ? "#2E3C49" : "#ffffff",
-          border: `1px solid #7DD069`,
-          color: theme === "dark" ? "#F6F7F9" : "#1a1a1a",
-        },
-      });
-      setSendAmt("");
-      setSendAddr("");
-      setIsDeposit(true);
-    } else {
-      // Failure case - simulating network/blockchain error
-      toast.error("Transaction failed", {
-        description: "Network error. Please try again.",
-        style: {
-          background: theme === "dark" ? "#2E3C49" : "#ffffff",
-          border: `1px solid #FF5914`,
-          color: theme === "dark" ? "#F6F7F9" : "#1a1a1a",
-        },
-      });
-    }
-
-    /* When backend is connected, replace the simulation above with:
-    
-    try {
-      const response = await fetch('/api/wallet/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: amt,
-          address: sendAddr,
-          crypto: selectedCrypto,
-          network: sendNetwork,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        // Update local state
-        setWallets((prev) =>
-          prev.map((w) =>
-            w.isDefault
-              ? {
-                  ...w,
-                  balance: {
-                    ...w.balance,
-                    [selectedCrypto]: w.balance[selectedCrypto] - amt,
-                  },
-                }
-              : w,
-          ),
-        );
-        
-        toast.success("Transaction sent successfully!", {
-          description: `Sent ${sendAmt} ${selectedCrypto} to ${sendAddr.slice(0, 6)}...${sendAddr.slice(-4)}. TxHash: ${data.txHash?.slice(0, 10)}...`,
-          style: {
-            background: theme === "dark" ? "#2E3C49" : "#ffffff",
-            border: `1px solid #7DD069`,
-            color: theme === "dark" ? "#F6F7F9" : "#1a1a1a",
-          },
-        });
-        
-        setSendAmt("");
-        setSendAddr("");
-        setIsDeposit(true);
-      } else {
-        throw new Error(data.message || 'Transaction failed');
-      }
-    } catch (error) {
-      toast.error("Transaction failed", {
-        description: error.message || "Network error. Please try again.",
-        style: {
-          background: theme === "dark" ? "#2E3C49" : "#ffffff",
-          border: `1px solid #FF5914`,
-          color: theme === "dark" ? "#F6F7F9" : "#1a1a1a",
-        },
-      });
-    }
-    */
   };
 
   const getCryptoName = (symbol: string) => {
