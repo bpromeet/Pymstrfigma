@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Link as LinkIcon, Key, Users, Webhook, Settings, Shield, FileText, User, Wallet, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
+import { Activity, Link as LinkIcon, Key, Users, Webhook, Settings, Shield, FileText, User, Wallet, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 
 export interface NavigationItem {
   id: string;
@@ -22,7 +22,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
 
   // Default merchant menu items
   const defaultNavItems: NavigationItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'dashboard', label: 'Dashboard', icon: Activity },
     { id: 'wallets', label: 'Wallets', icon: Wallet },
     { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'api', label: 'API Keys', icon: Key },

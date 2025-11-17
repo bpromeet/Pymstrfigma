@@ -16,7 +16,7 @@
    ======================================== */
 
 import React from 'react';
-import { LayoutDashboard, Link as LinkIcon, Key, MoreHorizontal, Wallet, FileText, LogOut, HelpCircle, Scale, BookOpen, Users, Settings, Shield, User } from 'lucide-react';
+import { Activity, Link as LinkIcon, Key, MoreHorizontal, Wallet, FileText, LogOut, HelpCircle, Scale, BookOpen, Users, Settings, Shield, User } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -74,7 +74,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
 
   // Default merchant nav items
   const defaultNavItems: BottomNavItem[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'dashboard', label: 'Dashboard', icon: Activity },
     { id: 'wallets', label: 'Wallets', icon: Wallet },
     { id: 'reports', label: 'Reports', icon: FileText },
     { id: 'more', label: 'More', icon: MoreHorizontal },
