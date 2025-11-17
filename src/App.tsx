@@ -597,31 +597,31 @@ const App = () => {
     {
       id: "ethereum",
       name: "Ethereum",
-      icon: <ChainIcon chain="ethereum" size="w-5 h-5" />,
+      icon: <ChainIcon chain="ethereum" size="w-[18px] h-[18px]" />,
       logo: ethLogo,
     },
     {
       id: "polygon",
       name: "Polygon",
-      icon: <ChainIcon chain="polygon" size="w-5 h-5" />,
+      icon: <ChainIcon chain="polygon" size="w-[18px] h-[18px]" />,
       logo: polygonLogo,
     },
     {
       id: "arbitrum",
       name: "Arbitrum",
-      icon: <ChainIcon chain="arbitrum" size="w-5 h-5" />,
+      icon: <ChainIcon chain="arbitrum" size="w-[18px] h-[18px]" />,
       logo: arbitrumLogo,
     },
     {
       id: "optimism",
       name: "Optimism",
-      icon: <ChainIcon chain="optimism" size="w-5 h-5" />,
+      icon: <ChainIcon chain="optimism" size="w-[18px] h-[18px]" />,
       logo: optimismLogo,
     },
     {
       id: "base",
       name: "Base",
-      icon: <ChainIcon chain="base" size="w-5 h-5" />,
+      icon: <ChainIcon chain="base" size="w-[18px] h-[18px]" />,
       logo: baseLogo,
     },
   ];
@@ -1335,7 +1335,7 @@ const App = () => {
           </div>
 
           <div className="flex justify-center">
-            <span className="text-xl font-bold text-[#FF5914]">PYMSTR</span>
+            <span className="text-[#FF5914]">PYMSTR</span>
           </div>
         </CardHeader>
         <CardContent
@@ -1370,7 +1370,7 @@ const App = () => {
                       }
                     >
                       <svg
-                        className="w-5 h-5 flex-shrink-0"
+                        className="w-[18px] h-[18px] flex-shrink-0"
                         viewBox="0 0 24 24"
                       >
                         <path
@@ -1402,7 +1402,7 @@ const App = () => {
                         handleWalletConnect("Twitter")
                       }
                     >
-                      <Twitter className="w-5 h-5 flex-shrink-0" />
+                      <Twitter className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         Twitter
                       </span>
@@ -1415,7 +1415,7 @@ const App = () => {
                         handleWalletConnect("Github")
                       }
                     >
-                      <Github className="w-5 h-5 flex-shrink-0" />
+                      <Github className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         Github
                       </span>
@@ -1428,7 +1428,7 @@ const App = () => {
                         handleWalletConnect("MetaMask")
                       }
                     >
-                      <Wallet className="w-5 h-5 flex-shrink-0" />
+                      <Wallet className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         MetaMask
                       </span>
@@ -1441,7 +1441,7 @@ const App = () => {
                         handleWalletConnect("WalletConnect")
                       }
                     >
-                      <Wallet className="w-5 h-5 flex-shrink-0" />
+                      <Wallet className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         WalletConnect
                       </span>
@@ -1454,7 +1454,7 @@ const App = () => {
                         handleWalletConnect("Coinbase Wallet")
                       }
                     >
-                      <Wallet className="w-5 h-5 flex-shrink-0" />
+                      <Wallet className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         Coinbase
                       </span>
