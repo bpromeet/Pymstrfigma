@@ -114,7 +114,7 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
                   <TableCell>${tx.price}</TableCell>
                   <TableCell>{tx.crypto}</TableCell>
                   <TableCell>
-                    <ChainIcon chain={tx.chain} size="w-5 h-5" />
+                    <ChainIcon chain={tx.chain} size={20} />
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -205,7 +205,7 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Chain:</span>
-                  <ChainIcon chain={tx.chain} size="w-5 h-5" />
+                  <ChainIcon chain={tx.chain} size={20} />
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Fee:</span>

@@ -191,7 +191,7 @@ export default function DashboardPage({
                     <div className="flex items-center gap-2">
                       <ChainIcon
                         chain="ethereum"
-                        size="w-5 h-5"
+                        size={20}
                       />
                       <span className="text-muted-foreground">
                         Ethereum
@@ -206,7 +206,7 @@ export default function DashboardPage({
                     <div className="flex items-center gap-2">
                       <ChainIcon
                         chain="polygon"
-                        size="w-5 h-5"
+                        size={20}
                       />
                       <span className="text-muted-foreground">
                         Polygon
@@ -221,7 +221,7 @@ export default function DashboardPage({
                     <div className="flex items-center gap-2">
                       <ChainIcon
                         chain="arbitrum"
-                        size="w-5 h-5"
+                        size={20}
                       />
                       <span className="text-muted-foreground">
                         Arbitrum
@@ -236,7 +236,7 @@ export default function DashboardPage({
                     <div className="flex items-center gap-2">
                       <ChainIcon
                         chain="optimism"
-                        size="w-5 h-5"
+                        size={20}
                       />
                       <span className="text-muted-foreground">
                         Optimism
@@ -249,7 +249,7 @@ export default function DashboardPage({
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <ChainIcon chain="base" size="w-5 h-5" />
+                      <ChainIcon chain="base" size={20} />
                       <span className="text-muted-foreground">
                         Base
                       </span>
@@ -474,7 +474,7 @@ export default function DashboardPage({
                         <TableCell>
                           <ChainIcon
                             chain={tx.chain}
-                            size="w-5 h-5"
+                            size={20}
                           />
                         </TableCell>
                         <TableCell>
@@ -605,7 +605,7 @@ export default function DashboardPage({
                         <span>
                           <ChainIcon
                             chain={tx.chain}
-                            size="w-5 h-5"
+                            size={20}
                           />
                         </span>
                       </div>

@@ -14,13 +14,9 @@ import {
   AlertCircle 
 } from "lucide-react";
 import { CryptoIcon } from "./CryptoIcon";
+import { ChainIcon } from "./ChainIcon";
 import { WalletAddressCopyButton } from "./WalletAddressCopyButton";
 import QRCode from "qrcode";
-import ethLogo from "figma:asset/3f415cd75e8a755a032ae16a3406c41dcc2d667a.png";
-import polygonLogo from "figma:asset/2a58e7908e32b2fe463112041ba6e2714512185b.png";
-import arbitrumLogo from "figma:asset/f48bde656d2828d3f1e6a10c15f97b6bf98615d5.png";
-import optimismLogo from "figma:asset/4f26997c993e11669528832115692d8c0b95f2e0.png";
-import baseLogo from "figma:asset/5849f744e6f7cf933d5afd306639724467364170.png";
 
 interface ManageCoinProps {
   selectedCrypto: string;
@@ -66,16 +62,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
     return names[network] || network;
   };
 
-  const getNetworkIcon = (network: string) => {
-    const icons: Record<string, string> = {
-      ethereum: ethLogo,
-      polygon: polygonLogo,
-      arbitrum: arbitrumLogo,
-      optimism: optimismLogo,
-      base: baseLogo
-    };
-    return icons[network] || "";
-  };
+
 
   // Generate QR code when deposit view is opened
   React.useEffect(() => {
@@ -120,7 +107,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
                     <TableRow key={chain}>
                       <TableCell className="pl-6">
                         <div className="flex items-center space-x-3">
-                          <img src={getNetworkIcon(chain)} alt={chain} className="w-8 h-8" />
+                          <ChainIcon chain={chain} size={32} />
                           <span className="text-gray-900 dark:text-white font-medium">
                             {getNetworkName(chain)}
                           </span>

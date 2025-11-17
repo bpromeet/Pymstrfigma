@@ -9,11 +9,7 @@ import { toast } from 'sonner@2.0.3';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
 import { cn } from './ui/utils';
-import ethLogo from 'figma:asset/3f415cd75e8a755a032ae16a3406c41dcc2d667a.png';
-import polygonLogo from 'figma:asset/2a58e7908e32b2fe463112041ba6e2714512185b.png';
-import arbitrumLogo from 'figma:asset/f48bde656d2828d3f1e6a10c15f97b6bf98615d5.png';
-import optimismLogo from 'figma:asset/4f26997c993e11669528832115692d8c0b95f2e0.png';
-import baseLogo from 'figma:asset/5849f744e6f7cf933d5afd306639724467364170.png';
+import { ChainIcon } from './ChainIcon';
 
 interface PaymentLinkFormProps {
   onLinkGenerated: (link: { id: string; price: number; description: string; status: 'active'; chain: string; currency: string; availableCurrencies: string[]; availableChains: string[] }) => void;
@@ -49,27 +45,27 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
     { 
       value: 'ethereum', 
       label: 'Ethereum',
-      icon: ethLogo
+      icon: <ChainIcon chain="ethereum" size={20} />
     },
     { 
       value: 'polygon', 
       label: 'Polygon',
-      icon: polygonLogo
+      icon: <ChainIcon chain="polygon" size={20} />
     },
     { 
       value: 'arbitrum', 
       label: 'Arbitrum',
-      icon: arbitrumLogo
+      icon: <ChainIcon chain="arbitrum" size={20} />
     },
     { 
       value: 'optimism', 
       label: 'Optimism',
-      icon: optimismLogo
+      icon: <ChainIcon chain="optimism" size={20} />
     },
     { 
       value: 'base', 
       label: 'Base',
-      icon: baseLogo
+      icon: <ChainIcon chain="base" size={20} />
     }
   ];
 
@@ -279,12 +275,8 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
                   onCheckedChange={() => handleChainToggle(network.value)}
                   className="hidden"
                 />
-                <div className="w-4 h-4 flex-shrink-0">
-                  <img 
-                    src={network.icon} 
-                    alt={network.label}
-                    className="w-full h-full object-contain"
-                  />
+                <div className="flex-shrink-0">
+                  {network.icon}
                 </div>
                 <span className="text-sm font-medium">{network.label}</span>
               </div>

@@ -1,7 +1,4 @@
 import React from "react";
-import usdcLogo from "figma:asset/b8084771bd1f1bf87626c826ff2fac011f016ed9.png";
-import usdtLogo from "figma:asset/90dac8c11ffff8e0b345d11a55049c088eff2165.png";
-import eurcLogo from "figma:asset/d915232b9755e23483dcfab1a692cf654672354f.png";
 
 interface CryptoIconProps {
   symbol: string;
@@ -9,57 +6,17 @@ interface CryptoIconProps {
   size?: number;
 }
 
-// Inline SVG fallbacks for crypto logos
-const CryptoSVGFallback: React.FC<{ symbol: string; size: number; className: string }> = ({ symbol, size, className }) => {
-  const upperSymbol = symbol.toUpperCase();
-  
-  if (upperSymbol === "USDC") {
-    return (
-      <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-        <circle cx="16" cy="16" r="16" fill="#2775CA"/>
-        <path d="M20.5 18.5C20.5 20.433 18.933 22 17 22H15C13.067 22 11.5 20.433 11.5 18.5V13.5C11.5 11.567 13.067 10 15 10H17C18.933 10 20.5 11.567 20.5 13.5" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-        <path d="M14 16H18" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    );
-  }
-  
-  if (upperSymbol === "USDT") {
-    return (
-      <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-        <circle cx="16" cy="16" r="16" fill="#26A17B"/>
-        <path d="M16 11V21M13 14H19M11 11H21" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    );
-  }
-  
-  if (upperSymbol === "EURC") {
-    return (
-      <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-        <circle cx="16" cy="16" r="16" fill="#2775CA"/>
-        <path d="M19 12C18 11 17 10.5 15.5 10.5C13 10.5 11 12.5 11 16C11 19.5 13 21.5 15.5 21.5C17 21.5 18 21 19 20M10 14H16M10 18H16" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    );
-  }
-  
-  // Generic fallback
-  return (
-    <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <circle cx="16" cy="16" r="16" fill="#6B7280"/>
-      <text x="16" y="20" fontSize="12" fill="white" textAnchor="middle" fontWeight="600">{symbol.slice(0, 2)}</text>
-    </svg>
-  );
-};
-
 /**
  * CryptoIcon - Displays cryptocurrency logo based on symbol
  * 
+ * Pure SVG implementation - no external assets needed
  * Supported symbols: USDC, USDT, EURC
  * 
  * Usage:
  * ```tsx
  * <CryptoIcon symbol="USDC" />
  * <CryptoIcon symbol="USDT" size={32} />
- * <CryptoIcon symbol="EURC" className="rounded-full" />
+ * <CryptoIcon symbol="EURC" className="shadow-lg" />
  * ```
  */
 export const CryptoIcon: React.FC<CryptoIconProps> = ({ 
@@ -67,36 +24,90 @@ export const CryptoIcon: React.FC<CryptoIconProps> = ({
   className = "", 
   size = 40 
 }) => {
-  const [imageError, setImageError] = React.useState(false);
+  const upperSymbol = symbol.toUpperCase();
   
-  const getCryptoLogo = (sym: string) => {
-    switch (sym.toUpperCase()) {
-      case "USDC":
-        return usdcLogo;
-      case "USDT":
-        return usdtLogo;
-      case "EURC":
-        return eurcLogo;
-      default:
-        return null;
-    }
-  };
-
-  const logoSrc = getCryptoLogo(symbol);
-
-  // If image failed to load or no logo source, use SVG fallback
-  if (imageError || !logoSrc) {
-    return <CryptoSVGFallback symbol={symbol} size={size} className={className} />;
+  // USDC - Blue circle with USD Coin design
+  if (upperSymbol === "USDC") {
+    return (
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 2000 2000" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        className={className}
+      >
+        <path d="M1000 2000c554.17 0 1000-445.83 1000-1000S1554.17 0 1000 0 0 445.83 0 1000s445.83 1000 1000 1000z" fill="#2775ca"/>
+        <path d="M1275 1158.33c0-145.83-87.5-195.83-262.5-216.66-125-16.67-150-50-150-108.34s41.67-95.83 125-95.83c75 0 116.67 25 137.5 87.5 4.17 12.5 16.67 20.83 29.17 20.83h66.66c16.67 0 29.17-12.5 29.17-29.16v-4.17c-16.67-91.67-91.67-162.5-187.5-170.83v-100c0-16.67-12.5-29.17-33.33-33.34h-62.5c-16.67 0-29.17 12.5-33.34 33.34v95.83c-125 16.67-204.16 100-204.16 204.17 0 137.5 83.33 191.66 258.33 212.5 116.67 20.83 154.17 45.83 154.17 112.5s-58.34 112.5-137.5 112.5c-108.34 0-145.84-45.84-158.34-108.34-4.16-16.66-16.66-25-29.16-25h-70.84c-16.66 0-29.16 12.5-29.16 29.17v4.17c16.66 104.16 83.33 179.16 220.83 200v100c0 16.66 12.5 29.16 33.33 33.33h62.5c16.67 0 29.17-12.5 33.34-33.33v-100c125-20.84 208.33-108.34 208.33-220.84z" fill="#fff"/>
+        <path d="M787.5 1595.83c-325-116.66-491.67-479.16-370.83-800 62.5-175 200-308.33 370.83-370.83 16.67-8.33 25-20.83 25-41.67V325c0-16.67-8.33-29.17-25-33.33-4.17 0-12.5 0-16.67 4.16-395.83 125-612.5 545.84-487.5 941.67 75 233.33 254.17 412.5 487.5 487.5 16.67 8.33 33.34 0 37.5-16.67 4.17-4.16 4.17-8.33 4.17-16.66v-58.34c0-12.5-12.5-29.16-25-37.5zM1229.17 295.83c-16.67-8.33-33.34 0-37.5 16.67-4.17 4.17-4.17 8.33-4.17 16.67v58.33c0 16.67 12.5 33.33 25 41.67 325 116.66 491.67 479.16 370.83 800-62.5 175-200 308.33-370.83 370.83-16.67 8.33-25 20.83-25 41.67V1700c0 16.67 8.33 29.17 25 33.33 4.17 0 12.5 0 16.67-4.16 395.83-125 612.5-545.84 487.5-941.67-75-237.5-258.34-416.67-487.5-491.67z" fill="#fff"/>
+      </svg>
+    );
   }
-
+  
+  // USDT - Green circle with Tether design
+  if (upperSymbol === "USDT") {
+    return (
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 339.43 295.27" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        className={className}
+      >
+        <path d="M62.15,1.45l-61.89,130a2.52,2.52,0,0,0,.54,2.94L167.95,294.56a2.55,2.55,0,0,0,3.53,0L338.63,134.4a2.52,2.52,0,0,0,.54-2.94l-61.89-130A2.5,2.5,0,0,0,275,0H64.45a2.5,2.5,0,0,0-2.3,1.45h0Z" fill="#50af95" fillRule="evenodd"/>
+        <path d="M191.19,144.8v0c-1.2.09-7.4,0.46-21.23,0.46-11,0-18.81-.33-21.55-0.46v0c-42.51-1.87-74.24-9.27-74.24-18.13s31.73-16.25,74.24-18.15v28.91c2.78,0.2,10.74.67,21.74,0.67,13.2,0,19.81-.55,21-0.66v-28.9c42.42,1.89,74.08,9.29,74.08,18.13s-31.65,16.24-74.08,18.12h0Zm0-39.25V79.68h59.2V40.23H89.21V79.68H148.4v25.86c-48.11,2.21-84.29,11.74-84.29,23.16s36.18,20.94,84.29,23.16v82.9h42.78V151.83c48-2.21,84.12-11.73,84.12-23.14s-36.09-20.93-84.12-23.15h0Zm0,0h0Z" fill="#fff" fillRule="evenodd"/>
+      </svg>
+    );
+  }
+  
+  // EURC - Blue circle with Euro design
+  if (upperSymbol === "EURC") {
+    return (
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 96 96" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        className={className}
+      >
+        <g clipPath="url(#clip0_3853_21562)">
+          <path d="M48 96C74.5097 96 96 74.5097 96 48C96 21.4903 74.5097 0 48 0C21.4903 0 0 21.4903 0 48C0 74.5097 21.4903 96 48 96Z" fill="#0B53BF"/>
+          <path d="M58.2 59.4305C56.1 60.2705 53.82 60.7505 51.63 60.7505C47.2929 60.7505 43.2039 58.9034 41.25 54.4505H50.79L52.65 49.9505H40.1397C40.0806 49.3307 40.05 48.6812 40.05 48.0005C40.05 47.3198 40.0806 46.6703 40.1397 46.0505H54.24L56.1 41.5505H41.25C43.2039 37.0976 47.2929 35.2505 51.63 35.2505C53.82 35.2505 56.1 35.7305 58.2 36.5705L60.12 32.0105C57.54 30.6605 54.63 30.0005 51.72 30.0005C44.6964 30.0005 37.5966 33.9272 35.0265 41.5505H30.42V46.0505H34.1037C34.0488 46.6823 34.02 47.3324 34.02 48.0005C34.02 48.6686 34.0485 49.3187 34.1037 49.9505H30.42V54.4505H35.0265C37.5966 62.0738 44.6964 66.0005 51.72 66.0005C54.63 66.0005 57.54 65.3405 60.12 63.9905L58.2 59.4305Z" fill="white" stroke="#0B53BF" strokeWidth="0.03" strokeMiterlimit="10"/>
+          <path d="M18 48.0003C18 34.4103 27.03 22.9503 39.36 19.2303V13.0503C23.64 16.8903 12 31.0803 12 48.0003C12 64.9203 23.64 79.1103 39.36 82.9503V76.7703C27.03 73.0803 18 61.5903 18 48.0003Z" fill="white" stroke="#0B53BF" strokeWidth="0.03" strokeMiterlimit="10"/>
+          <path d="M56.64 13.0503V19.2303C68.97 22.9503 78 34.4103 78 48.0003C78 61.5903 68.97 73.0503 56.64 76.7703V82.9503C72.36 79.1103 84 64.9203 84 48.0003C84 31.0803 72.36 16.8903 56.64 13.0503Z" fill="white" stroke="#0B53BF" strokeWidth="0.03" strokeMiterlimit="10"/>
+        </g>
+        <defs>
+          <clipPath id="clip0_3853_21562">
+            <rect width="96" height="96" fill="white"/>
+          </clipPath>
+        </defs>
+      </svg>
+    );
+  }
+  
+  // Generic fallback for unknown symbols
   return (
-    <img
-      src={logoSrc}
-      alt={`${symbol} logo`}
-      width={size}
-      height={size}
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 32 32" 
+      fill="none" 
+      xmlns="http://www.w3.org/2000/svg" 
       className={className}
-      onError={() => setImageError(true)}
-    />
+    >
+      <circle cx="16" cy="16" r="16" fill="#6B7280"/>
+      <text 
+        x="16" 
+        y="20" 
+        fontSize="12" 
+        fill="white" 
+        textAnchor="middle" 
+        fontWeight="600"
+      >
+        {symbol.slice(0, 2).toUpperCase()}
+      </text>
+    </svg>
   );
 };

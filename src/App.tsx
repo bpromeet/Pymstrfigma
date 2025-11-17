@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef, startTransition } from "react";
 import QRCode from "qrcode";
 import { QRCodeCanvas } from "qrcode.react";
-import ethLogo from "figma:asset/3f415cd75e8a755a032ae16a3406c41dcc2d667a.png";
-import polygonLogo from "figma:asset/2a58e7908e32b2fe463112041ba6e2714512185b.png";
-import arbitrumLogo from "figma:asset/f48bde656d2828d3f1e6a10c15f97b6bf98615d5.png";
-import optimismLogo from "figma:asset/4f26997c993e11669528832115692d8c0b95f2e0.png";
-import baseLogo from "figma:asset/5849f744e6f7cf933d5afd306639724467364170.png";
-import profileImage from "figma:asset/e3fc757146327315a7b55582ead18e6a5cc6abac.png";
 import {
   Card,
   CardContent,
@@ -146,13 +140,11 @@ import {
 } from "recharts@2.15.2";
 import { toast } from "sonner@2.0.3";
 import { Toaster } from "./components/ui/sonner";
-import usdcLogo from "figma:asset/b8084771bd1f1bf87626c826ff2fac011f016ed9.png";
-import usdtLogo from "figma:asset/90dac8c11ffff8e0b345d11a55049c088eff2165.png";
-import eurcLogo from "figma:asset/d915232b9755e23483dcfab1a692cf654672354f.png";
 import SearchField from "./components/SearchField";
 import DateField from "./components/DateField";
 import ReportsTransactionTable from "./components/ReportsTransactionTable";
 import { ChainIcon } from "./components/ChainIcon";
+import { CryptoIcon } from "./components/CryptoIcon";
 import PaymentLinkForm from "./components/PaymentLinkForm";
 import APIKeyManagement from "./components/APIKeyManagement";
 import QuickStartGuide from "./components/QuickStartGuide";
@@ -525,55 +517,6 @@ const App = () => {
   const recentTransactions = RECENT_TRANSACTIONS;
   const chartData = CHART_DATA;
 
-  const CryptoIcon = ({
-    symbol,
-    size = "w-8 h-8",
-  }: {
-    symbol: string;
-    size?: string;
-  }) => {
-    const iconProps = { className: size };
-
-    switch (symbol) {
-      case "USDC":
-        return (
-          <img
-            {...iconProps}
-            src={usdcLogo}
-            alt="USDC"
-            className={`${size} rounded-full`}
-          />
-        );
-      case "USDT":
-        return (
-          <img
-            {...iconProps}
-            src={usdtLogo}
-            alt="USDT"
-            className={`${size} rounded-full`}
-          />
-        );
-      case "EURC":
-        return (
-          <img
-            {...iconProps}
-            src={eurcLogo}
-            alt="EURC"
-            className={`${size} rounded-full`}
-          />
-        );
-      default:
-        return (
-          <div
-            {...iconProps}
-            className={`${size} bg-gray-300 rounded-full`}
-          />
-        );
-    }
-  };
-
-
-
   const supportedCryptos = [
     {
       symbol: "USDC",
@@ -596,32 +539,27 @@ const App = () => {
     {
       id: "ethereum",
       name: "Ethereum",
-      icon: <ChainIcon chain="ethereum" size="w-[18px] h-[18px]" />,
-      logo: ethLogo,
+      icon: <ChainIcon chain="ethereum" size={18} />,
     },
     {
       id: "polygon",
       name: "Polygon",
-      icon: <ChainIcon chain="polygon" size="w-[18px] h-[18px]" />,
-      logo: polygonLogo,
+      icon: <ChainIcon chain="polygon" size={18} />,
     },
     {
       id: "arbitrum",
       name: "Arbitrum",
-      icon: <ChainIcon chain="arbitrum" size="w-[18px] h-[18px]" />,
-      logo: arbitrumLogo,
+      icon: <ChainIcon chain="arbitrum" size={18} />,
     },
     {
       id: "optimism",
       name: "Optimism",
-      icon: <ChainIcon chain="optimism" size="w-[18px] h-[18px]" />,
-      logo: optimismLogo,
+      icon: <ChainIcon chain="optimism" size={18} />,
     },
     {
       id: "base",
       name: "Base",
-      icon: <ChainIcon chain="base" size="w-[18px] h-[18px]" />,
-      logo: baseLogo,
+      icon: <ChainIcon chain="base" size={18} />,
     },
   ];
 

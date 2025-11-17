@@ -148,7 +148,7 @@ export default function PaymentLinksPage({
                             {chainFilter !== "all" && (
                               <ChainIcon
                                 chain={chainFilter}
-                                size="w-4 h-4"
+                                size={16}
                               />
                             )}
                             <span>
@@ -168,31 +168,31 @@ export default function PaymentLinksPage({
                         </SelectItem>
                         <SelectItem value="ethereum">
                           <div className="flex items-center gap-2">
-                            <ChainIcon chain="ethereum" size="w-4 h-4" />
+                            <ChainIcon chain="ethereum" size={16} />
                             <span>Ethereum</span>
                           </div>
                         </SelectItem>
                         <SelectItem value="polygon">
                           <div className="flex items-center gap-2">
-                            <ChainIcon chain="polygon" size="w-4 h-4" />
+                            <ChainIcon chain="polygon" size={16} />
                             <span>Polygon</span>
                           </div>
                         </SelectItem>
                         <SelectItem value="arbitrum">
                           <div className="flex items-center gap-2">
-                            <ChainIcon chain="arbitrum" size="w-4 h-4" />
+                            <ChainIcon chain="arbitrum" size={16} />
                             <span>Arbitrum</span>
                           </div>
                         </SelectItem>
                         <SelectItem value="optimism">
                           <div className="flex items-center gap-2">
-                            <ChainIcon chain="optimism" size="w-4 h-4" />
+                            <ChainIcon chain="optimism" size={16} />
                             <span>Optimism</span>
                           </div>
                         </SelectItem>
                         <SelectItem value="base">
                           <div className="flex items-center gap-2">
-                            <ChainIcon chain="base" size="w-4 h-4" />
+                            <ChainIcon chain="base" size={16} />
                             <span>Base</span>
                           </div>
                         </SelectItem>
@@ -349,7 +349,7 @@ export default function PaymentLinksPage({
                               Chain
                             </p>
                             <div className="flex items-center gap-1.5">
-                              <ChainIcon chain={link.chain} size="w-4 h-4" />
+                              <ChainIcon chain={link.chain} size={16} />
                               <p className="text-gray-900 dark:text-white capitalize">
                                 {link.chain || "N/A"}
                               </p>
@@ -510,7 +510,7 @@ export default function PaymentLinksPage({
                               Chain
                             </p>
                             <div className="flex items-center gap-1.5">
-                              <ChainIcon chain={link.chain} size="w-4 h-4" />
+                              <ChainIcon chain={link.chain} size={16} />
                               <p className="text-gray-900 dark:text-white capitalize">
                                 {link.chain || "N/A"}
                               </p>
@@ -679,7 +679,7 @@ export default function PaymentLinksPage({
                               Chain
                             </p>
                             <div className="flex items-center gap-1.5">
-                              <ChainIcon chain={link.chain} size="w-4 h-4" />
+                              <ChainIcon chain={link.chain} size={16} />
                               <p className="text-gray-900 dark:text-white capitalize">
                                 {link.chain || "N/A"}
                               </p>
