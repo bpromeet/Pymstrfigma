@@ -180,8 +180,8 @@ import {
 } from "./components/CryptoSelector";
 import { ManageCoin } from "./components/ManageCoin";
 import { BottomNavigation, type BottomNavItem } from "./components/BottomNavigation";
-import { Activity, Wallet, Settings, HelpCircle, Scale, Receipt, MoreHorizontal, LogOut } from "lucide-react";
-import { TeamManagement } from "./components/TeamManagement";
+// Duplicate import removed - icons already imported at lines 63-119
+import { Scale, Receipt, MoreHorizontal } from "lucide-react";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import EndUserDashboardPage from "./pages/EndUserDashboardPage";
 import EndUserWalletsPage from "./pages/EndUserWalletsPage";
@@ -189,6 +189,7 @@ import EndUserTransactionsPage from "./pages/EndUserTransactionsPage";
 import EndUserSettingsPage from "./pages/EndUserSettingsPage";
 import HelpPage from "./pages/HelpPage";
 import LegalPage from "./pages/LegalPage";
+// Marketing pages removed - now in LandingApp.tsx (deployed to pymstr.com)
 import {
   INITIAL_PAYMENT_LINKS,
   INITIAL_WALLETS,
@@ -213,7 +214,14 @@ import {
 } from "./utils/helpers";
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState("admin");
+  // Initialize activeTab based on hash (for dev mode)
+  const getInitialTab = () => {
+    const hash = window.location.hash.toLowerCase();
+    if (hash === "#/dev" || hash === "#/dashboard") return "admin";
+    return "admin";
+  };
+  
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   const [isStandalonePage, setIsStandalonePage] =
     useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
@@ -253,6 +261,12 @@ const App = () => {
   const [showPaymentLinkDialog, setShowPaymentLinkDialog] =
     useState(false);
   const paymentLinksRef = useRef(paymentLinks);
+  
+  // Sync ref with state
+  useEffect(() => {
+    paymentLinksRef.current = paymentLinks;
+  }, [paymentLinks]);
+  
   const [isNavRailExpanded, setIsNavRailExpanded] =
     useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("dark");
@@ -268,7 +282,7 @@ const App = () => {
     }
   };
 
-  // Initialize theme on mount
+  // Initialize theme on mount (theme already set in state line 266)
   useEffect(() => {
     const isDark = theme === "dark";
     if (isDark) {
@@ -276,7 +290,7 @@ const App = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, []);
+  }, [theme]);
 
   // Scroll to top when navigating between pages
   useEffect(() => {
@@ -288,6 +302,13 @@ const App = () => {
     const handleHashChange = () => {
       const hash = window.location.hash;
       const hashLower = hash.toLowerCase();
+
+      // DEV MODE: Direct dashboard access bypass
+      if (hashLower === "#/dev") {
+        setActiveTab("admin");
+        setIsStandalonePage(false);
+        return;
+      }
 
       // Handle payment links first (#/pay/*)
       if (hash.startsWith("#/pay/")) {
@@ -346,7 +367,16 @@ const App = () => {
       } else if (hash === "#/pay") {
         setActiveTab("checkout");
         setIsStandalonePage(false);
+      } else if (hashLower === "#/dashboard") {
+        setActiveTab("admin");
+        setIsStandalonePage(false);
+      } else if (hash === "#/" || hash === "") {
+        // Default to dashboard for app.pymstr.com
+        setActiveTab("admin");
+        setIsStandalonePage(false);
       } else {
+        // Unknown route - default to dashboard
+        setActiveTab("admin");
         setIsStandalonePage(false);
       }
     };
@@ -895,7 +925,7 @@ const App = () => {
       lastActive: new Date().toISOString(),
     };
 
-    setTeamMembers((prev) => [...prev, member]);
+    setTeamMembers((prev) => [member, ...prev]);
     setNewMember({ name: "", email: "", role: "view-only" });
     setShowAddMember(false);
     toast(`Team member "${member.name}" added successfully!`);
@@ -2251,6 +2281,7 @@ const App = () => {
             onViewLink={handlePaymentLinkClick}
             showPaymentLinkDialog={showPaymentLinkDialog}
             setShowPaymentLinkDialog={setShowPaymentLinkDialog}
+            onLinkGenerated={handleLinkGenerated}
           />
         );
       case "wallet":
@@ -2285,7 +2316,7 @@ const App = () => {
             newMember={newMember}
             setNewMember={setNewMember}
             handleAddTeamMember={handleAddTeamMember}
-            handleDeleteMember={handleDeleteMember}
+            handleDeleteMember={handleRemoveTeamMember}
           />
         );
       case "reports":
@@ -2404,6 +2435,7 @@ const App = () => {
         return <HelpPage />;
       case "legal":
         return <LegalPage />;
+      // Marketing pages removed - now in LandingApp.tsx (deployed to pymstr.com)
       default:
         return <AdminDashboard />;
     }
@@ -2418,6 +2450,7 @@ const App = () => {
     } else if (activeTab === "codeexamples") {
       return <CodeExamplesPage />;
     }
+    // Marketing pages removed - now in LandingApp.tsx (deployed to pymstr.com)
   }
 
   // Helper: Determine if we should show navigation chrome (rail, header, bottom nav)

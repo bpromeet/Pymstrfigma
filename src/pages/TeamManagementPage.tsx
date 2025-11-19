@@ -316,9 +316,11 @@ export default function TeamManagementPage({
                             {/* Status Column */}
                             <TableCell className="py-4">
                               <span
-                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                                   member.status === "active"
                                     ? "bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]"
+                                    : member.status === "pending"
+                                    ? "bg-[#FFF3CD] text-[#856404] dark:bg-[#3d3000] dark:text-[#D9C370]"
                                     : "bg-[#43586C]/20 text-[#798A9B]"
                                 }`}
                               >
@@ -328,51 +330,69 @@ export default function TeamManagementPage({
                             
                             {/* Last Active Column */}
                             <TableCell className="py-4 text-gray-900 dark:text-white">
-                              {new Date(member.lastActive).toLocaleDateString('en-US', {
-                                month: 'numeric',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
+                              {member.status === "pending" ? (
+                                /* Resend Invite Button for Pending Members */
+                                <Button
+                                  variant="outline"
+                                  className="h-8 px-3 rounded-full border-[#D9C370] text-[#D9C370] hover:bg-yellow-100 dark:hover:bg-yellow-900/20 transition-all duration-200"
+                                  onClick={() => {
+                                    toast.success(`Invitation resent to ${member.email}`);
+                                  }}
+                                  aria-label="Resend invitation"
+                                >
+                                  <span className="text-xs">Resend Invite</span>
+                                </Button>
+                              ) : (
+                                /* Last Active Date for Active/Inactive Members */
+                                new Date(member.lastActive).toLocaleDateString('en-US', {
+                                  month: 'numeric',
+                                  day: 'numeric',
+                                  year: 'numeric'
+                                })
+                              )}
                             </TableCell>
                             
                             {/* Actions Column */}
                             <TableCell className="py-4">
                               <div className="flex items-center gap-2">
-                                {/* Activate/Deactivate Toggle */}
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className={`h-8 w-8 rounded-full transition-all duration-200 ${
-                                    member.status === "active"
-                                      ? "hover:bg-orange-100 dark:hover:bg-orange-900/20"
-                                      : "hover:bg-green-100 dark:hover:bg-green-900/20"
-                                  }`}
-                                  onClick={() => {
-                                    setTeamMembers((prev) =>
-                                      prev.map((m) =>
-                                        m.id === member.id
-                                          ? {
-                                              ...m,
-                                              status: m.status === "active" ? "inactive" : "active",
-                                            }
-                                          : m
-                                      )
-                                    );
-                                    toast.success(
+                                {/* Activate/Deactivate Button - Only for Active/Inactive Members */}
+                                {member.status !== "pending" && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={`h-8 w-8 rounded-full transition-all duration-200 ${
                                       member.status === "active"
-                                        ? `${member.name} deactivated`
-                                        : `${member.name} activated`
-                                    );
-                                  }}
-                                  aria-label={member.status === "active" ? "Deactivate member" : "Activate member"}
-                                >
-                                  {member.status === "active" ? (
-                                    <UserX className="w-4 h-4 text-[#FF5914]" />
-                                  ) : (
-                                    <UserCheck className="w-4 h-4 text-[#7DD069]" />
-                                  )}
-                                </Button>
-                                {/* Delete Button */}
+                                        ? "hover:bg-orange-100 dark:hover:bg-orange-900/20"
+                                        : "hover:bg-green-100 dark:hover:bg-green-900/20"
+                                    }`}
+                                    onClick={() => {
+                                      setTeamMembers((prev) =>
+                                        prev.map((m) =>
+                                          m.id === member.id
+                                            ? {
+                                                ...m,
+                                                status: m.status === "active" ? "inactive" : "active",
+                                              }
+                                            : m
+                                        )
+                                      );
+                                      toast.success(
+                                        member.status === "active"
+                                          ? `${member.name} deactivated`
+                                          : `${member.name} activated`
+                                      );
+                                    }}
+                                    aria-label={member.status === "active" ? "Deactivate member" : "Activate member"}
+                                  >
+                                    {member.status === "active" ? (
+                                      <UserX className="w-4 h-4 text-[#FF5914]" />
+                                    ) : (
+                                      <UserCheck className="w-4 h-4 text-[#7DD069]" />
+                                    )}
+                                  </Button>
+                                )}
+                                
+                                {/* Delete Button - Always Available */}
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -410,6 +430,8 @@ export default function TeamManagementPage({
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                           member.status === "active"
                             ? "bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]"
+                            : member.status === "pending"
+                            ? "bg-[#FFF3CD] text-[#856404] dark:bg-[#3d3000] dark:text-[#D9C370]"
                             : "bg-[#43586C]/20 text-[#798A9B]"
                         }`}
                       >
@@ -475,60 +497,94 @@ export default function TeamManagementPage({
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 pt-2 border-t border-[#43586C]/30">
-                      {/* Activate/Deactivate Button */}
-                      <Button
-                        variant="outline"
-                        className={`flex-1 h-10 rounded-full transition-all duration-200 ${
-                          member.status === "active"
-                            ? "border-[#FF5914] text-[#FF5914] hover:bg-orange-100 dark:hover:bg-orange-900/20"
-                            : "border-[#7DD069] text-[#7DD069] hover:bg-green-100 dark:hover:bg-green-900/20"
-                        }`}
-                        onClick={() => {
-                          setTeamMembers((prev) =>
-                            prev.map((m) =>
-                              m.id === member.id
-                                ? {
-                                    ...m,
-                                    status: m.status === "active" ? "inactive" : "active",
-                                  }
-                                : m
-                            )
-                          );
-                          toast.success(
-                            member.status === "active"
-                              ? `${member.name} deactivated`
-                              : `${member.name} activated`
-                          );
-                        }}
-                      >
-                        {member.status === "active" ? (
-                          <>
-                            <UserX className="w-4 h-4 mr-2" />
-                            Deactivate
-                          </>
-                        ) : (
-                          <>
-                            <UserCheck className="w-4 h-4 mr-2" />
-                            Activate
-                          </>
-                        )}
-                      </Button>
-                      {/* Delete Button */}
-                      <Button
-                        variant="outline"
-                        className="flex-1 h-10 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200"
-                        onClick={() => {
-                          setMemberToDelete({
-                            id: member.id,
-                            name: member.name,
-                            email: member.email,
-                          });
-                          setShowDeleteConfirm(true);
-                        }}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </Button>
+                      {/* Conditional Actions based on status */}
+                      {member.status === "pending" ? (
+                        /* Resend Invite for Pending Members */
+                        <>
+                          <Button
+                            variant="outline"
+                            className="flex-1 h-10 rounded-full border-[#D9C370] text-[#D9C370] hover:bg-yellow-100 dark:hover:bg-yellow-900/20 transition-all duration-200"
+                            onClick={() => {
+                              toast.success(`Invitation resent to ${member.email}`);
+                            }}
+                          >
+                            Resend Invite
+                          </Button>
+                          {/* Delete Button */}
+                          <Button
+                            variant="outline"
+                            className="flex-1 h-10 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200"
+                            onClick={() => {
+                              setMemberToDelete({
+                                id: member.id,
+                                name: member.name,
+                                email: member.email,
+                              });
+                              setShowDeleteConfirm(true);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </Button>
+                        </>
+                      ) : (
+                        /* Activate/Deactivate for Active/Inactive Members */
+                        <>
+                          <Button
+                            variant="outline"
+                            className={`flex-1 h-10 rounded-full transition-all duration-200 ${
+                              member.status === "active"
+                                ? "border-[#FF5914] text-[#FF5914] hover:bg-orange-100 dark:hover:bg-orange-900/20"
+                                : "border-[#7DD069] text-[#7DD069] hover:bg-green-100 dark:hover:bg-green-900/20"
+                            }`}
+                            onClick={() => {
+                              setTeamMembers((prev) =>
+                                prev.map((m) =>
+                                  m.id === member.id
+                                    ? {
+                                        ...m,
+                                        status: m.status === "active" ? "inactive" : "active",
+                                      }
+                                    : m
+                                )
+                              );
+                              toast.success(
+                                member.status === "active"
+                                  ? `${member.name} deactivated`
+                                  : `${member.name} activated`
+                              );
+                            }}
+                          >
+                            {member.status === "active" ? (
+                              <>
+                                <UserX className="w-4 h-4 mr-2" />
+                                Deactivate
+                              </>
+                            ) : (
+                              <>
+                                <UserCheck className="w-4 h-4 mr-2" />
+                                Activate
+                              </>
+                            )}
+                          </Button>
+                          {/* Delete Button */}
+                          <Button
+                            variant="outline"
+                            className="flex-1 h-10 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200"
+                            onClick={() => {
+                              setMemberToDelete({
+                                id: member.id,
+                                name: member.name,
+                                email: member.email,
+                              });
+                              setShowDeleteConfirm(true);
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete
+                          </Button>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}

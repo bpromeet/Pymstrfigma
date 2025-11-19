@@ -41,6 +41,7 @@ interface PaymentLinksPageProps {
   onViewLink: (link: any) => void;
   showPaymentLinkDialog: boolean;
   setShowPaymentLinkDialog: (show: boolean) => void;
+  onLinkGenerated: (newLink: any) => void; // ADD THIS LINE
 }
 
 export default function PaymentLinksPage({
@@ -51,16 +52,18 @@ export default function PaymentLinksPage({
   onViewLink,
   showPaymentLinkDialog,
   setShowPaymentLinkDialog,
+  onLinkGenerated, // ADD THIS LINE
 }: PaymentLinksPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [chainFilter, setChainFilter] = useState("all");
   const [currencyFilter, setCurrencyFilter] = useState("all");
   const [paymentLinksTab, setPaymentLinksTab] = useState("all");
 
-  const handleLinkGenerated = (newLink: any) => {
-    toast("Payment link created successfully!");
-    setShowPaymentLinkDialog(false);
-  };
+  // DELETE THE OLD handleLinkGenerated FUNCTION (lines 60-63) and use the prop directly
+  // const handleLinkGenerated = (newLink: any) => {
+  //   toast("Payment link created successfully!");
+  //   setShowPaymentLinkDialog(false);
+  // };
 
   // Filter function
   const getFilteredLinks = (source?: "manual" | "api") => {
@@ -130,7 +133,7 @@ export default function PaymentLinksPage({
                   Secure payment link for your customers
                 </DialogDescription>
               </DialogHeader>
-              <PaymentLinkForm onLinkGenerated={handleLinkGenerated} />
+              <PaymentLinkForm onLinkGenerated={onLinkGenerated} />
             </DialogContent>
           </Dialog>
 

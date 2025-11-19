@@ -193,7 +193,7 @@ export default function WebhooksPage() {
       apiKeyId: newWebhook.apiKeyId,
     };
 
-    setWebhooks([...webhooks, webhook]);
+    setWebhooks([webhook, ...webhooks]); // Add new webhook at the TOP
     setNewWebhook({ url: "", description: "", events: [], apiKeyId: "" });
     setShowCreateDialog(false);
     toast.success("Webhook endpoint added successfully");
@@ -316,6 +316,15 @@ export default function WebhooksPage() {
 
   const maskSecret = (secret: string) => {
     return secret.substring(0, 10) + "••••••••••••••••";
+  };
+
+  // Safe URL hostname extractor
+  const getHostname = (url: string): string => {
+    try {
+      return new URL(url).hostname;
+    } catch {
+      return url; // Return original if not a valid URL
+    }
   };
 
   return (
@@ -610,7 +619,7 @@ export default function WebhooksPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <code className="text-xs">{new URL(delivery.url).hostname}</code>
+                      <code className="text-xs">{getHostname(delivery.url)}</code>
                     </TableCell>
                     <TableCell>
                       <Badge
@@ -719,7 +728,7 @@ export default function WebhooksPage() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Endpoint</p>
-                  <code className="text-xs">{new URL(delivery.url).hostname}</code>
+                  <code className="text-xs">{getHostname(delivery.url)}</code>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">

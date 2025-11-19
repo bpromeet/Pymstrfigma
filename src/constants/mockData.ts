@@ -388,6 +388,15 @@ export const INITIAL_TEAM_MEMBERS = [
     avatar: "LA",
     lastActive: "2025-10-03T12:20:00Z",
   },
+  {
+    id: "5",
+    name: "Alex Pending",
+    email: "alex@pymstr.com",
+    role: "view-only",
+    status: "pending",
+    avatar: "AP",
+    lastActive: "Never",
+  },
 ];
 
 export const INITIAL_API_KEYS = [

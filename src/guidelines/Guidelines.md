@@ -2320,6 +2320,91 @@ const copyToClipboard = (text: string) => {
 * All documentation code blocks
 * Any component with copy functionality
 
+### Address Utilities (Web3 UX Pattern)
+
+All blockchain addresses must be displayed using truncated format with ellipsis for optimal UX. Never show full addresses in UI layouts.
+
+**Utility Location:** `/utils/address.ts`
+
+**Core Functions:**
+
+```tsx
+import { truncateAddress, formatAddress, isValidAddress } from '../utils/address';
+
+// Basic truncation (0x742d...bEb5)
+truncateAddress(address); // Returns: "0x742d...bEb5"
+
+// Custom truncation
+truncateAddress(address, 10, 8); // Returns: "0x742d35Cc...95f0bEb5"
+
+// Format helper with presets
+formatAddress(address, "short");  // 0x742d...bEb5
+formatAddress(address, "medium"); // 0x742d35Cc...95f0bEb5
+formatAddress(address, "full");   // Full address
+
+// Validation
+isValidAddress(address); // Returns: true/false
+```
+
+**Display Standards:**
+
+**Short Format (Default - Most Common):**
+* Start: 6 characters (includes "0x")
+* End: 4 characters
+* Result: `0x742d...bEb5`
+* Use for: Cards, tables, lists, mobile views
+
+**Medium Format (Detail Views):**
+* Start: 10 characters
+* End: 8 characters
+* Result: `0x742d35Cc...95f0bEb5`
+* Use for: Dialogs, transaction details, confirmation screens
+
+**Full Format (Copy Only):**
+* Show full address only in:
+  - Copy/paste contexts (but display truncated)
+  - QR codes
+  - Debug logs
+* Never display full address in regular UI
+
+**Implementation Example:**
+
+```tsx
+// ✅ CORRECT: Truncated display with full copy
+<div className="flex items-center gap-3">
+  <div className="bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-lg px-4 py-3">
+    <code className="text-sm">
+      {truncateAddress(walletAddress)}
+    </code>
+  </div>
+  <Button onClick={() => onCopy(walletAddress)}>
+    <Copy className="w-4 h-4" />
+  </Button>
+</div>
+
+// ❌ WRONG: Full address breaking layout
+<code className="text-sm break-all">
+  {walletAddress}
+</code>
+
+// ❌ WRONG: Manual truncation without utility
+<code>{address.slice(0, 6)}...{address.slice(-4)}</code>
+```
+
+**Where Applied:**
+* End User Wallets - Wallet address display
+* Transaction tables - From/To addresses
+* Payment Links - Recipient addresses
+* Merchant wallets - All address displays
+* Any blockchain address display in UI
+
+**Design System Benefits:**
+* ✅ Consistent truncation across entire app
+* ✅ Prevents layout overflow
+* ✅ Standard Web3 UX pattern
+* ✅ Single source of truth for address formatting
+* ✅ Easy to extend (add checksumming, ENS resolution, etc.)
+
 ---
 
 ## Responsive Design (Mobile-First MD3)

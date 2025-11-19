@@ -72,7 +72,7 @@ export const WalletAddressCopyButton: React.FC<WalletAddressCopyButtonProps> = (
         {truncatedAddress}
       </span>
       {copied ? (
-        <Check className="w-4 h-4" />
+        <Check className="w-4 h-4 text-green-600" />
       ) : (
         <Copy className="w-4 h-4" />
       )}
