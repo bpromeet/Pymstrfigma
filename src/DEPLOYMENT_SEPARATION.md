@@ -1,67 +1,16 @@
-# PYMSTR Deployment Separation Guide
+# PYMSTR Dashboard Deployment Guide
 
 ## Overview
 
-PYMSTR is now split into **two separate applications**:
+This repository contains the **PYMSTR Dashboard Application** only.
 
-1. **Landing Site** (`LandingApp.tsx`) → Deploy to `pymstr.com`
-2. **Dashboard App** (`App.tsx`) → Deploy to `app.pymstr.com`
+The marketing/landing site has been **moved to a separate repository** and is deployed independently.
 
----
+**Current Repository**:
+- 📊 Dashboard App (`App.tsx`) → Deploy to `app.pymstr.com`
 
-## 🌐 Landing Site (pymstr.com)
-
-**Purpose**: Public marketing website with niche-specific landing pages
-
-**Entry Point**: `/LandingApp.tsx`
-
-**Pages Included**:
-- Main landing page (`/`)
-- Gaming landing (`#/gaming`)
-- Creators landing (`#/creators`)
-- B2B landing (`#/b2b`)
-- High-Risk Merchants landing (`#/high-risk`)
-
-**Build Configuration**:
-
-### Option 1: Vite Build (Recommended)
-
-Create `vite.config.landing.ts`:
-
-```ts
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-
-export default defineConfig({
-  plugins: [react()],
-  root: '.',
-  build: {
-    outDir: 'dist-landing',
-    rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'index-landing.html')
-      }
-    }
-  }
-})
-```
-
-Build command:
-```bash
-vite build --config vite.config.landing.ts
-```
-
-### Option 2: Figma Site Deployment
-
-1. Upload `/LandingApp.tsx` as main entry
-2. Upload all marketing page files from `/pages/Marketing*.tsx`
-3. Upload `/index-landing.html` as index
-4. Upload `/src/landing-main.tsx` as entry script
-5. Set custom domain: `pymstr.com`
-
-**CTAs on Landing**:
-All "Get Started" / "Try Now" buttons should link to: `https://app.pymstr.com`
+**Separate Repository** (not in this workspace):
+- 🌐 Landing Site → Deployed to `pymstr.com`
 
 ---
 
@@ -86,9 +35,7 @@ All "Get Started" / "Try Now" buttons should link to: `https://app.pymstr.com`
 
 **Build Configuration**:
 
-### Option 1: Vite Build (Recommended)
-
-Use existing `vite.config.ts` (default):
+### Standard Build (Vite)
 
 ```bash
 vite build
@@ -96,34 +43,28 @@ vite build
 
 Output: `/dist` directory
 
-### Option 2: Figma Site Deployment
+### Figma Site Deployment
 
 1. Upload `/App.tsx` as main entry
-2. Upload all page files from `/pages/` (except Marketing*.tsx)
-3. Upload all component files from `/components/`
-4. Set custom domain: `app.pymstr.com`
+2. Upload `/index.html` 
+3. Upload `/src/main.tsx`
+4. Upload all page files from `/pages/`
+5. Upload all component files from `/components/`
+6. Upload `/utils/` and `/constants/`
+7. Upload `/styles/globals.css`
+8. Set custom domain: `app.pymstr.com`
 
-**Default Route**:
+**Default Routes**:
 - `/` → Dashboard (requires Web3Auth login in production)
 - `/#/dev` → Dev mode bypass (for testing only)
 - `/#/pay/PL123` → Checkout flow for payment links
 
 ---
 
-## 🔄 Routing Summary
+## 🔄 Dashboard Routes
 
-### Landing Site Routes (`pymstr.com`)
-```
-/                → Main landing page
-#/gaming         → Gaming niche landing
-#/creators       → Creators niche landing
-#/b2b            → B2B niche landing
-#/high-risk      → High-risk merchants landing
-```
+All routes handled by `App.tsx`:
 
-All routes handled by `LandingApp.tsx`
-
-### Dashboard App Routes (`app.pymstr.com`)
 ```
 /                → Dashboard (admin view)
 #/dev            → Dev mode bypass
@@ -145,50 +86,26 @@ All routes handled by `LandingApp.tsx`
 #/code-examples  → Code Examples (standalone)
 ```
 
-All routes handled by `App.tsx`
-
 ---
 
 ## 🚀 Deployment Steps
 
-### Step 1: Deploy Landing Site
+### Netlify Deployment (Current)
 
-**Figma Site**:
-1. Create new Figma Site project
-2. Upload files:
-   - `/LandingApp.tsx`
-   - `/pages/Marketing*.tsx` (all 5 files)
-   - `/index-landing.html`
-   - `/src/landing-main.tsx`
-   - `/components/` (shared components)
-   - `/styles/globals.css`
-3. Set custom domain: `pymstr.com`
-4. Publish
+1. Build the app:
+   ```bash
+   vite build
+   ```
 
-**Or use Vercel/Netlify**:
-```bash
-# Build landing
-vite build --config vite.config.landing.ts
+2. Deploy `/dist` folder to Netlify
 
-# Deploy dist-landing to pymstr.com
-vercel deploy dist-landing --prod
-```
+3. Configure:
+   - Custom domain: `app.pymstr.com`
+   - Build command: `vite build`
+   - Publish directory: `dist`
 
-### Step 2: Deploy Dashboard App
+### Alternative: Vercel Deployment
 
-**Figma Site**:
-1. Create new Figma Site project
-2. Upload files:
-   - `/App.tsx`
-   - `/pages/` (exclude Marketing*.tsx)
-   - `/components/`
-   - `/styles/globals.css`
-   - `/utils/`
-   - `/constants/`
-3. Set custom domain: `app.pymstr.com`
-4. Publish
-
-**Or use Vercel/Netlify**:
 ```bash
 # Build app
 vite build
@@ -199,28 +116,12 @@ vercel deploy dist --prod
 
 ---
 
-## ✅ Benefits of Separation
+## 🔗 Links to Marketing Site
 
-1. **No routing conflicts** - Each app has its own routes
-2. **Faster builds** - Smaller codebases
-3. **Independent deploys** - Update landing without touching app
-4. **Better performance** - Landing loads faster (no dashboard code)
-5. **Clearer architecture** - Separation of concerns
-6. **Easier maintenance** - Each app has single responsibility
+The landing site is deployed separately to `pymstr.com`.
 
----
+If you need to link back to marketing from the dashboard:
 
-## 🔗 Cross-App Links
-
-### From Landing → App
-```tsx
-// On landing CTA buttons
-<Button onClick={() => window.location.href = 'https://app.pymstr.com'}>
-  Get Started
-</Button>
-```
-
-### From App → Landing
 ```tsx
 // Back to marketing site
 <Button onClick={() => window.location.href = 'https://pymstr.com'}>
@@ -232,29 +133,19 @@ vercel deploy dist --prod
 
 ## 🧪 Local Development
 
-### Run Landing Site
-```bash
-# Option 1: Direct dev server
-vite --config vite.config.landing.ts --port 5173
-
-# Option 2: Build and preview
-vite build --config vite.config.landing.ts
-vite preview dist-landing --port 5173
-```
-
 ### Run Dashboard App
+
 ```bash
 # Default vite dev server
-vite --port 3000
+npm run dev
 
-# Or build and preview
-vite build
-vite preview --port 3000
+# Or with specific port
+vite --port 3000
 ```
 
 Access:
-- Landing: `http://localhost:5173`
-- App: `http://localhost:3000/#/dev` (dev mode bypass)
+- App: `http://localhost:5173` (default Vite port)
+- Dev mode: `http://localhost:5173/#/dev` (bypass Web3Auth)
 
 ---
 
@@ -262,77 +153,108 @@ Access:
 
 ```
 /
-├── LandingApp.tsx              # Landing site entry
 ├── App.tsx                     # Dashboard app entry
-├── index-landing.html          # Landing HTML
+├── index.html                  # Main HTML entry
 ├── src/
-│   └── landing-main.tsx        # Landing React mount
-├── pages/
-│   ├── Marketing*.tsx          # 5 landing pages
-│   ├── Dashboard*.tsx          # Dashboard pages
-│   ├── Wallets*.tsx            # etc.
-│   └── ...
-├── components/                 # Shared components
-├── utils/                      # Shared utilities
-├── styles/                     # Shared styles
-└── vite.config.landing.ts      # Landing build config
+│   └── main.tsx                # React mount point
+├── pages/                      # Dashboard pages
+│   ├── DashboardPage.tsx
+│   ├── PaymentLinksPage.tsx
+│   ├── WalletsPage.tsx
+│   ├── ReportsPage.tsx
+│   ├── APIKeysPage.tsx
+│   ├── SettingsPage.tsx
+│   ├── HelpPage.tsx
+│   ├── LegalPage.tsx
+│   ├── EndUserDashboardPage.tsx
+│   └── ... (18 total pages)
+├── components/                 # React components
+├── utils/                      # Utilities
+│   ├── address.ts              # Address truncation
+│   ├── clipboard.ts            # Copy utilities
+│   └── helpers.ts              # General helpers
+├── constants/                  # Mock data
+├── styles/                     # Global styles
+│   └── globals.css
+└── guidelines/                 # Design system docs
+    └── Guidelines.md
 ```
 
 ---
 
-## 🎯 Next Steps
+## ✅ Benefits of Separation
 
-1. ✅ **Landing deployed to `pymstr.com`** - Test all niche pages
-2. ✅ **App deployed to `app.pymstr.com`** - Test dashboard login
-3. ✅ **Update all CTAs** - Link landing → app
-4. ✅ **Test Web3Auth** - Ensure login redirects work
-5. ✅ **DNS Configuration** - Point subdomains correctly
-6. ✅ **SSL Certificates** - Secure both domains
+1. **No routing conflicts** - Dashboard has clean routes
+2. **Faster builds** - Smaller codebase (dashboard-only)
+3. **Independent deploys** - Update app without touching landing
+4. **Better performance** - No marketing code in dashboard
+5. **Clearer architecture** - Single responsibility
+6. **Easier maintenance** - Focused codebase
+
+---
+
+## 🎯 Production Checklist
+
+### Dashboard App (app.pymstr.com)
+- [x] Remove all marketing pages
+- [x] Default route goes to dashboard
+- [x] Clean entry point (index.html → main.tsx → App.tsx)
+- [x] All dashboard features functional
+- [x] 18 pages tested and working
+- [ ] Web3Auth integration configured
+- [ ] #/dev bypass disabled in production
+- [ ] #/pay/* checkout flow tested
+- [ ] Deploy to production
 
 ---
 
 ## 🐛 Troubleshooting
 
-**Landing redirects to dashboard?**
-- Check that you're deploying `LandingApp.tsx` not `App.tsx`
-- Verify `index-landing.html` points to `/src/landing-main.tsx`
+**App not loading?**
+- Check that `index.html` exists in root
+- Verify `/src/main.tsx` imports App.tsx correctly
+- Ensure all page files are uploaded
 
-**App shows marketing page?**
-- Check that `App.tsx` no longer imports Marketing*.tsx
-- Verify all marketing routes removed from hash handler
+**Routing not working?**
+- Hash routing is handled by App.tsx
+- Default route `/` should show dashboard
+- Test with `#/dev` for dev mode
 
-**Cross-origin issues?**
-- Both domains must use HTTPS in production
-- Configure CORS if app needs to call landing APIs (unlikely)
+**Build errors?**
+- Run `npm install` to ensure dependencies
+- Check that all imports resolve correctly
+- Verify no references to deleted marketing files
 
-**Shared components not working?**
-- Both apps need access to `/components/`, `/utils/`, `/styles/`
-- Ensure build includes all dependencies
-
----
-
-## 📊 Deployment Checklist
-
-### Landing Site (pymstr.com)
-- [ ] Remove all dashboard/app code
-- [ ] Keep only marketing pages
-- [ ] Update CTAs to link to app.pymstr.com
-- [ ] Test all 5 landing pages
-- [ ] Verify routing works (#/gaming, #/creators, etc.)
-- [ ] Check mobile responsiveness
-- [ ] Deploy to production
-
-### Dashboard App (app.pymstr.com)
-- [ ] Remove all marketing pages
-- [ ] Default route goes to dashboard
-- [ ] Web3Auth integration works
-- [ ] #/dev bypass works for testing
-- [ ] #/pay/* checkout flow works
-- [ ] All dashboard features functional
-- [ ] Deploy to production
+**Components not found?**
+- Ensure `/components/` folder uploaded
+- Check `/utils/` and `/constants/` uploaded
+- Verify `/styles/globals.css` is included
 
 ---
 
-**Status**: ✅ Separation Complete
+## 📦 Dependencies
 
-Both apps are now independent and ready for deployment!
+The dashboard uses:
+- React 18
+- Tailwind CSS 4.0
+- Vite (build tool)
+- ShadCN UI components
+- Lucide React icons
+- Web3Auth (authentication)
+- Pimlico (Account Abstraction)
+
+All dependencies are managed in `package.json`.
+
+---
+
+## 🎨 Design System
+
+The app follows Material Design 3 principles with PYMSTR brand identity.
+
+See `/guidelines/Guidelines.md` for complete design system documentation.
+
+---
+
+**Status**: ✅ Dashboard-Only Application
+
+This repository is clean, dashboard-focused, and ready for deployment to `app.pymstr.com`!

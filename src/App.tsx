@@ -189,7 +189,6 @@ import EndUserTransactionsPage from "./pages/EndUserTransactionsPage";
 import EndUserSettingsPage from "./pages/EndUserSettingsPage";
 import HelpPage from "./pages/HelpPage";
 import LegalPage from "./pages/LegalPage";
-// Marketing pages removed - now in LandingApp.tsx (deployed to pymstr.com)
 import {
   INITIAL_PAYMENT_LINKS,
   INITIAL_WALLETS,
@@ -2435,7 +2434,6 @@ const App = () => {
         return <HelpPage />;
       case "legal":
         return <LegalPage />;
-      // Marketing pages removed - now in LandingApp.tsx (deployed to pymstr.com)
       default:
         return <AdminDashboard />;
     }
@@ -2450,7 +2448,6 @@ const App = () => {
     } else if (activeTab === "codeexamples") {
       return <CodeExamplesPage />;
     }
-    // Marketing pages removed - now in LandingApp.tsx (deployed to pymstr.com)
   }
 
   // Helper: Determine if we should show navigation chrome (rail, header, bottom nav)
