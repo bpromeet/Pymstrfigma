@@ -23,7 +23,7 @@ const EndUserSettingsPage: React.FC<EndUserSettingsPageProps> = ({
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Settings className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<Settings className="w-6 h-6 text-[#FF5914]" />}
         title="Settings"
         subtitle="Manage your account preferences"
       />

@@ -222,6 +222,21 @@ export const SendCryptoDialog: React.FC<SendCryptoDialogProps> = ({
             </Select>
           </div>
 
+          {/* Important Warning - Above Recipient Address */}
+          <div className="bg-orange-50 dark:bg-orange-950/20 rounded-xl p-4 border border-orange-200 dark:border-orange-900">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-orange-900 dark:text-orange-200">
+                  Important
+                </p>
+                <p className="text-sm text-orange-700 dark:text-orange-300">
+                  Blockchain transactions cannot be reversed. Always double-check the recipient address before sending.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Recipient Address */}
           <div className="space-y-2">
             <Label htmlFor="recipient">Recipient Address</Label>

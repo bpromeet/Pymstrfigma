@@ -106,7 +106,7 @@ http://localhost:3000
 
 ## Project Structure
 
-```
+```plaintext
 ├── App.tsx                        # Main application component with routing
 ├── components/
 │   ├── APIKeyManagement.tsx       # API key generation and management

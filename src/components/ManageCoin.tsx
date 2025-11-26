@@ -188,9 +188,9 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
 
       {/* Deposit View */}
       {manageView === "deposit" && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Multi-Chain Address Info Box */}
-          <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-2xl border border-blue-200 dark:border-blue-900">
+          <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-200 dark:border-blue-900">
             <div className="flex items-start space-x-3">
               <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
@@ -215,8 +215,8 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
           </div>
 
           {/* QR Code Section */}
-          <div className="bg-[#1D2E3F] dark:bg-[#1D2E3F] p-8 rounded-2xl">
-            <div className="text-center space-y-4">
+          <div className="bg-[#1D2E3F] dark:bg-[#1D2E3F] p-6 rounded-2xl">
+            <div className="text-center space-y-3">
               <p className="text-white">Scan QR Code to Deposit</p>
               {qrCode && (
                 <div className="flex justify-center">
@@ -226,21 +226,6 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
                 </div>
               )}
               <p className="text-sm text-gray-400">Use your wallet app to scan</p>
-            </div>
-          </div>
-
-          {/* Important Warning */}
-          <div className="bg-orange-50 dark:bg-orange-950/20 p-4 rounded-2xl border border-orange-200 dark:border-orange-900">
-            <div className="flex items-start space-x-3">
-              <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-orange-900 dark:text-orange-200 mb-1">
-                  Important
-                </p>
-                <p className="text-sm text-orange-700 dark:text-orange-300">
-                  Send only {selectedCrypto} to this address on supported EVM chains. Sending other assets or using unsupported networks may result in permanent loss of funds.
-                </p>
-              </div>
             </div>
           </div>
         </div>

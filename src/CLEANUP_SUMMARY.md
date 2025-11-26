@@ -70,26 +70,20 @@ import APIKeyManagement from "./components/APIKeyManagement";
 import QuickStartGuide from "./components/QuickStartGuide";
 import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
-import MerchantSettings from "./components/MerchantSettings";
 import MerchantProfile from "./components/MerchantProfile";
-import SecuritySettings from "./components/SecuritySettings";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 ```
 
-**To verify**:
-```bash
-grep -n "PaymentLinkForm" App.tsx
-grep -n "APIKeyManagement" App.tsx
-grep -n "QuickStartGuide" App.tsx
-grep -n "APIReference[^P]" App.tsx  # Exclude APIReferencePage
-grep -n "CodeExamples[^P]" App.tsx  # Exclude CodeExamplesPage
-grep -n "MerchantSettings" App.tsx
-grep -n "MerchantProfile" App.tsx
-grep -n "SecuritySettings" App.tsx
-grep -n "ImageWithFallback" App.tsx
-```
+**Status**: ✅ CLEANED UP
+- ❌ `MerchantSettings` - REMOVED (Payment Settings feature deleted)
+- ❌ `SecuritySettings` - REMOVED (Security feature deleted)
 
-**If any return only 1 result (the import line), remove the import.**
+**Verification**:
+```bash
+grep -n "MerchantSettings" App.tsx     # Returns: 0 results ✅
+grep -n "SecuritySettings" App.tsx     # Returns: 0 results ✅
+grep -n "MerchantProfile" App.tsx      # Returns: Multiple uses ✅
+```
 
 ---
 

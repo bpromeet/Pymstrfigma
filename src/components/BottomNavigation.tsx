@@ -9,14 +9,14 @@
       
    2. THREE DOTS MENU (More Menu / More Sheet)
       - Bottom sheet that opens when "More" tab is clicked
-      - Contains: Dashboard, Wallets, Payment Settings, Links, API Keys, Webhooks, Documents, Help, Logout
+      - Contains: Dashboard, Wallets, Links, API Keys, Webhooks, Documents, Help, Logout
    
    DO NOT CONFUSE WITH:
    - AVATAR MENU: Located in App.tsx, top-right header dropdown (avatar click)
    ======================================== */
 
 import React from 'react';
-import { Activity, Link as LinkIcon, Key, MoreHorizontal, Wallet, FileText, LogOut, HelpCircle, Scale, BookOpen, Users, Settings, Shield, User } from 'lucide-react';
+import { Activity, Link as LinkIcon, Key, MoreHorizontal, Wallet, FileText, LogOut, HelpCircle, Scale, BookOpen, Users, User } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -85,10 +85,8 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
     { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'api', label: 'API Keys', icon: Key },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
-    { id: 'settings', label: 'Settings', icon: Settings },
     { id: 'team', label: 'Team', icon: Users },
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'security', label: 'Security', icon: Shield },
     { id: 'documents', label: 'Documentation', icon: BookOpen },
     { id: 'help', label: 'Help', icon: HelpCircle },
     { id: 'logout', label: 'Logout', icon: LogOut },
@@ -174,7 +172,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
           
           Location: Opens from bottom when "More" tab (three horizontal dots) is clicked in Footer
           Trigger: Clicking "More" tab in bottom navigation
-          Content: Payment Links, API Keys, Webhooks, Team, Settings, Profile, Security, Documentation, Help, Logout
+          Content: Payment Links, API Keys, Webhooks, Team, Profile, Documentation, Help, Logout
           Purpose: Access to all other app sections not in the main bottom nav
           DO NOT CONFUSE WITH: Avatar Menu (top right) or Footer (bottom navigation bar)
           

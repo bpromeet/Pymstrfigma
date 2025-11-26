@@ -18,7 +18,7 @@ const EndUserWalletsPage: React.FC<EndUserWalletsPageProps> = ({ copiedItem, onC
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Wallet className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
         title="Wallets"
         subtitle="Manage your crypto wallets"
       />

@@ -13,7 +13,7 @@ const EndUserTransactionsPage: React.FC = () => {
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Receipt className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<Receipt className="w-6 h-6 text-[#FF5914]" />}
         title="Transactions"
         subtitle="Your payment history"
       />

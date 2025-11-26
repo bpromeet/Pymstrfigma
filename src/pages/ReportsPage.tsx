@@ -45,7 +45,7 @@ export default function ReportsPage({
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<BarChart3 className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<BarChart3 className="w-6 h-6 text-[#FF5914]" />}
         title="Reports & Analytics"
         subtitle="View detailed analytics and insights about your payment activity"
       />

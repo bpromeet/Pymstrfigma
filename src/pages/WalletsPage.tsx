@@ -2,12 +2,9 @@ import React, { useState } from "react";
 import { PageLayout } from "../components/PageLayout";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Label } from "../components/ui/label";
-import { Switch } from "../components/ui/switch";
 import { Badge } from "../components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
-import { Wallet, Settings, Save, ChevronRight, ArrowLeft } from "lucide-react";
+import { Wallet, ChevronRight, ArrowLeft } from "lucide-react";
 import { CryptoIcon } from "../components/CryptoIcon";
 import WalletMainActionButton from "../components/WalletMainActionButton";
 import { ManageCoin } from "../components/ManageCoin";
@@ -36,21 +33,12 @@ interface WalletsPageProps {
   wallets: WalletData[];
   setWallets: React.Dispatch<React.SetStateAction<WalletData[]>>;
   theme: string;
-  editingWallet: string | null;
-  setEditingWallet: React.Dispatch<React.SetStateAction<string | null>>;
-  handleUpdateWallet: (
-    walletId: string,
-    updates: Partial<WalletData>
-  ) => void;
 }
 
 export default function WalletsPage({
   wallets,
   setWallets,
   theme,
-  editingWallet,
-  setEditingWallet,
-  handleUpdateWallet,
 }: WalletsPageProps) {
   const mainWallet = wallets.find((w) => w.isDefault);
   const [selectedCrypto, setSelectedCrypto] = useState<string>("");
@@ -60,7 +48,7 @@ export default function WalletsPage({
     return (
       <PageLayout>
         <PageLayout.Header
-          icon={<Wallet className="w-6 h-6 text-[#07D7FF]" />}
+          icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
           title="Wallet Management"
           subtitle="Manage your wallet balances and multi-chain crypto assets"
         />
@@ -106,7 +94,7 @@ export default function WalletsPage({
     <PageLayout>
       {!showingCurrency && (
         <PageLayout.Header
-          icon={<Wallet className="w-6 h-6 text-[#07D7FF]" />}
+          icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
           title="Wallet Management"
           subtitle="Manage your wallet balances and multi-chain crypto assets"
         />
@@ -265,94 +253,6 @@ export default function WalletsPage({
                             ))}
                           </TableBody>
                         </Table>
-                      </div>
-
-                      <div className="border-t pt-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="text-gray-900 dark:text-white">
-                              Wallet Settings
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              Configure notifications
-                            </p>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setEditingWallet(mainWallet.id)
-                            }
-                          >
-                            <Settings className="w-4 h-4 mr-2" />
-                            Edit
-                          </Button>
-                        </div>
-
-                        {editingWallet === mainWallet.id && (
-                          <div className="bg-white dark:bg-[#303030] border border-[#43586C] rounded-3xl p-4 space-y-4 mt-4">
-                            <div className="space-y-2">
-                              <Label>Wallet Name</Label>
-                              <Input
-                                defaultValue={mainWallet.name}
-                                id={`edit-name-${mainWallet.id}`}
-                                className="rounded bg-white dark:bg-[#2E3C49]"
-                              />
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Switch
-                                id={`notifications-${mainWallet.id}`}
-                                checked={
-                                  mainWallet.emailNotifications
-                                }
-                                onCheckedChange={(checked) =>
-                                  handleUpdateWallet(
-                                    mainWallet.id,
-                                    {
-                                      emailNotifications:
-                                        checked,
-                                    },
-                                  )
-                                }
-                              />
-                              <Label
-                                htmlFor={`notifications-${mainWallet.id}`}
-                              >
-                                Email notifications
-                              </Label>
-                            </div>
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  const input =
-                                    document.getElementById(
-                                      `edit-name-${mainWallet.id}`,
-                                    ) as HTMLInputElement;
-                                  if (input?.value)
-                                    handleUpdateWallet(
-                                      mainWallet.id,
-                                      { name: input.value },
-                                    );
-                                }}
-                                className="bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
-                              >
-                                <Save className="w-[18px] h-[18px] mr-2" />
-                                Save
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  setEditingWallet(null)
-                                }
-                                className="rounded-full"
-                              >
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </CardContent>

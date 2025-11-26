@@ -183,7 +183,7 @@ const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
             Back to Documents
           </button>
           <h1 className="flex items-center gap-3">
-            <Code2 className="w-6 h-6 text-[#07D7FF]" />
+            <Code2 className="w-6 h-6 text-[#FF5914]" />
             Code Examples
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -194,7 +194,7 @@ const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
         {/* Header - Mobile */}
         <div className="lg:hidden">
           <h1 className="flex items-center gap-3">
-            <Code2 className="w-6 h-6 text-[#07D7FF]" />
+            <Code2 className="w-6 h-6 text-[#FF5914]" />
             Code Examples
           </h1>
           <p className="text-muted-foreground mt-2">

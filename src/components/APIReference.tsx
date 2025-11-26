@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
 import { ArrowLeft, Copy, CheckCircle, AlertCircle, Globe, Code2, Webhook, BarChart3, DollarSign, Zap, TrendingUp, Building2, Check, X, Menu } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
+import { PymstrCodeBlock } from './PymstrCodeBlock';
 
 interface APIReferenceProps {
   onBack: () => void;
@@ -198,7 +199,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
             Back to Documents
           </button>
           <h1 className="flex items-center gap-3">
-            <Code2 className="w-6 h-6 text-[#07D7FF]" />
+            <Code2 className="w-6 h-6 text-[#FF5914]" />
             API Reference
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -209,7 +210,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
         {/* Header - Mobile */}
         <div className="lg:hidden">
           <h1 className="flex items-center gap-3">
-            <Code2 className="w-6 h-6 text-[#07D7FF]" />
+            <Code2 className="w-6 h-6 text-[#FF5914]" />
             API Reference
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -369,21 +370,14 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
           
           <div>
             <h4 className="font-semibold text-sm mb-2">Example Request</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`curl -X GET https://api.pymstr.com/v1/payment-links \\
+            <PymstrCodeBlock
+              code={`curl -X GET https://api.pymstr.com/v1/payment-links \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`curl -X GET https://api.pymstr.com/v1/payment-links \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`, 'auth-example')}
-              >
-                {copiedCode === 'auth-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
+  -H "Content-Type: application/json"`}
+              language="bash"
+              onCopy={(code) => copyToClipboard(code, 'auth-example')}
+              copied={copiedCode === 'auth-example'}
+            />
           </div>
 
           <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-4">
@@ -483,8 +477,8 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
 
                 <div>
                   <h5 className="font-semibold text-sm mb-2">Response: <Badge className="ml-2 rounded-full">201 Created</Badge></h5>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`{
+                  <PymstrCodeBlock
+                    code={`{
   "success": true,
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -497,29 +491,11 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
     "expiresAt": 1440,
     "createdAt": "2025-10-22T10:30:00Z"
   }
-}`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyToClipboard(`{
-  "success": true,
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Premium Subscription",
-    "price": "29.99",
-    "currency": "USD",
-    "status": "active",
-    "source": "api",
-    "url": "https://checkout.pymstr.com/550e8400-e29b-41d4-a716-446655440000",
-    "expiresAt": 1440,
-    "createdAt": "2025-10-22T10:30:00Z"
-  }
-}`, 'create-pl-res')}
-                    >
-                      {copiedCode === 'create-pl-res' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+}`}
+                    language="json"
+                    onCopy={(code) => copyToClipboard(code, 'create-pl-res')}
+                    copied={copiedCode === 'create-pl-res'}
+                  />
                 </div>
               </div>
 
@@ -552,8 +528,8 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                   <p className="text-xs text-muted-foreground mb-2">
                     When status is "completed", the link is <strong>single-use and cannot be reused</strong>. It includes <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">txHash</code> but no transaction ID.
                   </p>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`{
+                  <PymstrCodeBlock
+                    code={`{
   "success": true,
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -578,41 +554,11 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
     "createdAt": "2025-10-22T10:30:00Z",
     "completedAt": "2025-10-22T10:35:22Z"
   }
-}`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyToClipboard(`{
-  "success": true,
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Premium Subscription",
-    "price": "29.99",
-    "currency": "USD",
-    "status": "completed",
-    "source": "api",
-    "url": "https://checkout.pymstr.com/550e8400-e29b-41d4-a716-446655440000",
-    "acceptedTokens": ["USDC", "USDT", "DAI"],
-    "acceptedChains": ["ethereum", "polygon", "arbitrum", "optimism", "base"],
-    "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-    "chain": "polygon",
-    "token": "USDC",
-    "fromAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-    "expiresAt": 1440,
-    "redirectUrl": "https://yoursite.com/success",
-    "metadata": {
-      "customerId": "cust_12345",
-      "planId": "premium_monthly"
-    },
-    "createdAt": "2025-10-22T10:30:00Z",
-    "completedAt": "2025-10-22T10:35:22Z"
-  }
-}`, 'get-pl-res')}
-                    >
-                      {copiedCode === 'get-pl-res' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+}`}
+                    language="json"
+                    onCopy={(code) => copyToClipboard(code, 'get-pl-res')}
+                    copied={copiedCode === 'get-pl-res'}
+                  />
                 </div>
               </div>
 
@@ -657,8 +603,8 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
 
                 <div>
                   <h5 className="font-semibold text-sm mb-2">Response: <Badge className="ml-2 rounded-full">200 OK</Badge></h5>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`{
+                  <PymstrCodeBlock
+                    code={`{
   "success": true,
   "data": [
     {
@@ -700,58 +646,11 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
     "offset": 0,
     "hasMore": true
   }
-}`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyToClipboard(`{
-  "success": true,
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "name": "Premium Subscription",
-      "price": "29.99",
-      "currency": "USD",
-      "status": "completed",
-      "source": "api",
-      "txHash": "0x1234567890abcdef...",
-      "chain": "polygon",
-      "token": "USDC",
-      "createdAt": "2025-10-22T10:30:00Z",
-      "completedAt": "2025-10-22T10:35:22Z"
-    },
-    {
-      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-      "name": "Invoice #1234",
-      "price": "9.99",
-      "currency": "USD",
-      "status": "active",
-      "source": "manual",
-      "createdAt": "2025-10-20T14:22:00Z"
-    },
-    {
-      "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-      "name": "Enterprise Package",
-      "price": "199.99",
-      "currency": "USD",
-      "status": "expired",
-      "source": "api",
-      "createdAt": "2025-10-15T09:12:00Z",
-      "expiresAt": 7200
-    }
-  ],
-  "pagination": {
-    "total": 47,
-    "limit": 20,
-    "offset": 0,
-    "hasMore": true
-  }
-}`, 'list-pl-res')}
-                    >
-                      {copiedCode === 'list-pl-res' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+}`}
+                    language="json"
+                    onCopy={(code) => copyToClipboard(code, 'list-pl-res')}
+                    copied={copiedCode === 'list-pl-res'}
+                  />
                 </div>
               </div>
 
@@ -787,8 +686,8 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
 
                 <div>
                   <h5 className="font-semibold text-sm mb-2">Response: <Badge className="ml-2 rounded-full">200 OK</Badge></h5>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`{
+                  <PymstrCodeBlock
+                    code={`{
   "success": true,
   "message": "Payment link deleted successfully",
   "data": {
@@ -796,24 +695,11 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
     "status": "deleted",
     "deletedAt": "2025-10-22T15:30:00Z"
   }
-}`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyToClipboard(`{
-  "success": true,
-  "message": "Payment link deleted successfully",
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "status": "deleted",
-    "deletedAt": "2025-10-22T15:30:00Z"
-  }
-}`, 'delete-pl-res')}
-                    >
-                      {copiedCode === 'delete-pl-res' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+}`}
+                    language="json"
+                    onCopy={(code) => copyToClipboard(code, 'delete-pl-res')}
+                    copied={copiedCode === 'delete-pl-res'}
+                  />
                 </div>
               </div>
             </TabsContent>
@@ -939,25 +825,25 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
             Simple, transparent pricing with no hidden fees
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           {/* Pricing Tiers */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Free Tier */}
-            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-5 space-y-4 hover:border-[#07D7FF]/30 transition-colors">
+            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3 hover:border-[#07D7FF]/30 transition-colors">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Zap className="w-5 h-5 text-blue-600" />
                   <h4 className="font-semibold">Free</h4>
                 </div>
                 <div className="space-y-1">
-                  <div className="flex items-baseline space-x-1">
+                  <div>
                     <span className="text-3xl font-bold">0%</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">on first $1,000 processed</p>
+                  <p className="text-xs text-muted-foreground leading-tight">Up to $20K<br />processed</p>
                 </div>
               </div>
               
-              <div className="space-y-2 text-sm">
+              <div className="space-y-1.5 text-sm">
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                   <span className="text-muted-foreground">Perfect for testing</span>
@@ -978,22 +864,19 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
             </div>
 
             {/* Starter Tier */}
-            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-5 space-y-4 hover:border-[#07D7FF]/30 transition-colors">
+            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3 hover:border-[#07D7FF]/30 transition-colors">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <TrendingUp className="w-5 h-5 text-green-600" />
                   <h4 className="font-semibold">Starter</h4>
                 </div>
                 <div className="space-y-1">
-                  <div className="flex items-baseline space-x-1">
-                    <span className="text-3xl font-bold">1.0%</span>
-                    <span className="text-sm text-muted-foreground">per transaction</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Up to $50K/month</p>
+                  <div className="text-3xl font-bold">2.5%</div>
+                  <p className="text-xs text-muted-foreground leading-tight">per transaction<br />up to $2.5M</p>
                 </div>
               </div>
               
-              <div className="space-y-2 text-sm">
+              <div className="space-y-1.5 text-sm">
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                   <span className="text-muted-foreground">Payment Links</span>
@@ -1014,7 +897,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
             </div>
 
             {/* Professional Tier */}
-            <div className="border-2 border-[#07D7FF] rounded-3xl p-5 space-y-4 relative bg-[#07D7FF]/5">
+            <div className="border-2 border-[#07D7FF] rounded-3xl p-4 pt-6 space-y-3 relative bg-[#07D7FF]/5">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <Badge className="bg-[#07D7FF] text-white rounded-full">Popular</Badge>
               </div>
@@ -1024,15 +907,12 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                   <h4 className="font-semibold">Professional</h4>
                 </div>
                 <div className="space-y-1">
-                  <div className="flex items-baseline space-x-1">
-                    <span className="text-3xl font-bold">0.5%</span>
-                    <span className="text-sm text-muted-foreground">per transaction</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">$50K - $500K/month</p>
+                  <div className="text-3xl font-bold">2%</div>
+                  <p className="text-xs text-muted-foreground leading-tight">per transaction<br />up to $10M</p>
                 </div>
               </div>
               
-              <div className="space-y-2 text-sm">
+              <div className="space-y-1.5 text-sm">
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                   <span className="text-muted-foreground">Everything in Starter</span>
@@ -1047,7 +927,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                 </div>
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Team (up to 5 users)</span>
+                  <span className="text-muted-foreground">Team (up to 5)</span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
@@ -1057,29 +937,26 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
             </div>
 
             {/* Enterprise Tier */}
-            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-5 space-y-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Building2 className="w-5 h-5 text-purple-600" />
                   <h4 className="font-semibold">Enterprise</h4>
                 </div>
                 <div className="space-y-1">
-                  <div className="flex items-baseline space-x-1">
-                    <span className="text-3xl font-bold">0.3%</span>
-                    <span className="text-sm text-muted-foreground">per transaction</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">$500K+/month</p>
+                  <div className="text-3xl font-bold">1.5%</div>
+                  <p className="text-xs text-muted-foreground leading-tight">per transaction<br />from $10M</p>
                 </div>
               </div>
               
-              <div className="space-y-2 text-sm">
+              <div className="space-y-1.5 text-sm">
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                   <span className="text-muted-foreground">Everything in Pro</span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Custom rates available</span>
+                  <span className="text-muted-foreground">Custom rates</span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
@@ -1087,7 +964,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                 </div>
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Dedicated account manager</span>
+                  <span className="text-muted-foreground">Account manager</span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />

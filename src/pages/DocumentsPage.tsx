@@ -63,7 +63,7 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ onNavigateToDoc }) => {
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<BookOpen className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<BookOpen className="w-6 h-6 text-[#FF5914]" />}
         title="Documentation"
         subtitle="Complete guides and API documentation for PYMSTR integration"
       />

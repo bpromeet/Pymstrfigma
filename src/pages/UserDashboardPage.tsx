@@ -67,31 +67,31 @@ const UserDashboardPage: React.FC<UserDashboardPageProps> = ({
     switch (activeSection) {
       case "overview":
         return {
-          icon: <Activity className="w-6 h-6 text-[#07D7FF]" />,
+          icon: <Activity className="w-6 h-6 text-[#FF5914]" />,
           title: "Dashboard",
           subtitle: "Your payment activity overview",
         };
       case "wallets":
         return {
-          icon: <Wallet className="w-6 h-6 text-[#07D7FF]" />,
+          icon: <Wallet className="w-6 h-6 text-[#FF5914]" />,
           title: "Wallets",
           subtitle: "Manage your crypto wallets",
         };
       case "transactions":
         return {
-          icon: <Receipt className="w-6 h-6 text-[#07D7FF]" />,
+          icon: <Receipt className="w-6 h-6 text-[#FF5914]" />,
           title: "Transactions",
           subtitle: "Your payment history",
         };
       case "settings":
         return {
-          icon: <Settings className="w-6 h-6 text-[#07D7FF]" />,
+          icon: <Settings className="w-6 h-6 text-[#FF5914]" />,
           title: "Settings",
           subtitle: "Manage your account preferences",
         };
       default:
         return {
-          icon: <Activity className="w-6 h-6 text-[#07D7FF]" />,
+          icon: <Activity className="w-6 h-6 text-[#FF5914]" />,
           title: "Dashboard",
           subtitle: "Your payment activity overview",
         };

@@ -54,7 +54,7 @@ const HelpPage: React.FC = () => {
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<HelpCircle className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<HelpCircle className="w-6 h-6 text-[#FF5914]" />}
         title="Help Center"
         subtitle="Find answers and get support"
       />
@@ -289,53 +289,53 @@ const HelpPage: React.FC = () => {
               <CardContent className="space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <Wallet className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <p className="font-medium">Setting Up Your Wallet</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Wallet className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="font-medium text-foreground truncate">Setting Up Your Wallet</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Create and configure your PYMSTR wallet
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <p className="font-medium">Making Your First Payment</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <CreditCard className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="font-medium text-foreground truncate">Making Your First Payment</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Complete a transaction step-by-step
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <Shield className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <p className="font-medium">Security Best Practices</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Shield className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="font-medium text-foreground truncate">Security Best Practices</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Keep your account and funds safe
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
               </CardContent>
             </Card>
@@ -351,70 +351,70 @@ const HelpPage: React.FC = () => {
               <CardContent className="space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <Settings className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <p className="font-medium">Merchant Account Setup</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Settings className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="font-medium text-foreground truncate">Merchant Account Setup</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Complete KYC and configure your business
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <Book className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <p className="font-medium">Creating Payment Links</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Book className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="font-medium text-foreground truncate">Creating Payment Links</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Manual links and API integration
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <MessageSquare className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <p className="font-medium">Webhook Configuration</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <MessageSquare className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="font-medium text-foreground truncate">Webhook Configuration</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Set up real-time payment notifications
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <ExternalLink className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <p className="font-medium">API Documentation</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <ExternalLink className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left min-w-0 flex-1">
+                      <div className="font-medium text-foreground truncate">API Documentation</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Complete API reference and examples
-                      </p>
+                      </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
               </CardContent>
             </Card>
@@ -430,16 +430,16 @@ const HelpPage: React.FC = () => {
               <CardContent className="space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
                   <div className="flex items-center gap-3">
                     <Book className="w-5 h-5 text-[#07D7FF]" />
                     <div className="text-left">
-                      <p className="font-medium">Understanding Blockchain Networks</p>
-                      <p className="text-sm text-muted-foreground">
+                      <div className="font-medium text-foreground">Understanding Blockchain Networks</div>
+                      <div className="text-sm text-muted-foreground">
                         Ethereum, Polygon, Arbitrum, Optimism, Base
-                      </p>
+                      </div>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -447,16 +447,16 @@ const HelpPage: React.FC = () => {
 
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
                   <div className="flex items-center gap-3">
                     <Shield className="w-5 h-5 text-[#07D7FF]" />
                     <div className="text-left">
-                      <p className="font-medium">Account Abstraction Explained</p>
-                      <p className="text-sm text-muted-foreground">
+                      <div className="font-medium text-foreground">Account Abstraction Explained</div>
+                      <div className="text-sm text-muted-foreground">
                         How PYMSTR uses AA for better UX
-                      </p>
+                      </div>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -464,16 +464,16 @@ const HelpPage: React.FC = () => {
 
                 <Button
                   variant="outline"
-                  className="w-full justify-between rounded-full"
+                  className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
                   <div className="flex items-center gap-3">
                     <Settings className="w-5 h-5 text-[#07D7FF]" />
                     <div className="text-left">
-                      <p className="font-medium">Gas Fees Optimization</p>
-                      <p className="text-sm text-muted-foreground">
+                      <div className="font-medium text-foreground">Gas Fees Optimization</div>
+                      <div className="text-sm text-muted-foreground">
                         Save on transaction costs
-                      </p>
+                      </div>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />

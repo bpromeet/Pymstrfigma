@@ -90,7 +90,7 @@ export default function DashboardPage({
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Activity className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<Activity className="w-6 h-6 text-[#FF5914]" />}
         title="Dashboard"
         subtitle="Overview of your payment processing and analytics"
       />

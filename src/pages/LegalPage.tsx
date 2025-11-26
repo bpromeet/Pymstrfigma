@@ -15,7 +15,7 @@ const LegalPage: React.FC = () => {
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Scale className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<Scale className="w-6 h-6 text-[#FF5914]" />}
         title="Legal"
         subtitle="Terms, privacy, and policies"
       />

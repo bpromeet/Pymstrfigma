@@ -65,7 +65,7 @@ Output: `/dist` directory
 
 All routes handled by `App.tsx`:
 
-```
+```plaintext
 /                → Dashboard (admin view)
 #/dev            → Dev mode bypass
 #/dashboard      → Dashboard
@@ -151,7 +151,7 @@ Access:
 
 ## 📁 File Organization
 
-```
+```plaintext
 /
 ├── App.tsx                     # Dashboard app entry
 ├── index.html                  # Main HTML entry

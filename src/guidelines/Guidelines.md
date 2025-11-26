@@ -4,7 +4,9 @@
 
 ## ⚠️ IMPORTANT: Layout Bug Prevention
 
-**Before making any layout changes, consult `/LAYOUT_CHECKLIST.md`** - This checklist contains critical rules to prevent common layout bugs like content overflow, navigation rail conflicts, and responsive breakpoints issues.
+**MANDATORY: Before creating ANY component, page, or layout:**
+1. **Consult `/guidelines/MOBILE_LAYOUT_RULES.md`** - Complete mobile layout & overflow prevention guide
+2. **Check `/LAYOUT_CHECKLIST.md`** - Critical rules for navigation rail, content overflow, responsive breakpoints
 
 **Common mistakes to avoid:**
 - Missing `mx-auto` on containers with `max-w-*`
@@ -12,6 +14,9 @@
 - Missing `min-w-0` and `truncate` on flex children
 - Using fixed widths instead of responsive utilities
 - Wrong transition speeds (200ms for buttons, 1500ms for layouts)
+- **No text truncation** → causes mobile overflow
+- **No explicit text colors** → invisible text in buttons/cards
+- **Fixed button widths** → breaks mobile layout
 
 ## MD3 Compliance Overview
 
@@ -699,7 +704,6 @@ This creates the perfect balance: **snappy interactions** + **luxurious theme sw
 * ✅ **Always use `1500ms`** for navigation rail, layout changes, modal backdrops
 * ✅ **Theme transitions happen automatically** at 1500ms via `globals.css` universal selector
 * ✅ **Two-speed system creates perfect UX**: Fast interactions + Smooth theme changes
-* ✅ **Payment Settings is the gold standard**: 200ms buttons + 1500ms backgrounds
 * ❌ **Never use `duration-[1500ms]` on buttons** - feels sluggish and unresponsive
 * ❌ **Never use `duration-200` on nav rail expansion** - feels jarring and abrupt
 
@@ -711,7 +715,7 @@ This creates the perfect balance: **snappy interactions** + **luxurious theme sw
 5. **For Card components**: Built-in `duration-[1500ms]` transition in `/components/ui/card.tsx` provides smooth theme transitions automatically
 
 **Card Component Note:**
-The ShadCN Card component (`/components/ui/card.tsx`) has a built-in `transition-all duration-[1500ms]` that makes all card backgrounds, borders, and colors transition smoothly during dark/light mode changes. This creates the signature PYMSTR smooth theme transition feel seen in Payment Settings and Webhooks sections. You don't need to add transitions to Cards - they're automatic!
+The ShadCN Card component (`/components/ui/card.tsx`) has a built-in `transition-all duration-[1500ms]` that makes all card backgrounds, borders, and colors transition smoothly during dark/light mode changes. This creates the signature PYMSTR smooth theme transition feel. You don't need to add transitions to Cards - they're automatic!
 
 ---
 

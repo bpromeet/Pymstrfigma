@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Separator } from './ui/separator';
 import { ArrowLeft, Copy, CheckCircle, Globe, Code2, Webhook, BarChart3, Zap, Menu, ShieldCheck, BookOpen } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
+import { PymstrCodeBlock } from './PymstrCodeBlock';
 
 interface QuickStartGuideProps {
   onBack: () => void;
@@ -199,7 +200,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
             Back to Documents
           </button>
           <h1 className="flex items-center gap-3">
-            <BookOpen className="w-6 h-6 text-[#07D7FF]" />
+            <BookOpen className="w-6 h-6 text-[#FF5914]" />
             Developer Quick Start Guide
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -210,7 +211,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
         {/* Header - Mobile */}
         <div className="lg:hidden">
           <h1 className="flex items-center gap-3">
-            <BookOpen className="w-6 h-6 text-[#07D7FF]" />
+            <BookOpen className="w-6 h-6 text-[#FF5914]" />
             Developer Quick Start Guide
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -421,8 +422,8 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
             <p className="text-xs text-muted-foreground mb-2">
               API-generated links are automatically tagged with <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">source: "api"</code> and appear in the "API" tab.
             </p>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`curl -X POST https://api.pymstr.com/v1/payment-links \\
+            <PymstrCodeBlock
+              code={`curl -X POST https://api.pymstr.com/v1/payment-links \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -431,31 +432,16 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
     "currency": "USD",
     "acceptedTokens": ["USDC", "USDT", "EURC"],
     "acceptedChains": ["polygon", "ethereum"]
-  }'`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`curl -X POST https://api.pymstr.com/v1/payment-links \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Premium Subscription",
-    "price": "99.99",
-    "currency": "USD",
-    "acceptedTokens": ["USDC", "USDT", "DAI"],
-    "acceptedChains": ["polygon", "ethereum"]
-  }'`)}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
+  }'`}
+              language="bash"
+              copyable
+            />
           </div>
 
           <div>
             <h4 className="font-semibold mb-2">Response:</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`{
+            <PymstrCodeBlock
+              code={`{
   "success": true,
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -468,29 +454,10 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
     "url": "https://checkout.pymstr.com/550e8400-e29b-41d4-a716-446655440000",
     "createdAt": "2025-10-22T10:30:00Z"
   }
-}`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`{
-  "success": true,
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Premium Subscription",
-    "price": "99.99",
-    "currency": "USD",
-    "acceptedTokens": ["USDC", "USDT", "DAI"],
-    "acceptedChains": ["polygon", "ethereum"],
-    "status": "pending",
-    "url": "https://checkout.pymstr.com/550e8400-e29b-41d4-a716-446655440000",
-    "createdAt": "2025-10-22T10:30:00Z"
-  }
-}`)}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
+}`}
+              language="json"
+              copyable
+            />
           </div>
         </CardContent>
       </Card>
@@ -540,8 +507,8 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
 
           <div>
             <h4 className="font-semibold mb-2">Handle Webhook Events (Node.js Example):</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`// Node.js/Express example
+            <PymstrCodeBlock
+              code={`// Node.js/Express example
 app.post('/api/pymstr-webhook', express.json(), (req, res) => {
   const event = req.body;
   
@@ -569,28 +536,10 @@ app.post('/api/pymstr-webhook', express.json(), (req, res) => {
   
   // Always respond with 200 to acknowledge receipt
   res.status(200).send('Webhook received');
-});`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`app.post('/api/pymstr-webhook', express.json(), (req, res) => {
-  const event = req.body;
-  const signature = req.headers['x-pymstr-signature'];
-  if (!verifySignature(signature, req.body)) {
-    return res.status(401).send('Invalid signature');
-  }
-  switch(event.type) {
-    case 'payment.completed':
-      fulfillOrder(event.data.payment_id);
-      break;
-  }
-  res.status(200).send('Webhook received');
-});`)}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
+});`}
+              language="javascript"
+              copyable
+            />
           </div>
         </CardContent>
       </Card>
@@ -610,8 +559,8 @@ app.post('/api/pymstr-webhook', express.json(), (req, res) => {
             <p className="text-sm text-muted-foreground mb-3">
               Generate payment links on-demand and redirect customers. Your integration endpoint stays permanent, but each customer interaction creates a new unique single-use payment link:
             </p>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`// When customer clicks "Pay with Crypto"
+            <PymstrCodeBlock
+              code={`// When customer clicks "Pay with Crypto"
 async function initiatePayment(price) {
   const response = await fetch('https://api.pymstr.com/v1/payment-links', {
     method: 'POST',
@@ -629,30 +578,10 @@ async function initiatePayment(price) {
   
   // Redirect customer to payment page
   window.location.href = result.data.url;
-}`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`async function initiatePayment(price) {
-  const response = await fetch('https://api.pymstr.com/v1/payment-links', {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${process.env.PYMSTR_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      price,
-      currency: 'USD'
-    })
-  });
-  const result = await response.json();
-  window.location.href = result.data.url;
-}`)}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
+}`}
+              language="javascript"
+              copyable
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -684,25 +613,18 @@ async function initiatePayment(price) {
         <CardContent className="space-y-4">
           <div>
             <h4 className="font-semibold mb-2">Via API:</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\
-  -H "Authorization: Bearer YOUR_API_KEY"`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\
-  -H "Authorization: Bearer YOUR_API_KEY"`)}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
+            <PymstrCodeBlock
+              code={`curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\
+  -H "Authorization: Bearer YOUR_API_KEY"`}
+              language="bash"
+              copyable
+            />
           </div>
 
           <div>
             <h4 className="font-semibold mb-2">Response:</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`{
+            <PymstrCodeBlock
+              code={`{
   "success": true,
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -718,32 +640,10 @@ async function initiatePayment(price) {
     "createdAt": "2025-10-22T10:30:00Z",
     "completedAt": "2025-10-22T10:35:00Z"
   }
-}`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`{
-  "success": true,
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Premium Subscription",
-    "price": "99.99",
-    "currency": "USD",
-    "acceptedTokens": ["USDC", "USDT", "DAI"],
-    "acceptedChains": ["polygon", "ethereum"],
-    "status": "completed",
-    "token": "USDC",
-    "chain": "polygon",
-    "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-    "createdAt": "2025-10-22T10:30:00Z",
-    "completedAt": "2025-10-22T10:35:00Z"
-  }
-}`)}
-              >
-                <Copy className="w-4 h-4" />
-              </Button>
-            </div>
+}`}
+              language="json"
+              copyable
+            />
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">

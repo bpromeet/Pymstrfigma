@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "./components/ui/card";
 import { Button } from "./components/ui/button";
-import { Badge } from "./components/ui/badge";
 import { Input } from "./components/ui/input";
 import { Textarea } from "./components/ui/textarea";
 import { Label } from "./components/ui/label";
@@ -70,7 +69,6 @@ import {
   TrendingUp,
   Wallet,
   Shield,
-  ShieldCheck,
   Link,
   CheckCircle,
   ExternalLink,
@@ -140,6 +138,7 @@ import {
 } from "recharts@2.15.2";
 import { toast } from "sonner@2.0.3";
 import { Toaster } from "./components/ui/sonner";
+import { formatPrice } from "./utils/currency";
 import SearchField from "./components/SearchField";
 import DateField from "./components/DateField";
 import ReportsTransactionTable from "./components/ReportsTransactionTable";
@@ -150,9 +149,7 @@ import APIKeyManagement from "./components/APIKeyManagement";
 import QuickStartGuide from "./components/QuickStartGuide";
 import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
-import MerchantSettings from "./components/MerchantSettings";
 import MerchantProfile from "./components/MerchantProfile";
-import SecuritySettings from "./components/SecuritySettings";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import QuickStartPage from "./pages/QuickStartPage";
 import APIReferencePage from "./pages/APIReferencePage";
@@ -164,7 +161,6 @@ import ReportsPage from "./pages/ReportsPage";
 import WalletsPage from "./pages/WalletsPage";
 import TeamManagementPage from "./pages/TeamManagementPage";
 import APIKeysPage from "./pages/APIKeysPage";
-import SettingsPage from "./pages/SettingsPage";
 import { NavigationRail, type NavigationItem } from "./components/NavigationRail";
 import WebhooksPage from "./components/WebhookManagement";
 import PageLayout from "./components/PageLayout";
@@ -322,6 +318,7 @@ const App = () => {
             price: payment.price,
             description: payment.description,
             merchantName: "PYMSTR Merchant",
+            baseCurrency: payment.baseCurrency,
             availableCurrencies:
               payment.availableCurrencies || [
                 "USDC",
@@ -391,7 +388,6 @@ const App = () => {
 
   // Wallet states
   const [wallets, setWallets] = useState(INITIAL_WALLETS);
-  const [editingWallet, setEditingWallet] = useState(null);
   const [showCreateWallet, setShowCreateWallet] =
     useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState("");
@@ -509,7 +505,6 @@ const App = () => {
     setPaymentLinksTab("all");
 
     // Reset wallet states
-    setEditingWallet(null);
     setShowCreateWallet(false);
     setSelectedWalletId("");
     setWalletAction("");
@@ -785,15 +780,20 @@ const App = () => {
 
   const handleLinkGenerated = (newLink: {
     id: string;
+    linkId: string;
     price: number;
     description: string;
     status: "active";
     chain: string;
     currency: string;
+    availableCurrencies: string[];
+    availableChains: string[];
+    expiryDate?: string;
   }) => {
     const linkWithSource = { ...newLink, source: "manual" };
     setPaymentLinks((links) => [linkWithSource, ...links]);
     setShowPaymentLinkDialog(false);
+    toast("Payment link created successfully!");
   };
 
   const handlePaymentLinkClick = (link) => {
@@ -824,19 +824,6 @@ const App = () => {
     }
     setWallets((prev) => prev.filter((w) => w.id !== walletId));
     toast("Wallet deleted successfully!");
-  };
-
-  const handleUpdateWallet = (
-    walletId: string,
-    updates: any,
-  ) => {
-    setWallets((prev) =>
-      prev.map((w) =>
-        w.id === walletId ? { ...w, ...updates } : w,
-      ),
-    );
-    setEditingWallet(null);
-    toast("Wallet updated successfully!");
   };
 
   const handleWalletAction = () => {
@@ -994,7 +981,6 @@ const App = () => {
       totalCalls: 0,
       permissions: keyData.permissions,
       ipWhitelist: keyData.ipWhitelist,
-      domainWhitelist: keyData.domainWhitelist,
       rateLimit: keyData.rateLimit,
     };
 
@@ -1225,11 +1211,7 @@ const App = () => {
   const CustomerCheckout = () => (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card
-        className={`w-full max-w-md relative overflow-hidden flex flex-col rounded-2xl ${
-          showCryptoSelection && (currentPayment?.availableCurrencies?.length || 3) > 1
-            ? "min-h-[600px]"
-            : "min-h-[500px]"
-        }`}
+        className="w-full max-w-md relative overflow-hidden flex flex-col rounded-2xl"
       >
         <CardHeader
           className={`text-center p-6 flex-shrink-0 ${showCryptoSelection ? "pb-4" : "pb-6"} ${showQRFunding || showOnRamper ? "hidden" : ""}`}
@@ -1312,7 +1294,7 @@ const App = () => {
               <div className="text-center space-y-2">
                 <h3>Login to Pay</h3>
                 <p className="text-muted-foreground">
-                  ${currentPayment?.price || 156.78} •{" "}
+                  {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)} •{" "}
                   {currentPayment?.description || "Payment"}
                 </p>
               </div>
@@ -1430,10 +1412,10 @@ const App = () => {
               )}
             </div>
           ) : showCryptoSelection ? (
-            <div className="flex flex-col h-full pt-4 pb-6 px-0 space-y-4">
+            <div className="flex flex-col pt-4 pb-6 px-0 space-y-4">
               <div className="text-center space-y-2">
                 <h2 className="text-4xl">
-                  ${currentPayment?.price || 156.78}
+                  {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)}
                 </h2>
                 <p className="text-muted-foreground">
                   {currentPayment
@@ -1635,6 +1617,39 @@ const App = () => {
               </div>
             ) : (
               <div className="space-y-6">
+                {/* Balance Comparison Boxes - Side by Side */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Current Balance Box */}
+                  <div className="bg-[#FF5914]/10 p-4 rounded-2xl border border-[#FF5914]/30">
+                    <div className="text-sm text-[#1C1B1F] dark:text-[#F6F7F9] mb-1">
+                      You have:
+                    </div>
+                    <div className="text-2xl font-medium text-[#FF5914]">
+                      {getWalletBalance(
+                        selectedCrypto,
+                        selectedChain,
+                      ).toFixed(2)}{" "}
+                      {selectedCrypto}
+                    </div>
+                  </div>
+
+                  {/* Required Amount Box */}
+                  <div className="bg-[#1E88E5]/10 p-4 rounded-2xl border border-[#1E88E5]/30">
+                    <div className="text-sm text-[#1C1B1F] dark:text-[#F6F7F9] mb-1">
+                      Required:
+                    </div>
+                    <div className="text-2xl font-medium text-[#1E88E5]">
+                      {parseFloat(
+                        calculateCryptoAmount(
+                          currentPayment?.price || 156.78,
+                          selectedCrypto,
+                        ),
+                      ).toFixed(2)}{" "}
+                      {selectedCrypto}
+                    </div>
+                  </div>
+                </div>
+
                 {/* MD3 Warning Container - Yellow background with proper text contrast */}
                 <div className="bg-[#D9C370]/10 p-6 rounded-2xl border border-[#D9C370]/30">
                   <div className="flex items-center gap-3 mb-3">
@@ -1710,7 +1725,7 @@ const App = () => {
             <div className="flex flex-col justify-center h-full space-y-8">
               <div className="text-center space-y-3">
                 <h1 className="text-5xl">
-                  ${currentPayment?.price || 156.78}
+                  {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)}
                 </h1>
                 <p className="text-muted-foreground">
                   {currentPayment
@@ -1740,7 +1755,7 @@ const App = () => {
             <div className="space-y-6">
               <div className="text-center space-y-2">
                 <h2 className="text-4xl">
-                  ${currentPayment?.price || 156.78}
+                  {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)}
                 </h2>
                 <p className="text-muted-foreground">
                   {currentPayment
@@ -1865,7 +1880,10 @@ const App = () => {
         open={showOnRamper}
         onOpenChange={setShowOnRamper}
       >
-        <DialogContent className="max-w-md max-h-[85vh] p-0 overflow-hidden rounded-3xl">
+        <DialogContent 
+          className="max-w-md max-h-[85vh] p-0 overflow-hidden rounded-3xl"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader className="p-6 pb-4">
             <DialogTitle>
               Buy {selectedCrypto} with Credit Card
@@ -1934,115 +1952,95 @@ const App = () => {
             }
           }}
         >
-        <DialogContent className="w-full max-w-[448px] h-auto max-h-[90vh] p-0 overflow-hidden rounded-3xl">
+        <DialogContent 
+          className="w-full max-w-[448px] h-auto max-h-[90vh] p-0 overflow-hidden rounded-3xl"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           {/* Header */}
-          <DialogHeader className="p-6 pb-4">
-            <DialogTitle className="text-2xl">Scan to Add Funds</DialogTitle>
+          <DialogHeader className="p-6 pb-3">
+            <DialogTitle>Scan to Add Funds</DialogTitle>
             <DialogDescription className="mt-1">
-              Send {selectedCrypto} to complete payment
+              Send {selectedCrypto} - {getChainName(selectedChain)} to complete payment
             </DialogDescription>
           </DialogHeader>
 
-          {/* Content - Two Column Layout */}
-          <div className="px-6 pb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Left Column - QR Code */}
-              <div className="space-y-3">
-                <div className="bg-white dark:bg-[#2E3C49] p-4 rounded-2xl border border-[#D1D9E1] dark:border-[#43586C] flex items-center justify-center relative">
-                  <QRCodeCanvas
-                    value={walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
-                    size={180}
-                    level="H"
-                    includeMargin={true}
-                  />
-                  {/* Currency Badge - Positioned over QR */}
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-[#1E88E5] hover:bg-[#1E88E5] text-white px-3 py-1 rounded-full shadow-lg">
-                      {selectedCrypto} · {getChainName(selectedChain)}
-                    </Badge>
-                  </div>
-                </div>
+          {/* Content - Compact Layout */}
+          <div className="px-6 pb-6 space-y-4">
+            {/* QR Code Section */}
+            <div className="bg-white dark:bg-[#2E3C49] p-3 rounded-2xl border border-[#D1D9E1] dark:border-[#43586C] flex items-center justify-center">
+              <QRCodeCanvas
+                value={walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
+                size={160}
+                level="H"
+                includeMargin={true}
+              />
+            </div>
 
-                {/* Wallet Address with Copy */}
-                <div className="bg-[#FAFAFA] dark:bg-[#303030] px-4 py-3 rounded-xl border border-[#D1D9E1] dark:border-[#43586C] flex items-center justify-between">
-                  <span className="font-mono text-sm text-[#1C1B1F] dark:text-[#F6F7F9]">
-                    {formatAddress(walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb")}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 rounded-lg hover:bg-[#1E88E5]/10 transition-all duration-200"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      copyToClipboard(walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb");
-                    }}
-                  >
-                    {copiedItem === (walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb") ? (
-                      <Check className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-[#1E88E5]" />
-                    )}
-                  </Button>
+            {/* Wallet Address with Copy */}
+            <div className="bg-[#FAFAFA] dark:bg-[#303030] px-3 py-2.5 rounded-xl border border-[#D1D9E1] dark:border-[#43586C] flex items-center justify-between">
+              <span className="font-mono text-sm text-[#1C1B1F] dark:text-[#F6F7F9]">
+                {formatAddress(walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb")}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 rounded-lg hover:bg-[#1E88E5]/10 transition-all duration-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  copyToClipboard(walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb");
+                }}
+              >
+                {copiedItem === (walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb") ? (
+                  <Check className="w-4 h-4 text-green-600" />
+                ) : (
+                  <Copy className="w-4 h-4 text-[#1E88E5]" />
+                )}
+              </Button>
+            </div>
+
+            {/* Balance & Required - Compact Cards */}
+            <div className="space-y-3">
+              {/* Balance Card - Dynamic color based on funding status */}
+              <div className={`p-3 rounded-2xl border-2 ${
+                qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
+                  ? "bg-[#7DD069]/10 dark:bg-[#7DD069]/20 border-[#7DD069]"
+                  : "bg-[#FF5914]/10 dark:bg-[#FF5914]/20 border-[#FF5914]"
+              }`}>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-[#1C1B1F] dark:text-[#F6F7F9]">Balance</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">{qrFundingBalance.toFixed(2)}</p>
+                    <p className="text-xs text-[#1C1B1F] dark:text-[#F6F7F9]">{selectedCrypto}</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Right Column - Balance & Required */}
-              <div className="flex flex-col justify-between space-y-4 md:space-y-0">
-                {/* Balance Card - Dynamic color based on funding status */}
-                <div className={`p-4 rounded-2xl border-2 ${
-                  qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
-                    ? "bg-[#7DD069]/10 dark:bg-[#7DD069]/20 border-[#7DD069]"
-                    : "bg-[#FF5914]/10 dark:bg-[#FF5914]/20 border-[#FF5914]"
-                }`}>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Balance</p>
-                    <p className="text-4xl">{qrFundingBalance.toFixed(2)}</p>
-                    <p className="text-sm text-muted-foreground">{selectedCrypto}</p>
+              {/* Required Amount Card - Fixed visibility */}
+              <div className="bg-[#1E88E5]/10 dark:bg-[#1E88E5]/20 p-3 rounded-2xl border-2 border-[#1E88E5]">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-[#1C1B1F] dark:text-[#F6F7F9]">Required</span>
+                    <span className="text-xl font-medium text-[#1E88E5]">
+                      {parseFloat(calculateCryptoAmount(
+                        currentPayment?.price || 156.78,
+                        selectedCrypto,
+                      )).toFixed(2)} {selectedCrypto}
+                    </span>
                   </div>
-                </div>
 
-                {/* Required Amount Card */}
-                <div className="bg-[#303030] dark:bg-[#2E3C49] p-4 rounded-2xl border border-[#43586C]">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Required</span>
-                      <span className="text-sm font-medium">
-                        {parseFloat(calculateCryptoAmount(
-                          currentPayment?.price || 156.78,
-                          selectedCrypto,
-                        )).toFixed(2)}{" "}
-                        {selectedCrypto}
-                      </span>
-                    </div>
-
-                    {/* Progress Bar - Dynamic color based on funding status */}
-                    <div className="space-y-2">
-                      <div className="w-full bg-[#43586C] rounded-full h-2 overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
-                              ? "bg-[#7DD069]"
-                              : "bg-[#FF5914]"
-                          }`}
-                          style={{
-                            width: `${Math.min((qrFundingBalance / parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))) * 100, 100)}%`,
-                          }}
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground text-center">
-                        {qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
-                          ? "Funds received!"
-                          : "Waiting for deposit..."}
-                      </p>
-                    </div>
-                  </div>
+                  {/* Compact Status Message */}
+                  <p className="text-xs text-[#1C1B1F] dark:text-[#F6F7F9] text-center">
+                    {qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
+                      ? "✓ Funds received!"
+                      : `Waiting for deposit... (${(parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)) - qrFundingBalance).toFixed(2)} ${selectedCrypto})`}
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Check for Funds Button */}
-            <div className="mt-4 space-y-2">
+            <div className="space-y-2">
               <Button
                 className="w-full rounded-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200"
                 onClick={handleCheckFunds}
@@ -2272,11 +2270,10 @@ const App = () => {
             paymentLinks={paymentLinks}
             onDeleteLink={handleDeleteLink}
             onDeactivateLink={handleDeactivateLink}
-            onCopyLink={(linkId) =>
-              copyToClipboard(
-                `${window.location.origin}/#/pay/${linkId}`,
-              )
-            }
+            onCopyLink={(linkId) => {
+              const url = `${window.location.origin}/#/pay/${linkId}`;
+              copyToClipboard(url);
+            }}
             onViewLink={handlePaymentLinkClick}
             showPaymentLinkDialog={showPaymentLinkDialog}
             setShowPaymentLinkDialog={setShowPaymentLinkDialog}
@@ -2289,9 +2286,6 @@ const App = () => {
             wallets={wallets}
             setWallets={setWallets}
             theme={theme}
-            editingWallet={editingWallet}
-            setEditingWallet={setEditingWallet}
-            handleUpdateWallet={handleUpdateWallet}
           />
         );
       case "wallets":
@@ -2300,9 +2294,6 @@ const App = () => {
             wallets={wallets}
             setWallets={setWallets}
             theme={theme}
-            editingWallet={editingWallet}
-            setEditingWallet={setEditingWallet}
-            handleUpdateWallet={handleUpdateWallet}
           />
         );
       case "team":
@@ -2370,26 +2361,11 @@ const App = () => {
             }}
           />
         );
-      case "settings":
-        return (
-          <SettingsPage
-            merchantConfig={merchantConfig}
-            setMerchantConfig={setMerchantConfig}
-          />
-        );
       case "profile":
         return (
           <MerchantProfile
             onSave={(profile) => {
               console.log("Profile saved:", profile);
-            }}
-          />
-        );
-      case "security":
-        return (
-          <SecuritySettings
-            onSave={(settings) => {
-              console.log("Security settings saved:", settings);
             }}
           />
         );
@@ -2546,13 +2522,6 @@ const App = () => {
                         >
                           <User className="mr-2 h-[18px] w-[18px]" />
                           Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setActiveTab("security")}
-                          className="cursor-pointer rounded-lg h-10 px-3"
-                        >
-                          <Shield className="mr-2 h-[18px] w-[18px]" />
-                          Security
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => setActiveTab("wallets")}

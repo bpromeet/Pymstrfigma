@@ -11,7 +11,7 @@ import { Separator } from './ui/separator';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Alert, AlertDescription } from './ui/alert';
-import { Key, Plus, Copy, CheckCircle, AlertCircle, Shield, Pause, Play, Trash2, Globe, Lock, Activity, ExternalLink, Check } from 'lucide-react';
+import { Key, Plus, Copy, CheckCircle, AlertCircle, Shield, Pause, Play, Trash2, Globe, Activity, ExternalLink, Check } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import PageLayout from './PageLayout';
 
@@ -26,7 +26,6 @@ interface APIKey {
   totalCalls: number;
   permissions: string[];
   ipWhitelist: string[];
-  domainWhitelist: string[];
   rateLimit: { perMinute: number; perHour: number };
 }
 
@@ -47,7 +46,6 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
     environment: 'test' as const,
     permissions: ['read_payments'] as string[],
     ipWhitelist: '',
-    domainWhitelist: '',
     rateLimit: { perMinute: 100, perHour: 1000 }
   });
   const [showApiKeySecret, setShowApiKeySecret] = useState<string | null>(null);
@@ -65,7 +63,6 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
       environment: newApiKey.environment,
       permissions: newApiKey.permissions,
       ipWhitelist: newApiKey.ipWhitelist ? newApiKey.ipWhitelist.split(',').map(ip => ip.trim()).filter(ip => ip) : [],
-      domainWhitelist: newApiKey.domainWhitelist ? newApiKey.domainWhitelist.split(',').map(d => d.trim()).filter(d => d) : [],
       rateLimit: newApiKey.rateLimit
     });
 
@@ -76,7 +73,6 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
       environment: 'test',
       permissions: ['read_payments'],
       ipWhitelist: '',
-      domainWhitelist: '',
       rateLimit: { perMinute: 100, perHour: 1000 }
     });
     toast('API key created successfully!');
@@ -96,10 +92,10 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
     toast('API key deleted successfully!');
   };
 
-  const handleUpdateWhitelist = (keyId: string, type: 'ip' | 'domain', value: string) => {
+  const handleUpdateWhitelist = (keyId: string, type: 'ip', value: string) => {
     const list = value.split(',').map(item => item.trim()).filter(item => item);
-    onUpdateKey(keyId, { [type === 'ip' ? 'ipWhitelist' : 'domainWhitelist']: list });
-    toast(`${type === 'ip' ? 'IP' : 'Domain'} whitelist updated!`);
+    onUpdateKey(keyId, { ipWhitelist: list });
+    toast('IP whitelist updated!');
   };
 
   const handleTogglePermission = (keyId: string, permission: string) => {
@@ -145,7 +141,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Key className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<Key className="w-6 h-6 text-[#FF5914]" />}
         title="API Configuration"
         subtitle="Manage API keys and integration settings"
       />
@@ -216,7 +212,10 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
 
       {/* Create API Key Dialog */}
       <Dialog open={showCreateApiKey} onOpenChange={setShowCreateApiKey}>
-        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#303030] shadow-xl p-8">
+        <DialogContent 
+          className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#303030] shadow-xl p-8"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader className="mb-6">
             <DialogTitle className="text-2xl">Create New API Key</DialogTitle>
             <DialogDescription>Generate a new API key for your integration</DialogDescription>
@@ -256,8 +255,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                 {[
                   { id: 'read_payments', label: 'Read payments' },
                   { id: 'create_payment_links', label: 'Create payment links' },
-                  { id: 'receive_webhooks', label: 'Receive webhooks' },
-                  { id: 'issue_refunds', label: 'Issue refunds' }
+                  { id: 'receive_webhooks', label: 'Receive webhooks' }
                 ].map((perm) => (
                   <div key={perm.id} className="flex items-center gap-2">
                     <Switch
@@ -291,18 +289,6 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
               <p className="text-sm text-[#798A9B]">Comma-separated IP addresses</p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="domain-whitelist">Domain Whitelist (Optional)</Label>
-              <Input
-                id="domain-whitelist"
-                placeholder="example.com, app.example.com"
-                value={newApiKey.domainWhitelist}
-                onChange={(e) => setNewApiKey(prev => ({ ...prev, domainWhitelist: e.target.value }))}
-                className="w-full h-12 px-4 py-3 rounded bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
-              />
-              <p className="text-sm text-[#798A9B]">Comma-separated domains</p>
-            </div>
-
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <Button 
                 onClick={handleCreateApiKey}
@@ -320,7 +306,6 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                     environment: 'test',
                     permissions: ['read_payments'],
                     ipWhitelist: '',
-                    domainWhitelist: '',
                     rateLimit: { perMinute: 100, perHour: 1000 }
                   });
                 }}
@@ -412,11 +397,6 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                             <Globe className="w-3 h-3" />
                           </Badge>
                         )}
-                        {key.domainWhitelist.length > 0 && (
-                          <Badge variant="outline" className="text-xs rounded-full px-1.5 py-0">
-                            <Lock className="w-3 h-3" />
-                          </Badge>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -429,7 +409,10 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
 
       {/* API Key Details Dialog */}
       <Dialog open={!!selectedApiKey} onOpenChange={() => setSelectedApiKey(null)}>
-        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl">
+        <DialogContent 
+          className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
               <Key className="w-5 h-5" />
@@ -503,8 +486,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                       {[
                         { id: 'read_payments', label: 'Read payments' },
                         { id: 'create_payment_links', label: 'Create payment links' },
-                        { id: 'receive_webhooks', label: 'Receive webhooks' },
-                        { id: 'issue_refunds', label: 'Issue refunds' }
+                        { id: 'receive_webhooks', label: 'Receive webhooks' }
                       ].map((perm) => (
                         <div key={perm.id} className="flex items-center space-x-2">
                           <Switch
@@ -543,20 +525,6 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                     />
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       Comma-separated IP addresses
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Domain Whitelist</Label>
-                    <Textarea
-                      placeholder="example.com, app.example.com"
-                      value={selectedKey.domainWhitelist.join(', ')}
-                      onChange={(e) => handleUpdateWhitelist(selectedKey.id, 'domain', e.target.value)}
-                      className="rounded-3xl text-sm"
-                      rows={3}
-                    />
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Allowed domains for webhooks and CORS
                     </p>
                   </div>
 

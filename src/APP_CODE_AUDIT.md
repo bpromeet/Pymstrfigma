@@ -135,14 +135,12 @@ import APIKeyManagement from "./components/APIKeyManagement";
 import QuickStartGuide from "./components/QuickStartGuide";
 import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
-import MerchantSettings from "./components/MerchantSettings";
 import MerchantProfile from "./components/MerchantProfile";
-import SecuritySettings from "./components/SecuritySettings";
 ```
 
-**Reason**: These are likely used in page components (PaymentLinksPage, APIKeysPage, etc.), not directly in App.tsx
+**Status**: ✅ CLEANED UP - MerchantSettings and SecuritySettings have been removed from the codebase.
 
-**Action**: Search codebase to confirm. If not used in App.tsx, remove imports.
+**Action**: These components are used inline in App.tsx switch cases.
 
 ---
 
@@ -300,8 +298,8 @@ Consider consolidating route handling and state initialization effects for bette
   - [ ] `APIReference` (if not used in App.tsx)
   - [ ] `CodeExamples` (if not used in App.tsx)
   - [ ] `MerchantSettings` (if not used in App.tsx)
-  - [ ] `MerchantProfile` (if not used in App.tsx)
-  - [ ] `SecuritySettings` (if not used in App.tsx)
+  - [x] `MerchantProfile` - Used in App.tsx (KEEP)
+  - [x] `SecuritySettings` - ✅ REMOVED (feature deleted)
 - [ ] Check if both `QRCode` and `QRCodeCanvas` are needed
 
 ### Low Priority (Improvements)

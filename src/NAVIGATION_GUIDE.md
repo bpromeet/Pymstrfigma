@@ -37,7 +37,6 @@ const [activeTab, setActiveTab] = useState(getInitialTab());
 - `"wallets"` - Wallets
 - `"api"` - API Keys
 - `"webhooks"` - Webhooks
-- `"settings"` - Payment Settings
 - `"reports"` - Reports
 - `"documents"` - Documents hub
 - `"quickstart"` - Quick Start Guide

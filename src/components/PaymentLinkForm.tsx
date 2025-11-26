@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -12,21 +12,34 @@ import { cn } from './ui/utils';
 import { ChainIcon } from './ChainIcon';
 
 interface PaymentLinkFormProps {
-  onLinkGenerated: (link: { id: string; price: number; description: string; status: 'active'; chain: string; currency: string; availableCurrencies: string[]; availableChains: string[] }) => void;
+  onLinkGenerated: (link: { 
+    id: string; 
+    linkId: string;
+    price: number; 
+    description: string; 
+    status: 'active'; 
+    chain: string; 
+    currency: string; 
+    availableCurrencies: string[];
+    availableChains: string[];
+    baseCurrency: string; // Add baseCurrency to interface
+    expiryDate?: string;
+  }) => void;
 }
 
 const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) => {
   const [formData, setFormData] = useState({
     price: '',
     title: '',
-    currencies: ['USDC'] as string[],
-    chains: ['ethereum'] as string[],
+    currencies: ['USDC', 'USDT', 'EURC'] as string[],
+    chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'] as string[],
     baseCurrency: 'USD',
     hasExpiry: false,
     expiryDate: ''
   });
   const [openBaseCurrency, setOpenBaseCurrency] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  const generateButtonRef = useRef<HTMLButtonElement>(null);
 
   const currencies = [
     { value: 'USDC', label: 'USDC' },
@@ -125,15 +138,19 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
     }
 
     const newId = Date.now().toString();
+    const linkId = `#PL${newId.slice(-6)}`; // Generate linkId like #PL123456
     const newLink = {
       id: newId,
+      linkId: linkId,
       price: parseFloat(formData.price),
       description: formData.title,
       status: 'active' as const,
       chain: formData.chains[0], // Using first selected chain for display purposes
       currency: formData.currencies[0], // Using first selected currency for display purposes
       availableCurrencies: formData.currencies,
-      availableChains: formData.chains
+      availableChains: formData.chains,
+      baseCurrency: formData.baseCurrency, // Add base currency to payment link
+      expiryDate: formData.hasExpiry ? formData.expiryDate : undefined
     };
 
     onLinkGenerated(newLink);
@@ -142,8 +159,8 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
     setFormData({
       price: '',
       title: '',
-      currencies: ['USDC'],
-      chains: ['ethereum'],
+      currencies: ['USDC', 'USDT', 'EURC'],
+      chains: ['ethereum', 'polygon', 'arbitrum', 'optimism', 'base'],
       baseCurrency: 'USD',
       hasExpiry: false,
       expiryDate: ''
@@ -223,6 +240,12 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
             placeholder="e.g., Consulting Services, Product Purchase" 
             value={formData.title}
             onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                generateButtonRef.current?.focus();
+              }
+            }}
             className="w-full h-12 px-4 py-3 rounded bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
           />
         </div>
@@ -236,10 +259,10 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
               <div
                 key={currency.value}
                 className={cn(
-                  "flex items-center gap-1.5 px-4 py-2 rounded-full cursor-pointer transition-all duration-200",
+                  "flex items-center gap-1.5 px-4 py-2 rounded-full cursor-pointer transition-all duration-200 border",
                   formData.currencies.includes(currency.value)
-                    ? "bg-[#757575] text-white hover:bg-[#959FA8]"
-                    : "bg-[#FAFAFA] dark:bg-[#2E3C49] text-[#1C1B1F] dark:text-[#F6F7F9] border border-[#43586C] hover:bg-[#EEEEEE] dark:hover:bg-[#303030]"
+                    ? "bg-[#757575] text-white hover:bg-[#959FA8] border-[#757575]"
+                    : "bg-[#FAFAFA] dark:bg-[#2E3C49] text-[#1C1B1F] dark:text-[#F6F7F9] border-[#43586C] hover:bg-[#EEEEEE] dark:hover:bg-[#303030]"
                 )}
                 onClick={() => handleCurrencyToggle(currency.value)}
               >
@@ -262,10 +285,10 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
               <div
                 key={network.value}
                 className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-full cursor-pointer transition-all duration-200",
+                  "flex items-center gap-2 px-3 py-2 rounded-full cursor-pointer transition-all duration-200 border",
                   formData.chains.includes(network.value)
-                    ? "bg-[#757575] text-white hover:bg-[#959FA8]"
-                    : "bg-[#FAFAFA] dark:bg-[#2E3C49] text-[#1C1B1F] dark:text-[#F6F7F9] border border-[#43586C] hover:bg-[#EEEEEE] dark:hover:bg-[#303030]"
+                    ? "bg-[#757575] text-white hover:bg-[#959FA8] border-[#757575]"
+                    : "bg-[#FAFAFA] dark:bg-[#2E3C49] text-[#1C1B1F] dark:text-[#F6F7F9] border-[#43586C] hover:bg-[#EEEEEE] dark:hover:bg-[#303030]"
                 )}
                 onClick={() => handleChainToggle(network.value)}
               >
@@ -308,6 +331,7 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
         <Button 
           className="w-full min-h-12 px-8 py-3 bg-[#1E88E5] text-white hover:bg-[#1565C0] hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 rounded-full" 
           onClick={handleSubmit}
+          ref={generateButtonRef}
         >
           <Link className="w-[18px] h-[18px] mr-2" />
           Generate Payment Link

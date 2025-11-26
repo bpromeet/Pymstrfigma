@@ -7,7 +7,9 @@ import {
   Share2,
   Link as LinkIcon,
   Clock,
+  Check,
 } from "lucide-react";
+import { formatPrice } from "../utils/currency";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
@@ -41,7 +43,7 @@ interface PaymentLinksPageProps {
   onViewLink: (link: any) => void;
   showPaymentLinkDialog: boolean;
   setShowPaymentLinkDialog: (show: boolean) => void;
-  onLinkGenerated: (newLink: any) => void; // ADD THIS LINE
+  onLinkGenerated: (newLink: any) => void;
 }
 
 export default function PaymentLinksPage({
@@ -52,18 +54,49 @@ export default function PaymentLinksPage({
   onViewLink,
   showPaymentLinkDialog,
   setShowPaymentLinkDialog,
-  onLinkGenerated, // ADD THIS LINE
+  onLinkGenerated,
 }: PaymentLinksPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [chainFilter, setChainFilter] = useState("all");
   const [currencyFilter, setCurrencyFilter] = useState("all");
   const [paymentLinksTab, setPaymentLinksTab] = useState("all");
+  const [sharedLinkId, setSharedLinkId] = useState<string | null>(null);
 
-  // DELETE THE OLD handleLinkGenerated FUNCTION (lines 60-63) and use the prop directly
-  // const handleLinkGenerated = (newLink: any) => {
-  //   toast("Payment link created successfully!");
-  //   setShowPaymentLinkDialog(false);
-  // };
+  // Handle share button click
+  const handleShare = (linkId: string) => {
+    const link = paymentLinks.find(l => l.id === linkId);
+    const url = `${window.location.origin}/#/pay/${linkId}`;
+    
+    // Check if Web Share API is available and we're in a secure context
+    if (navigator.share && window.isSecureContext) {
+      // Use Web Share API (mobile native share dialog)
+      navigator.share({
+        title: link?.description || 'Payment Link',
+        text: `Pay ${formatPrice(link?.price || 0, link?.baseCurrency)} via PYMSTR`,
+        url: url,
+      })
+      .then(() => {
+        // Success - don't show checkmark, native dialog is the feedback
+        toast('Payment link shared!');
+      })
+      .catch((err) => {
+        // User cancelled or share failed - fall back to clipboard
+        if (err.name !== 'AbortError') {
+          // Only copy to clipboard if it wasn't user cancellation
+          onCopyLink(linkId);
+          // Show green checkmark for clipboard fallback
+          setSharedLinkId(linkId);
+          setTimeout(() => setSharedLinkId(null), 2000);
+        }
+      });
+    } else {
+      // Fallback: Copy to clipboard (desktop or non-secure context)
+      onCopyLink(linkId);
+      // Show green checkmark for clipboard copy
+      setSharedLinkId(linkId);
+      setTimeout(() => setSharedLinkId(null), 2000);
+    }
+  };
 
   // Filter function
   const getFilteredLinks = (source?: "manual" | "api") => {
@@ -97,7 +130,7 @@ export default function PaymentLinksPage({
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<LinkIcon className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<LinkIcon className="w-6 h-6 text-[#FF5914]" />}
         title="Payment Links"
         subtitle="Create and manage single-use payment links for transactions"
       />
@@ -124,7 +157,10 @@ export default function PaymentLinksPage({
             open={showPaymentLinkDialog}
             onOpenChange={setShowPaymentLinkDialog}
           >
-            <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#303030] shadow-xl p-8">
+            <DialogContent
+              className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#303030] shadow-xl p-8"
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
               <DialogHeader className="mb-6">
                 <DialogTitle className="text-2xl">
                   Generate Payment Link
@@ -307,6 +343,35 @@ export default function PaymentLinksPage({
                           >
                             {link.source}
                           </Badge>
+                          
+                          {/* Chains pills - mobile inline, desktop separate */}
+                          {link.availableChains && link.availableChains.length > 0 && (
+                            <>
+                              {link.availableChains.map((chain: string) => (
+                                <div key={chain} className="flex md:hidden items-center gap-1 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-full px-2 py-1 border border-[#43586C]">
+                                  <ChainIcon chain={chain} size={14} />
+                                  <span className="text-xs text-gray-900 dark:text-white capitalize">
+                                    {chain}
+                                  </span>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                          
+                          {/* Currencies pills - mobile inline, desktop separate */}
+                          {link.availableCurrencies && link.availableCurrencies.length > 0 && (
+                            <>
+                              {link.availableCurrencies.map((currency: string) => (
+                                <div key={currency} className="flex md:hidden items-center gap-1 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-full px-2 py-1 border border-[#43586C]">
+                                  <CryptoIcon symbol={currency} size={14} />
+                                  <span className="text-xs text-gray-900 dark:text-white">
+                                    {currency}
+                                  </span>
+                                </div>
+                              ))}
+                            </>
+                          )}
+                          
                           {link.expiryDate && (
                             <Badge className="rounded-full whitespace-nowrap bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
                               <Clock className="w-3 h-3 mr-1" />
@@ -338,37 +403,73 @@ export default function PaymentLinksPage({
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm mb-3">
+                        {/* Desktop: Grid with Price, Chains, Currencies */}
+                        <div className="hidden md:grid grid-cols-3 gap-4 text-sm mb-3">
                           <div>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-gray-600 dark:text-gray-400 mb-1.5">
                               Price
                             </p>
                             <p className="text-gray-900 dark:text-white">
-                              ${link.price}
+                              {formatPrice(link.price, link.baseCurrency)}
                             </p>
                           </div>
                           <div>
-                            <p className="text-gray-600 dark:text-gray-400">
-                              Chain
+                            <p className="text-gray-600 dark:text-gray-400 mb-1.5">
+                              Chains
                             </p>
-                            <div className="flex items-center gap-1.5">
-                              <ChainIcon chain={link.chain} size={16} />
-                              <p className="text-gray-900 dark:text-white capitalize">
-                                {link.chain || "N/A"}
-                              </p>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {link.availableChains && link.availableChains.length > 0 ? (
+                                link.availableChains.map((chain: string) => (
+                                  <div key={chain} className="flex items-center gap-1 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-full px-2 py-1 border border-[#43586C]">
+                                    <ChainIcon chain={chain} size={14} />
+                                    <span className="text-xs text-gray-900 dark:text-white capitalize">
+                                      {chain}
+                                    </span>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="flex items-center gap-1.5">
+                                  <ChainIcon chain={link.chain} size={16} />
+                                  <p className="text-gray-900 dark:text-white capitalize">
+                                    {link.chain || "N/A"}
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
                           <div>
-                            <p className="text-gray-600 dark:text-gray-400">
-                              Currency
+                            <p className="text-gray-600 dark:text-gray-400 mb-1.5">
+                              Currencies
                             </p>
-                            <div className="flex items-center gap-1.5">
-                              <CryptoIcon symbol={link.currency} size={16} />
-                              <p className="text-gray-900 dark:text-white">
-                                {link.currency || "N/A"}
-                              </p>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {link.availableCurrencies && link.availableCurrencies.length > 0 ? (
+                                link.availableCurrencies.map((currency: string) => (
+                                  <div key={currency} className="flex items-center gap-1 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-full px-2 py-1 border border-[#43586C]">
+                                    <CryptoIcon symbol={currency} size={14} />
+                                    <span className="text-xs text-gray-900 dark:text-white">
+                                      {currency}
+                                    </span>
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="flex items-center gap-1.5">
+                                  <CryptoIcon symbol={link.currency} size={16} />
+                                  <p className="text-gray-900 dark:text-white">
+                                    {link.currency || "N/A"}
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
+                        </div>
+                        
+                        {/* Mobile: Only Price */}
+                        <div className="md:hidden mb-3">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Price: <span className="text-gray-900 dark:text-white font-medium">
+                              {formatPrice(link.price, link.baseCurrency)}
+                            </span>
+                          </p>
                         </div>
 
                         {link.txHash && (
@@ -408,11 +509,15 @@ export default function PaymentLinksPage({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onCopyLink(link.id);
+                              handleShare(link.id);
                             }}
                             className="rounded-full"
                           >
-                            <Share2 className="w-4 h-4" />
+                            {sharedLinkId === link.id ? (
+                              <Check className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <Share2 className="w-4 h-4" />
+                            )}
                           </Button>
                           <Button
                             variant="outline"
@@ -505,7 +610,7 @@ export default function PaymentLinksPage({
                               Price
                             </p>
                             <p className="text-gray-900 dark:text-white">
-                              ${link.price}
+                              {formatPrice(link.price, link.baseCurrency)}
                             </p>
                           </div>
                           <div>
@@ -532,10 +637,10 @@ export default function PaymentLinksPage({
                           </div>
                           <div>
                             <p className="text-gray-600 dark:text-gray-400">
-                              Clicks
+                              Conversions
                             </p>
                             <p className="text-gray-900 dark:text-white">
-                              {link.clicks}
+                              {link.conversions || 0}
                             </p>
                           </div>
                         </div>
@@ -577,11 +682,15 @@ export default function PaymentLinksPage({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onCopyLink(link.id);
+                              handleShare(link.id);
                             }}
                             className="rounded-full"
                           >
-                            <Share2 className="w-4 h-4" />
+                            {sharedLinkId === link.id ? (
+                              <Check className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <Share2 className="w-4 h-4" />
+                            )}
                           </Button>
                           <Button
                             variant="outline"
@@ -674,7 +783,7 @@ export default function PaymentLinksPage({
                               Price
                             </p>
                             <p className="text-gray-900 dark:text-white">
-                              ${link.price}
+                              {formatPrice(link.price, link.baseCurrency)}
                             </p>
                           </div>
                           <div>
@@ -746,11 +855,15 @@ export default function PaymentLinksPage({
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onCopyLink(link.id);
+                              handleShare(link.id);
                             }}
                             className="rounded-full"
                           >
-                            <Share2 className="w-4 h-4" />
+                            {sharedLinkId === link.id ? (
+                              <Check className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <Share2 className="w-4 h-4" />
+                            )}
                           </Button>
                           <Button
                             variant="outline"

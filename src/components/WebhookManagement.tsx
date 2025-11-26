@@ -330,7 +330,7 @@ export default function WebhooksPage() {
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Webhook className="w-6 h-6 text-[#07D7FF]" />}
+        icon={<Webhook className="w-6 h-6 text-[#FF5914]" />}
         title="Webhook Management"
         subtitle="Configure webhooks to receive real-time payment notifications"
       />
@@ -354,7 +354,10 @@ export default function WebhooksPage() {
       
       {/* Add Webhook Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent 
+            className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto"
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
             <DialogHeader>
               <DialogTitle>Add Webhook Endpoint</DialogTitle>
               <DialogDescription>
@@ -651,7 +654,10 @@ export default function WebhooksPage() {
                               View
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                          <DialogContent 
+                            className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto"
+                            onOpenAutoFocus={(e) => e.preventDefault()}
+                          >
                             <DialogHeader>
                               <DialogTitle>Webhook Delivery Details</DialogTitle>
                               <DialogDescription>
@@ -748,7 +754,10 @@ export default function WebhooksPage() {
                         View Details
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent 
+                      className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto"
+                      onOpenAutoFocus={(e) => e.preventDefault()}
+                    >
                       <DialogHeader>
                         <DialogTitle>Webhook Delivery Details</DialogTitle>
                         <DialogDescription>Event: {selectedDelivery?.event}</DialogDescription>
@@ -919,7 +928,10 @@ app.post('/webhooks/pymstr', (req, res) => {
 
       {/* Webhook Detail Modal */}
       <Dialog open={showDetailDialog} onOpenChange={setShowDetailDialog}>
-        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent 
+          className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] overflow-y-auto"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           {selectedWebhook && (() => {
             const webhook = webhooks.find(w => w.id === (selectedWebhook as any).id);
             if (!webhook) return null;
