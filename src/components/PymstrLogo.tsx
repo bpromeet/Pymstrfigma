@@ -113,10 +113,17 @@ export const PymstrLogo: React.FC<PymstrLogoProps> = ({
           P
         </span>
       ) : (
-        // Variant with gradient background box
-        <div className={`flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${colors.iconBg} ${sizeClasses[size]}`}>
-          <span className={`${colors.iconText} font-bold text-xl`}>P</span>
-        </div>
+        // Variant with new monogram SVG
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={`${sizeClasses[size]} w-auto`}>
+          <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
+          <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
+          <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
+          <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
+          <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
+          <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
+          <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
+          <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+        </svg>
       )}
       <span className={`font-bold ${colors.wordmark} ${textSizeClasses[size]}`}>
         PYMSTR

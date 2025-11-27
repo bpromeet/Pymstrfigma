@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, BookOpen, Code, ChevronRight, ExternalLink } from 'lucide-react';
+import { FileText, BookOpen, Code, ChevronRight, ExternalLink, Anchor } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import PageLayout from '../components/PageLayout';

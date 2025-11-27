@@ -176,7 +176,6 @@ import {
 } from "./components/CryptoSelector";
 import { ManageCoin } from "./components/ManageCoin";
 import { BottomNavigation, type BottomNavItem } from "./components/BottomNavigation";
-// Duplicate import removed - icons already imported at lines 63-119
 import { Scale, Receipt, MoreHorizontal } from "lucide-react";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import EndUserDashboardPage from "./pages/EndUserDashboardPage";
@@ -1014,16 +1013,6 @@ const App = () => {
       getExplorerUrl={getExplorerUrl}
     />
   );
-
-  // ============================================================================
-  // DEAD CODE REMOVED: Unused inline PaymentLinks component (lines 2029-2652)
-  //
-  // This component was never called - the app uses /components/PaymentLinksDashboard.tsx
-  // instead (see renderContent() switch statement, case "links" on line 6798).
-  //
-  // The inline component was a duplicate with ~620 lines of dead code that caused
-  // confusion during development. Removed during code cleanup on 2025-11-06.
-  // ============================================================================
 
   const Wallets = () => {
     const mainWallet = wallets.find((w) => w.isDefault);
@@ -2352,11 +2341,11 @@ const App = () => {
           <DocumentsPage
             onNavigateToDoc={(doc) => {
               if (doc === "quickstart") {
-                setActiveTab("quickstart");
+                window.location.hash = "#/quickstart";
               } else if (doc === "api-reference") {
-                setActiveTab("apireference");
+                window.location.hash = "#/api-reference";
               } else if (doc === "code-examples") {
-                setActiveTab("codeexamples");
+                window.location.hash = "#/code-examples";
               }
             }}
           />
@@ -2390,7 +2379,7 @@ const App = () => {
         return isUserLoggedIn ? <EndUserDashboardPage /> : <UserLogin />;
       case "user-wallets":
         return isUserLoggedIn ? (
-          <EndUserWalletsPage copiedItem={copiedItem} onCopy={copyToClipboard} />
+          <EndUserWalletsPage wallets={wallets} setWallets={setWallets} theme={theme} />
         ) : (
           <UserLogin />
         );
@@ -2468,9 +2457,30 @@ const App = () => {
         {shouldShowNavigation() && (
             <header className="sticky top-0 z-40 bg-white dark:bg-[#0A0A0A]">
               <div className="flex items-center justify-between px-4 md:px-6 h-16">
-                {/* Mobile: P Logo */}
+                {/* Mobile: Logo */}
                 <div className="md:hidden">
-                  <span className="text-2xl font-bold text-[#FF5914]">P</span>
+                  {/* Light mode logo */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 dark:hidden">
+                    <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
+                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
+                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+                  </svg>
+                  {/* Dark mode logo */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 hidden dark:block">
+                    <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
+                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
+                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+                  </svg>
                 </div>
 
                 {/* Desktop: Empty spacer (rail logo is sufficient) */}

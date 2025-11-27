@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import PageLayout from "../components/PageLayout";
 import { Activity, Wallet, Settings, HelpCircle, Scale, Receipt } from "lucide-react";
 import UserOverviewSection from "../components/user-sections/UserOverviewSection";
-import UserWalletsSection from "../components/user-sections/UserWalletsSection";
 import UserTransactionsSection from "../components/user-sections/UserTransactionsSection";
 import UserSettingsSection from "../components/user-sections/UserSettingsSection";
 
@@ -46,7 +45,18 @@ const UserDashboardPage: React.FC<UserDashboardPageProps> = ({
       case "overview":
         return <UserOverviewSection />;
       case "wallets":
-        return <UserWalletsSection copiedItem={copiedItem} onCopy={onCopy} />;
+        // Wallets section removed - use new EndUserWalletsPage instead
+        return (
+          <div className="text-center py-12">
+            <Wallet className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-gray-900 dark:text-white mb-2">
+              Wallets Moved
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              Please use the new wallet navigation
+            </p>
+          </div>
+        );
       case "transactions":
         return <UserTransactionsSection />;
       case "settings":

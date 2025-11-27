@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
 import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } from './ui/primary-tabs';
-import { Copy, CheckCircle, Code2, ArrowLeft, Check } from 'lucide-react';
+import { Copy, CheckCircle, Code2, ArrowLeft, Check, FileText } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
 interface CodeExamplesProps {
@@ -44,63 +44,41 @@ const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
-      {/* Mobile Back Button - NOT STICKY, scrolls away */}
-      <div className="lg:hidden p-4 border-b border-[#43586C]/10">
-        <button
-          onClick={onBack}
-          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] active:scale-95 transition-all duration-200"
-          aria-label="Back to Documents"
-        >
-          <ArrowLeft className="w-[18px] h-[18px] text-[#1C1B1F] dark:text-[#F6F7F9]" />
-        </button>
-      </div>
+      {/* STICKY HEADER WITH BACK BUTTON + TITLE + TABS */}
+      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a] shadow-sm border-b border-[#43586C]/20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          {/* Back Button + Title Section */}
+          <div className="pt-4 pb-3 border-b border-[#43586C]/10">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="inline-flex items-center gap-2 px-4 py-2 min-h-10 mb-4 bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-200 rounded-full"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Documents
+              </button>
+            )}
+            <div className="flex items-center gap-3">
+              <FileText className="w-6 h-6 text-[#FF5914]" />
+              <h1 className="text-gray-900 dark:text-white">Code Examples</h1>
+            </div>
+            <p className="text-[#798A9B] mt-1">Ready-to-use integration code in multiple languages</p>
+          </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Back Button + Header - Desktop */}
-        <div className="lg:block hidden mb-6">
-          <button
-            onClick={onBack}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#1C1B1F] dark:hover:text-[#F6F7F9] mb-4 transition-colors duration-200"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Documents
-          </button>
-          <h1 className="flex items-center gap-3">
-            <FileText className="w-6 h-6 text-[#FF5914]" />
-            Code Examples
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Ready-to-use integration code in multiple languages
-          </p>
-        </div>
-
-        {/* Header - Mobile */}
-        <div className="lg:hidden mb-6">
-          <h1 className="flex items-center gap-3">
-            <FileText className="w-6 h-6 text-[#FF5914]" />
-            Code Examples
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Ready-to-use integration code in multiple languages
-          </p>
-        </div>
-      </div>
-
-      {/* MD3 Primary Tabs - Sticky Navigation - Mobile: top-0, Desktop: top-16 */}
-      <div className="sticky top-0 lg:top-16 z-40 bg-white dark:bg-[#0a0a0a] shadow-sm border-b border-[#43586C]/20 py-3">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex w-full items-center overflow-x-auto scrollbar-hide gap-1">
+          {/* Tabs Section */}
+          <div className="py-3">
+            <div className="flex w-full items-center overflow-x-auto scrollbar-hide gap-1">
             <button onClick={() => setActiveTab('javascript')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'javascript' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>JavaScript / Node.js</button>
             <button onClick={() => setActiveTab('python')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'python' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Python</button>
             <button onClick={() => setActiveTab('php')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'php' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>PHP</button>
             <button onClick={() => setActiveTab('curl')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'curl' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>cURL</button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Tab Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6 bg-white dark:bg-[#0a0a0a]">
         <div className="space-y-4">
           {/* JavaScript Tab */}
           {activeTab === 'javascript' && (

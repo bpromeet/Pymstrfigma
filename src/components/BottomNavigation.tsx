@@ -151,7 +151,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
                 onClick={() => handleNavClick(item.id)}
                 className={`flex flex-col items-center justify-center min-w-[64px] h-16 px-3 rounded-full transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#FF5914]/12 text-[#FF5914]'
+                    ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
                     : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                 }`}
                 aria-label={item.label}
@@ -216,7 +216,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
                       isLogout
                         ? 'text-[#FF5914] hover:bg-[#FF5914]/12'
                         : isActive
-                        ? 'bg-[#FF5914]/12 text-[#FF5914]'
+                        ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
                         : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                     }`}
                   >

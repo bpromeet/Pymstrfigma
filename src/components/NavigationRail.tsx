@@ -77,7 +77,30 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
             {isExpanded ? (
               <span className="text-xl font-bold text-[#FF5914]">PYMSTR</span>
             ) : (
-              <span className="text-xl font-bold text-[#FF5914]">P</span>
+              <>
+                {/* Light mode logo */}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-10 w-10 dark:hidden">
+                  <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
+                  <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
+                  <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
+                  <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
+                  <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
+                  <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
+                  <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
+                  <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+                </svg>
+                {/* Dark mode logo */}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-10 w-10 hidden dark:block">
+                  <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
+                  <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
+                  <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
+                  <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
+                  <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
+                  <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
+                  <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
+                  <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+                </svg>
+              </>
             )}
           </div>
         </div>
@@ -97,7 +120,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
                     isExpanded ? 'px-6 gap-4' : 'px-0 justify-center'
                   } ${
                     isActive
-                      ? 'bg-[#FF5914]/12 text-[#FF5914]'
+                      ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
                       : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                   }`}
                   style={{transition: 'padding 1500ms ease-out, gap 1500ms ease-out, justify-content 1500ms ease-out'}}
