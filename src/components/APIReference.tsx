@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
 import { Separator } from './ui/separator';
+import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } from './ui/primary-tabs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
-import { ArrowLeft, Copy, CheckCircle, AlertCircle, Globe, Code2, Webhook, BarChart3, DollarSign, Zap, TrendingUp, Building2, Check, X, Menu } from 'lucide-react';
+import { ArrowLeft, Copy, CheckCircle, AlertCircle, Globe, Code2, Webhook, BarChart3, DollarSign, Zap, TrendingUp, Building2, Check, X } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { PymstrCodeBlock } from './PymstrCodeBlock';
 
@@ -14,71 +15,9 @@ interface APIReferenceProps {
 
 const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<string>('overview');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-
-  const sections = [
-    { id: 'overview', label: 'Overview', icon: Globe },
-    { id: 'payment-types', label: 'Payment Link Types', icon: Code2 },
-    { id: 'authentication', label: 'Authentication', icon: Code2 },
-    { id: 'endpoints', label: 'API Endpoints', icon: BarChart3 },
-    { id: 'pricing', label: 'Pricing & Fees', icon: DollarSign },
-    { id: 'webhooks', label: 'Webhooks', icon: Webhook },
-    { id: 'errors', label: 'Error Codes', icon: AlertCircle },
-    { id: 'examples', label: 'Code Examples', icon: Code2 },
-    { id: 'rate-limits', label: 'Rate Limits', icon: BarChart3 },
-    { id: 'support', label: 'Support', icon: CheckCircle },
-  ];
-
-  // Scroll to top when component mounts
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  // Scroll spy effect
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        rootMargin: '-20% 0px -70% 0px',
-        threshold: 0,
-      }
-    );
-
-    sections.forEach((section) => {
-      const element = document.getElementById(section.id);
-      if (element) {
-        observer.observe(element);
-      }
-    });
-
-    return () => {
-      sections.forEach((section) => {
-        const element = document.getElementById(section.id);
-        if (element) {
-          observer.unobserve(element);
-        }
-      });
-    };
-  }, []);
-
-  const scrollToSection = (sectionId: string) => {
-    setActiveSection(sectionId);
-    setMobileMenuOpen(false);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+  const [activeTab, setActiveTab] = useState('overview');
 
   const copyToClipboard = (text: string, id: string) => {
-    // Fallback method that doesn't require Clipboard API permissions
     const textarea = document.createElement('textarea');
     textarea.value = text;
     textarea.style.position = 'fixed';
@@ -100,100 +39,24 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
-      {/* Sticky Side Navigation - Desktop */}
-      <aside className="hidden lg:block fixed left-[120px] top-0 bottom-0 w-80 bg-white dark:bg-[#0a0a0a] overflow-y-auto border-r border-[#43586C]">
-        <div className="p-6 space-y-4">
-          <Button 
-            variant="outline" 
-            onClick={onBack}
-            className="rounded-full w-full"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Documents
-          </Button>
-          
-          <nav className="space-y-1">
-            {sections.map((section) => {
-              const Icon = section.icon;
-              return (
-                <button
-                  key={section.id}
-                  onClick={() => scrollToSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-sm transition-colors ${
-                    activeSection === section.id
-                      ? 'bg-black text-white dark:bg-white dark:text-black'
-                      : 'text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  <span className="text-left">{section.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-      </aside>
-
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <>
-          <div 
-            className="lg:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <aside className="lg:hidden fixed left-0 top-0 bottom-0 w-80 bg-white dark:bg-gray-900 z-50 p-6 overflow-y-auto">
-            <div className="space-y-1">
-              <nav className="space-y-1">
-                {sections.map((section) => {
-                  const Icon = section.icon;
-                  return (
-                    <button
-                      key={section.id}
-                      onClick={() => scrollToSection(section.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-sm transition-colors ${
-                        activeSection === section.id
-                          ? 'bg-black text-white dark:bg-white dark:text-black'
-                          : 'text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4 shrink-0" />
-                      <span className="text-left">{section.label}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
-          </aside>
-        </>
-      )}
-
-      {/* Mobile Sticky Header with Back Button and Menu */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-[#0a0a0a] shadow-sm">
-        <div className="flex items-center justify-between px-4 h-14">
-          <button
-            onClick={onBack}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] active:scale-95 transition-all duration-200"
-            aria-label="Back to Documents"
-          >
-            <ArrowLeft className="w-[18px] h-[18px] text-[#1C1B1F] dark:text-[#F6F7F9]" />
-          </button>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] active:scale-95 transition-all duration-200"
-            aria-label="Open navigation menu"
-          >
-            <Menu className="w-[18px] h-[18px] text-[#1C1B1F] dark:text-[#F6F7F9]" />
-          </button>
-        </div>
+      {/* Mobile Back Button - NOT STICKY, scrolls away */}
+      <div className="lg:hidden p-4 border-b border-[#43586C]/10">
+        <button
+          onClick={onBack}
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] active:scale-95 transition-all duration-200"
+          aria-label="Back to Documents"
+        >
+          <ArrowLeft className="w-[18px] h-[18px] text-[#1C1B1F] dark:text-[#F6F7F9]" />
+        </button>
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-[440px] min-h-screen p-6 lg:p-8 space-y-6 pt-20 lg:pt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Back Button + Header - Desktop */}
-        <div className="lg:block hidden">
+        <div className="lg:block hidden mb-6">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#1C1B1F] dark:hover:text-[#F6F7F9] mb-6 transition-colors duration-200"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#1C1B1F] dark:hover:text-[#F6F7F9] mb-4 transition-colors duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Documents
@@ -203,1508 +66,631 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
             API Reference
           </h1>
           <p className="text-muted-foreground mt-2">
-            Complete documentation for PYMSTR API integration
+            Complete API documentation for PYMSTR integration
           </p>
         </div>
 
         {/* Header - Mobile */}
-        <div className="lg:hidden">
+        <div className="lg:hidden mb-6">
           <h1 className="flex items-center gap-3">
             <Code2 className="w-6 h-6 text-[#FF5914]" />
             API Reference
           </h1>
           <p className="text-muted-foreground mt-2">
-            Complete documentation for PYMSTR API integration
+            Complete API documentation for PYMSTR integration
           </p>
         </div>
+      </div>
 
-        {/* Overview */}
-        <Card id="overview">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <Globe className="w-4 h-4" />
-            </div>
-            <span>Overview</span>
-          </CardTitle>
-          <CardDescription>Introduction to PYMSTR API capabilities</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            The PYMSTR API allows you to accept stablecoin payments on your platform. This reference provides detailed information about endpoints, request/response formats, authentication, and webhook integration.
-          </p>
-          
-          <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-3xl p-4">
-            <p className="text-sm text-blue-800 dark:text-blue-300">
-              <strong>Base URL:</strong> <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">https://api.pymstr.com/v1</code>
-            </p>
+      {/* MD3 Primary Tabs - Sticky Navigation - Mobile: top-0, Desktop: top-16 */}
+      <div className="sticky top-0 lg:top-16 z-40 bg-white dark:bg-[#0a0a0a] shadow-sm border-b border-[#43586C]/20 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex w-full items-center overflow-x-auto scrollbar-hide gap-1">
+            <button onClick={() => setActiveTab('overview')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'overview' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Overview</button>
+            <button onClick={() => setActiveTab('payment-types')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'payment-types' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Payment Types</button>
+            <button onClick={() => setActiveTab('authentication')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'authentication' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Authentication</button>
+            <button onClick={() => setActiveTab('endpoints')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'endpoints' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>API Endpoints</button>
+            <button onClick={() => setActiveTab('pricing')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'pricing' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Pricing & Fees</button>
+            <button onClick={() => setActiveTab('webhooks')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'webhooks' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Webhooks</button>
+            <button onClick={() => setActiveTab('errors')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'errors' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Error Codes</button>
+            <button onClick={() => setActiveTab('examples')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'examples' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Code Examples</button>
+            <button onClick={() => setActiveTab('rate-limits')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'rate-limits' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Rate Limits</button>
+            <button onClick={() => setActiveTab('support')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'support' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Support</button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Payment Link Types & Architecture */}
-      <Card id="payment-types" className="border-2 border-[#07D7FF]/20">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <Globe className="w-4 h-4" />
-            </div>
-            <span>Payment Link Types & Architecture</span>
-          </CardTitle>
-          <CardDescription>Understanding manual and API-generated payment links</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-[#07D7FF]/10 border border-[#07D7FF]/20 rounded-3xl p-4">
-            <h4 className="font-semibold mb-2">Key Concept: Single-Use Payment Links</h4>
-            <p className="text-sm text-muted-foreground">
-              All PYMSTR payment links are <strong>single-use only</strong>. Once a payment is completed, the link cannot be reused. 
-              Each completed payment stores only a <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">txHash</code> (blockchain transaction hash) - 
-              no transaction IDs are generated.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Manual Links */}
-            <div className="border border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3">
-              <div className="flex items-center space-x-2">
-                <Badge className="bg-blue-600 rounded-full">Manual</Badge>
-                <h5 className="font-semibold">Manual Payment Links</h5>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Created directly in the admin dashboard UI for specific transactions.
-              </p>
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-3 space-y-2 text-sm">
-                <div><strong>Source:</strong> <code className="text-blue-600">"manual"</code></div>
-                <div><strong>Created via:</strong> Dashboard UI</div>
-                <div><strong>Dashboard tab:</strong> "Manual"</div>
-                <div><strong>Use cases:</strong> Invoicing, one-off payments, direct payment requests</div>
-              </div>
-            </div>
-
-            {/* API Links */}
-            <div className="border border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3">
-              <div className="flex items-center space-x-2">
-                <Badge className="bg-green-600 rounded-full">API</Badge>
-                <h5 className="font-semibold">API-Generated Payment Links</h5>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Created programmatically via API for automated payment processing.
-              </p>
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-3 space-y-2 text-sm">
-                <div><strong>Source:</strong> <code className="text-green-600">"api"</code></div>
-                <div><strong>Created via:</strong> POST /payment-links API</div>
-                <div><strong>Dashboard tab:</strong> "API"</div>
-                <div><strong>Use cases:</strong> E-commerce, automated flows, dynamic pricing</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-3">
-            <h5 className="font-semibold">API Integration Flow</h5>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">1.</span>
-                <span>Customer clicks "Pay with Crypto" on your website (your integration endpoint - permanent & reusable)</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">2.</span>
-                <span>Your backend calls PYMSTR API: <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">POST /payment-links</code></span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">3.</span>
-                <span>API creates a <strong>new unique payment link</strong> with status "active"</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">4.</span>
-                <span>API returns the payment link URL (e.g., <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">pymstr.com/#/pay/PL12345</code>)</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">5.</span>
-                <span>You redirect customer to the payment link URL</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">6.</span>
-                <span>Customer completes Web3 payment through PYMSTR checkout</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">7.</span>
-                <span>Payment link status → "completed" with <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">txHash</code> stored</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">8.</span>
-                <span>Link <strong>cannot be reused</strong> - subsequent access attempts show "already used" error</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <span className="font-semibold text-[#07D7FF] mt-0.5">9.</span>
-                <span>Your webhook receives <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">payment.completed</code> event with txHash</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-4">
-            <p className="text-sm text-yellow-800 dark:text-yellow-300">
-              <AlertCircle className="w-4 h-4 inline mr-2" />
-              <strong>Important:</strong> Your integration endpoint (e.g., your "Pay with Crypto" button) remains permanent and reusable. 
-              Each time it's used, you create a <strong>new unique single-use payment link</strong> via the API. The merchant's integration is reusable, 
-              but each payment session/link is single-use.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Authentication */}
-      <Card id="authentication">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <Code2 className="w-4 h-4" />
-            </div>
-            <span>Authentication</span>
-          </CardTitle>
-          <CardDescription>Secure your API requests with Bearer token authentication</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            All API requests require authentication using an API key. Include your API key in the Authorization header using the Bearer scheme.
-          </p>
-          
-          <div>
-            <h4 className="font-semibold text-sm mb-2">Example Request</h4>
-            <PymstrCodeBlock
-              code={`curl -X GET https://api.pymstr.com/v1/payment-links \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`}
-              language="bash"
-              onCopy={(code) => copyToClipboard(code, 'auth-example')}
-              copied={copiedCode === 'auth-example'}
-            />
-          </div>
-
-          <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-4">
-            <p className="text-sm text-yellow-800 dark:text-yellow-300">
-              <AlertCircle className="w-4 h-4 inline mr-2" />
-              <strong>Keep your API keys secure!</strong> Never share them publicly or commit them to version control.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* API Endpoints */}
-      <Card id="endpoints">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <BarChart3 className="w-4 h-4" />
-            </div>
-            <span>API Endpoints</span>
-          </CardTitle>
-          <CardDescription>Core endpoints for payment link management and analytics</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="payment-links" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 rounded-full">
-              <TabsTrigger value="payment-links" className="rounded-full">Payment Links</TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-full">Analytics</TabsTrigger>
-            </TabsList>
-
-            {/* Payment Links Tab */}
-            <TabsContent value="payment-links" className="space-y-6 mt-6">
-              {/* Create Payment Link */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Create Payment Link</h4>
-                  <Badge variant="default" className="bg-green-600 rounded-full">POST</Badge>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-3">
-                  <code className="text-sm">/payment-links</code>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Create a new single-use payment link for accepting crypto payments. Links created via API are automatically tagged with <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">source: "api"</code> and appear in the "API" tab of your dashboard.
-                </p>
-                
-                <div>
-                  <h5 className="font-semibold text-sm mb-3">Request Body Parameters:</h5>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-3 text-sm">
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">name</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">string - Display name for the payment link</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">price</code>
-                      <Badge variant="destructive" className="rounded-full shrink-0">Required</Badge>
-                      <span className="text-muted-foreground">string - Payment amount (e.g., "29.99")</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">currency</code>
-                      <Badge variant="destructive" className="rounded-full shrink-0">Required</Badge>
-                      <span className="text-muted-foreground">string - Fiat currency code (USD, EUR, GBP, etc.)</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">expiresAt</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">number - Minutes until the payment link expires (e.g., 60 for 1 hour, 1440 for 24 hours)</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">redirectUrl</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">string - URL to redirect after successful payment</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">acceptedTokens</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">array - Tokens to accept (USDC, USDT, DAI). Defaults to all</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">acceptedChains</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">array - Chains to accept (ethereum, polygon, arbitrum, optimism, base). Defaults to all</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">metadata</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">object - Custom key-value data for your reference</span>
-                    </div>
+      {/* Tab Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="space-y-4">
+          {/* Overview Tab */}
+          {activeTab === 'overview' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <Globe className="w-4 h-4" />
+                  </div>
+                  <span>API Overview</span>
+                </CardTitle>
+                <CardDescription>PYMSTR REST API specifications</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 space-y-3">
+                  <div className="flex items-start space-x-2">
+                    <span className="font-semibold min-w-[140px]">Base URL:</span>
+                    <code className="text-sm text-muted-foreground">https://api.pymstr.com/v1</code>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="font-semibold min-w-[140px]">Protocol:</span>
+                    <span className="text-muted-foreground">HTTPS/REST</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="font-semibold min-w-[140px]">Format:</span>
+                    <span className="text-muted-foreground">JSON</span>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <span className="font-semibold min-w-[140px]">Authentication:</span>
+                    <span className="text-muted-foreground">Bearer Token (API Key)</span>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-3xl p-4">
                   <p className="text-sm text-blue-800 dark:text-blue-300">
-                    <strong>Note:</strong> Payment links created via API are automatically assigned <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">source: "api"</code>. 
-                    The link is <strong>single-use only</strong> - once payment is completed, it cannot be reused. Each API call should create a new payment link for each transaction.
+                    <strong>ℹ️ Note:</strong> All API requests must be made over HTTPS. Requests made over plain HTTP will fail.
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Payment Types Tab */}
+          {activeTab === 'payment-types' && (
+            <Card className="border-2 border-[#07D7FF]/20">
+              <CardHeader>
+                <CardTitle>Payment Link Types</CardTitle>
+                <CardDescription>Manual vs API-generated payment links</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  PYMSTR supports two types of payment link creation. Both are single-use and follow the same completion rules.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Manual Payment Links */}
+                  <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-3xl p-4 space-y-3">
+                    <h4 className="font-semibold">📝 Manual Payment Links</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Created directly in admin UI for specific transactions.
+                    </p>
+                    <div className="bg-white dark:bg-blue-900/30 rounded-2xl p-2 text-xs">
+                      <code>source: <span className="text-blue-600">"manual"</span></code>
+                    </div>
+                  </div>
+
+                  {/* API-Generated Payment Links */}
+                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-3xl p-4 space-y-3">
+                    <h4 className="font-semibold">🔗 API-Generated Payment Links</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Created programmatically via API for automated flows.
+                    </p>
+                    <div className="bg-white dark:bg-green-900/30 rounded-2xl p-2 text-xs">
+                      <code>source: <span className="text-green-600">"api"</span></code>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-[#07D7FF]/10 border border-[#07D7FF]/20 rounded-3xl p-4">
+                  <h5 className="font-semibold mb-2">🔐 Single-Use Architecture</h5>
+                  <ul className="space-y-1 text-sm text-muted-foreground ml-4">
+                    <li>✓ Once completed, links cannot be reused</li>
+                    <li>✓ Each payment stores only txHash (no transaction IDs)</li>
+                    <li>✓ API-generated links follow same single-use rules as manual links</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Authentication Tab */}
+          {activeTab === 'authentication' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <Code2 className="w-4 h-4" />
+                  </div>
+                  <span>Authentication</span>
+                </CardTitle>
+                <CardDescription>API key authentication and security</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  The PYMSTR API uses API keys to authenticate requests. Include your API key in the Authorization header.
+                </p>
 
                 <div>
-                  <h5 className="font-semibold text-sm mb-2">Response: <Badge className="ml-2 rounded-full">201 Created</Badge></h5>
+                  <h4 className="font-semibold mb-2">Request Header:</h4>
                   <PymstrCodeBlock
-                    code={`{
-  "success": true,
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Premium Subscription",
-    "price": "29.99",
-    "currency": "USD",
-    "status": "active",
-    "source": "api",
-    "url": "https://checkout.pymstr.com/550e8400-e29b-41d4-a716-446655440000",
-    "expiresAt": 1440,
-    "createdAt": "2025-10-22T10:30:00Z"
-  }
-}`}
-                    language="json"
-                    onCopy={(code) => copyToClipboard(code, 'create-pl-res')}
-                    copied={copiedCode === 'create-pl-res'}
+                    code={`Authorization: Bearer YOUR_API_KEY\nContent-Type: application/json`}
+                    language="http"
+                    copyable
                   />
                 </div>
-              </div>
 
-              <Separator />
-
-              {/* Get Payment Link */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Get Payment Link</h4>
-                  <Badge variant="secondary" className="rounded-full">GET</Badge>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-3">
-                  <code className="text-sm">/payment-links/{'{id}'}</code>
-                </div>
-                <p className="text-sm text-muted-foreground">Retrieve details of a specific payment link.</p>
-                
                 <div>
-                  <h5 className="font-semibold text-sm mb-3">Path Parameters:</h5>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-3 text-sm">
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">id</code>
-                      <Badge variant="destructive" className="rounded-full shrink-0">Required</Badge>
-                      <span className="text-muted-foreground">string - The unique UUID identifier of the payment link</span>
+                  <h4 className="font-semibold mb-2">Example Request:</h4>
+                  <PymstrCodeBlock
+                    code={`curl -X GET https://api.pymstr.com/v1/payment-links \\\\\n  -H "Authorization: Bearer sk_live_51H..." \\\\\n  -H "Content-Type: application/json"`}
+                    language="bash"
+                    copyable
+                  />
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-4">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                    <strong>⚠️ Security:</strong> Keep your API keys secure! Never share them publicly or commit them to version control.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* API Endpoints Tab */}
+          {activeTab === 'endpoints' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <BarChart3 className="w-4 h-4" />
+                  </div>
+                  <span>API Endpoints</span>
+                </CardTitle>
+                <CardDescription>Core endpoints for payment link management</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Tabs for Payment Links and Analytics */}
+                <Tabs defaultValue="payment-links">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="payment-links">Payment Links</TabsTrigger>
+                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="payment-links" className="space-y-6 mt-4">
+                    {/* Create Payment Link */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-green-600 hover:bg-green-700">POST</Badge>
+                        <code className="text-sm">/payment-links</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Create a new single-use payment link. Links created via API are tagged with <code>source: "api"</code>.
+                      </p>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Request Body:</h5>
+                        <PymstrCodeBlock
+                          code={`{\n  "name": "Premium Subscription",\n  "price": "99.99",\n  "currency": "USD",\n  "acceptedTokens": ["USDC", "USDT", "EURC"],\n  "acceptedChains": ["polygon", "ethereum", "arbitrum", "optimism", "base"]\n}`}
+                          language="json"
+                          copyable
+                        />
+                      </div>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Response (201 Created):</h5>
+                        <PymstrCodeBlock
+                          code={`{\n  "success": true,\n  "data": {\n    "id": "550e8400-e29b-41d4-a716-446655440000",\n    "name": "Premium Subscription",\n    "price": "99.99",\n    "currency": "USD",\n    "acceptedTokens": ["USDC", "USDT", "EURC"],\n    "acceptedChains": ["polygon", "ethereum", "arbitrum", "optimism", "base"],\n    "status": "pending",\n    "source": "api",\n    "url": "https://checkout.pymstr.com/550e8400-e29b-41d4-a716-446655440000",\n    "createdAt": "2025-10-22T10:30:00Z"\n  }\n}`}
+                          language="json"
+                          copyable
+                        />
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Get Payment Link */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-blue-600 hover:bg-blue-700">GET</Badge>
+                        <code className="text-sm">/payment-links/:id</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Retrieve details of a specific payment link, including completion status and txHash if completed.
+                      </p>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Response (200 OK):</h5>
+                        <PymstrCodeBlock
+                          code={`{\n  "success": true,\n  "data": {\n    "id": "550e8400-e29b-41d4-a716-446655440000",\n    "name": "Premium Subscription",\n    "price": "99.99",\n    "currency": "USD",\n    "acceptedTokens": ["USDC", "USDT", "EURC"],\n    "acceptedChains": ["polygon", "ethereum"],\n    "status": "completed",\n    "source": "api",\n    "token": "USDC",\n    "chain": "polygon",\n    "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",\n    "createdAt": "2025-10-22T10:30:00Z",\n    "completedAt": "2025-10-22T10:35:00Z"\n  }\n}`}
+                          language="json"
+                          copyable
+                        />
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* List Payment Links */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-blue-600 hover:bg-blue-700">GET</Badge>
+                        <code className="text-sm">/payment-links</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        List all payment links with optional filters (status, source type).
+                      </p>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Query Parameters:</h5>
+                        <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-4 space-y-2 text-sm">
+                          <div><code>status</code> - Filter by status: <code>pending</code>, <code>completed</code>, <code>expired</code></div>
+                          <div><code>source</code> - Filter by source: <code>manual</code>, <code>api</code></div>
+                          <div><code>limit</code> - Number of results per page (default: 20, max: 100)</div>
+                          <div><code>offset</code> - Pagination offset (default: 0)</div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="analytics" className="space-y-6 mt-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-blue-600 hover:bg-blue-700">GET</Badge>
+                        <code className="text-sm">/analytics/summary</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Get payment analytics summary including total volume, transaction counts, and trends.
+                      </p>
+
+                      <div>
+                        <h5 className="font-semibold text-sm mb-2">Response (200 OK):</h5>
+                        <PymstrCodeBlock
+                          code={`{\n  "success": true,\n  "data": {\n    "totalVolume": "125,847.50",\n    "totalTransactions": 342,\n    "completedTransactions": 328,\n    "pendingTransactions": 14,\n    "averageTransactionValue": "368.12",\n    "topChain": "polygon",\n    "topToken": "USDC"\n  }\n}`}
+                          language="json"
+                          copyable
+                        />
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Pricing & Fees Tab */}
+          {activeTab === 'pricing' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <DollarSign className="w-4 h-4" />
+                  </div>
+                  <span>Pricing & Fees</span>
+                </CardTitle>
+                <CardDescription>Transaction fees and pricing structure</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-3xl p-4 text-center">
+                    <p className="text-3xl font-bold text-blue-600">0.5%</p>
+                    <p className="text-sm text-muted-foreground mt-1">Per Transaction Fee</p>
+                  </div>
+                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-3xl p-4 text-center">
+                    <p className="text-3xl font-bold text-green-600">$0</p>
+                    <p className="text-sm text-muted-foreground mt-1">Setup Fee</p>
+                  </div>
+                  <div className="bg-purple-50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800 rounded-3xl p-4 text-center">
+                    <p className="text-3xl font-bold text-purple-600">$0</p>
+                    <p className="text-sm text-muted-foreground mt-1">Monthly Fee</p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
+                  <h5 className="font-semibold mb-2">Gas Fee Coverage</h5>
+                  <p className="text-sm text-muted-foreground">
+                    PYMSTR uses Account Abstraction (Pimlico) to sponsor gas fees for end users. Customers pay <strong>zero gas fees</strong> on all transactions.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Webhooks Tab */}
+          {activeTab === 'webhooks' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <Webhook className="w-4 h-4" />
+                  </div>
+                  <span>Webhooks</span>
+                </CardTitle>
+                <CardDescription>Real-time event notifications</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  Webhooks allow your application to receive real-time notifications when payment events occur.
+                </p>
+
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
+                  <h5 className="font-semibold mb-2">Available Events:</h5>
+                  <ul className="space-y-2">
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <code className="text-sm">payment.completed</code>
+                      <span className="text-sm text-muted-foreground">- Payment confirmed on-chain</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <code className="text-sm">payment.failed</code>
+                      <span className="text-sm text-muted-foreground">- Payment failed or rejected</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      <code className="text-sm">payment.pending</code>
+                      <span className="text-sm text-muted-foreground">- Payment initiated</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 className="font-semibold mb-2">Webhook Payload Example:</h5>
+                  <PymstrCodeBlock
+                    code={`{\n  "event": "payment.completed",\n  "timestamp": "2025-10-22T10:35:00Z",\n  "data": {\n    "paymentLinkId": "550e8400-e29b-41d4-a716-446655440000",\n    "price": "99.99",\n    "currency": "USD",\n    "token": "USDC",\n    "chain": "polygon",\n    "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",\n    "status": "completed",\n    "completedAt": "2025-10-22T10:35:00Z"\n  }\n}`}
+                    language="json"
+                    copyable
+                  />
+                </div>
+
+                <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-4">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                    <strong>🔐 Security:</strong> Always verify webhook signatures using the <code>x-pymstr-signature</code> header.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Error Codes Tab */}
+          {activeTab === 'errors' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <AlertCircle className="w-4 h-4" />
+                  </div>
+                  <span>Error Codes</span>
+                </CardTitle>
+                <CardDescription>HTTP status codes and error handling</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                    <Badge className="bg-green-600 hover:bg-green-700 flex-shrink-0">200</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">OK</p>
+                      <p className="text-sm text-muted-foreground">Request succeeded</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                    <Badge className="bg-green-600 hover:bg-green-700 flex-shrink-0">201</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">Created</p>
+                      <p className="text-sm text-muted-foreground">Resource created successfully</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                    <Badge className="bg-yellow-600 hover:bg-yellow-700 flex-shrink-0">400</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">Bad Request</p>
+                      <p className="text-sm text-muted-foreground">Invalid request parameters</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                    <Badge className="bg-red-600 hover:bg-red-700 flex-shrink-0">401</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">Unauthorized</p>
+                      <p className="text-sm text-muted-foreground">Invalid or missing API key</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                    <Badge className="bg-red-600 hover:bg-red-700 flex-shrink-0">404</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">Not Found</p>
+                      <p className="text-sm text-muted-foreground">Resource does not exist</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                    <Badge className="bg-red-600 hover:bg-red-700 flex-shrink-0">429</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">Too Many Requests</p>
+                      <p className="text-sm text-muted-foreground">Rate limit exceeded</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-2xl">
+                    <Badge className="bg-red-600 hover:bg-red-700 flex-shrink-0">500</Badge>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold">Internal Server Error</p>
+                      <p className="text-sm text-muted-foreground">Server error - contact support</p>
                     </div>
                   </div>
                 </div>
 
                 <div>
-                  <h5 className="font-semibold text-sm mb-2">Response Example (Completed): <Badge className="ml-2 rounded-full">200 OK</Badge></h5>
-                  <p className="text-xs text-muted-foreground mb-2">
-                    When status is "completed", the link is <strong>single-use and cannot be reused</strong>. It includes <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">txHash</code> but no transaction ID.
-                  </p>
+                  <h5 className="font-semibold mb-2">Error Response Format:</h5>
                   <PymstrCodeBlock
-                    code={`{
-  "success": true,
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Premium Subscription",
-    "price": "29.99",
-    "currency": "USD",
-    "status": "completed",
-    "source": "api",
-    "url": "https://checkout.pymstr.com/550e8400-e29b-41d4-a716-446655440000",
-    "acceptedTokens": ["USDC", "USDT", "DAI"],
-    "acceptedChains": ["ethereum", "polygon", "arbitrum", "optimism", "base"],
-    "txHash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-    "chain": "polygon",
-    "token": "USDC",
-    "fromAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb",
-    "expiresAt": 1440,
-    "redirectUrl": "https://yoursite.com/success",
-    "metadata": {
-      "customerId": "cust_12345",
-      "planId": "premium_monthly"
-    },
-    "createdAt": "2025-10-22T10:30:00Z",
-    "completedAt": "2025-10-22T10:35:22Z"
-  }
-}`}
+                    code={`{\n  "success": false,\n  "error": {\n    "code": "INVALID_API_KEY",\n    "message": "The provided API key is invalid or has been revoked",\n    "statusCode": 401\n  }\n}`}
                     language="json"
-                    onCopy={(code) => copyToClipboard(code, 'get-pl-res')}
-                    copied={copiedCode === 'get-pl-res'}
+                    copyable
                   />
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          )}
 
-              <Separator />
+          {/* Code Examples Tab */}
+          {activeTab === 'examples' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <Code2 className="w-4 h-4" />
+                  </div>
+                  <span>Code Examples</span>
+                </CardTitle>
+                <CardDescription>Integration examples in multiple languages</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Tabs defaultValue="javascript">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="javascript">JavaScript</TabsTrigger>
+                    <TabsTrigger value="python">Python</TabsTrigger>
+                    <TabsTrigger value="php">PHP</TabsTrigger>
+                    <TabsTrigger value="curl">cURL</TabsTrigger>
+                  </TabsList>
 
-              {/* List Payment Links */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">List Payment Links</h4>
-                  <Badge variant="secondary" className="rounded-full">GET</Badge>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-3">
-                  <code className="text-sm">/payment-links</code>
-                </div>
-                <p className="text-sm text-muted-foreground">Retrieve all payment links with optional filtering.</p>
-                
-                <div>
-                  <h5 className="font-semibold text-sm mb-3">Query Parameters:</h5>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-3 text-sm">
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">status</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">string - Filter by status: active, completed, expired, inactive</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">source</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">string - Filter by creation method: manual, api</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">limit</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">number - Number of results to return (default: 20, max: 100)</span>
-                    </div>
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">offset</code>
-                      <Badge variant="secondary" className="rounded-full shrink-0">Optional</Badge>
-                      <span className="text-muted-foreground">number - Pagination offset (default: 0)</span>
-                    </div>
+                  <TabsContent value="javascript" className="space-y-3 mt-4">
+                    <h5 className="font-semibold">Node.js Example:</h5>
+                    <PymstrCodeBlock
+                      code={`const axios = require('axios');\n\nconst createPaymentLink = async () => {\n  try {\n    const response = await axios.post(\n      'https://api.pymstr.com/v1/payment-links',\n      {\n        name: 'Premium Subscription',\n        price: '99.99',\n        currency: 'USD',\n        acceptedTokens: ['USDC', 'USDT', 'EURC'],\n        acceptedChains: ['polygon', 'ethereum']\n      },\n      {\n        headers: {\n          'Authorization': \`Bearer \${process.env.PYMSTR_API_KEY}\`,\n          'Content-Type': 'application/json'\n        }\n      }\n    );\n    \n    console.log('Payment link created:', response.data.data.url);\n    return response.data;\n  } catch (error) {\n    console.error('Error:', error.response?.data);\n  }\n};\n\ncreatePaymentLink();`}
+                      language="javascript"
+                      copyable
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="python" className="space-y-3 mt-4">
+                    <h5 className="font-semibold">Python Example:</h5>
+                    <PymstrCodeBlock
+                      code={`import requests\nimport os\n\ndef create_payment_link():\n    url = 'https://api.pymstr.com/v1/payment-links'\n    headers = {\n        'Authorization': f'Bearer {os.getenv(\"PYMSTR_API_KEY\")}',\n        'Content-Type': 'application/json'\n    }\n    payload = {\n        'name': 'Premium Subscription',\n        'price': '99.99',\n        'currency': 'USD',\n        'acceptedTokens': ['USDC', 'USDT', 'EURC'],\n        'acceptedChains': ['polygon', 'ethereum']\n    }\n    \n    response = requests.post(url, json=payload, headers=headers)\n    \n    if response.status_code == 201:\n        data = response.json()\n        print(f'Payment link created: {data[\"data\"][\"url\"]}')\n        return data\n    else:\n        print(f'Error: {response.json()}')\n\ncreate_payment_link()`}
+                      language="python"
+                      copyable
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="php" className="space-y-3 mt-4">
+                    <h5 className="font-semibold">PHP Example:</h5>
+                    <PymstrCodeBlock
+                      code={`<?php\n\n$apiKey = getenv('PYMSTR_API_KEY');\n$url = 'https://api.pymstr.com/v1/payment-links';\n\n$data = [\n    'name' => 'Premium Subscription',\n    'price' => '99.99',\n    'currency' => 'USD',\n    'acceptedTokens' => ['USDC', 'USDT', 'EURC'],\n    'acceptedChains' => ['polygon', 'ethereum']\n];\n\n$options = [\n    'http' => [\n        'header'  => [\n            \"Content-Type: application/json\",\n            \"Authorization: Bearer $apiKey\"\n        ],\n        'method'  => 'POST',\n        'content' => json_encode($data)\n    ]\n];\n\n$context  = stream_context_create($options);\n$result = file_get_contents($url, false, $context);\n\nif ($result !== false) {\n    $response = json_decode($result, true);\n    echo \"Payment link created: \" . $response['data']['url'];\n} else {\n    echo \"Error creating payment link\";\n}\n\n?>`}
+                      language="php"
+                      copyable
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="curl" className="space-y-3 mt-4">
+                    <h5 className="font-semibold">cURL Example:</h5>
+                    <PymstrCodeBlock
+                      code={`curl -X POST https://api.pymstr.com/v1/payment-links \\\\\n  -H "Authorization: Bearer YOUR_API_KEY" \\\\\n  -H "Content-Type: application/json" \\\\\n  -d '{\n    "name": "Premium Subscription",\n    "price": "99.99",\n    "currency": "USD",\n    "acceptedTokens": ["USDC", "USDT", "EURC"],\n    "acceptedChains": ["polygon", "ethereum"]\n  }'`}
+                      language="bash"
+                      copyable
+                    />
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Rate Limits Tab */}
+          {activeTab === 'rate-limits' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <BarChart3 className="w-4 h-4" />
+                  </div>
+                  <span>Rate Limits</span>
+                </CardTitle>
+                <CardDescription>API request limits and quotas</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-3xl p-4">
+                    <p className="text-2xl font-bold text-blue-600">100</p>
+                    <p className="text-sm text-muted-foreground mt-1">Requests per minute</p>
+                  </div>
+                  <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-3xl p-4">
+                    <p className="text-2xl font-bold text-green-600">10,000</p>
+                    <p className="text-sm text-muted-foreground mt-1">Requests per day</p>
                   </div>
                 </div>
 
-                <div>
-                  <h5 className="font-semibold text-sm mb-2">Response: <Badge className="ml-2 rounded-full">200 OK</Badge></h5>
-                  <PymstrCodeBlock
-                    code={`{
-  "success": true,
-  "data": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "name": "Premium Subscription",
-      "price": "29.99",
-      "currency": "USD",
-      "status": "completed",
-      "source": "api",
-      "txHash": "0x1234567890abcdef...",
-      "chain": "polygon",
-      "token": "USDC",
-      "createdAt": "2025-10-22T10:30:00Z",
-      "completedAt": "2025-10-22T10:35:22Z"
-    },
-    {
-      "id": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-      "name": "Invoice #1234",
-      "price": "9.99",
-      "currency": "USD",
-      "status": "active",
-      "source": "manual",
-      "createdAt": "2025-10-20T14:22:00Z"
-    },
-    {
-      "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
-      "name": "Enterprise Package",
-      "price": "199.99",
-      "currency": "USD",
-      "status": "expired",
-      "source": "api",
-      "createdAt": "2025-10-15T09:12:00Z",
-      "expiresAt": 7200
-    }
-  ],
-  "pagination": {
-    "total": 47,
-    "limit": 20,
-    "offset": 0,
-    "hasMore": true
-  }
-}`}
-                    language="json"
-                    onCopy={(code) => copyToClipboard(code, 'list-pl-res')}
-                    copied={copiedCode === 'list-pl-res'}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Delete Payment Link */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Delete Payment Link</h4>
-                  <Badge variant="destructive" className="rounded-full">DELETE</Badge>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-3">
-                  <code className="text-sm">/payment-links/{'{id}'}</code>
-                </div>
-                <p className="text-sm text-muted-foreground">Delete a payment link (soft delete - preserves payment data for accounting purposes).</p>
-                
-                <div>
-                  <h5 className="font-semibold text-sm mb-3">Path Parameters:</h5>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-3 text-sm">
-                    <div className="flex items-start space-x-3">
-                      <code className="text-[#07D7FF] min-w-[140px]">id</code>
-                      <Badge variant="destructive" className="rounded-full shrink-0">Required</Badge>
-                      <span className="text-muted-foreground">string - The unique UUID identifier of the payment link to delete</span>
-                    </div>
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
+                  <h5 className="font-semibold mb-2">Rate Limit Headers:</h5>
+                  <div className="space-y-1 text-sm font-mono">
+                    <div><code>X-RateLimit-Limit:</code> Total requests allowed</div>
+                    <div><code>X-RateLimit-Remaining:</code> Requests remaining</div>
+                    <div><code>X-RateLimit-Reset:</code> Unix timestamp for reset</div>
                   </div>
                 </div>
 
                 <div className="bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-3xl p-4">
                   <p className="text-sm text-yellow-800 dark:text-yellow-300">
-                    <strong>Note:</strong> This is a soft delete. The payment link will be marked as deleted but payment data is preserved for accounting and compliance purposes.
+                    <strong>⚠️ Note:</strong> If you exceed the rate limit, you'll receive a 429 Too Many Requests error. Implement exponential backoff in your retry logic.
                   </p>
                 </div>
+              </CardContent>
+            </Card>
+          )}
 
-                <div>
-                  <h5 className="font-semibold text-sm mb-2">Response: <Badge className="ml-2 rounded-full">200 OK</Badge></h5>
-                  <PymstrCodeBlock
-                    code={`{
-  "success": true,
-  "message": "Payment link deleted successfully",
-  "data": {
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "status": "deleted",
-    "deletedAt": "2025-10-22T15:30:00Z"
-  }
-}`}
-                    language="json"
-                    onCopy={(code) => copyToClipboard(code, 'delete-pl-res')}
-                    copied={copiedCode === 'delete-pl-res'}
-                  />
-                </div>
-              </div>
-            </TabsContent>
+          {/* Support Tab */}
+          {activeTab === 'support' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
+                    <CheckCircle className="w-4 h-4" />
+                  </div>
+                  <span>Support</span>
+                </CardTitle>
+                <CardDescription>Get help with API integration</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
+                    <h5 className="font-semibold mb-2">📧 Email Support</h5>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      For technical issues and integration help:
+                    </p>
+                    <a href="mailto:support@pymstr.com" className="text-[#07D7FF] hover:underline text-sm">
+                      support@pymstr.com
+                    </a>
+                  </div>
 
-            {/* Analytics Tab */}
-            <TabsContent value="analytics" className="space-y-6 mt-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-semibold">Get Analytics</h4>
-                  <Badge variant="secondary" className="rounded-full">GET</Badge>
-                </div>
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-3">
-                  <code className="text-sm">/analytics</code>
-                </div>
-                <p className="text-muted-foreground">Retrieve payment analytics and statistics.</p>
-                
-                <div>
-                  <h5 className="font-semibold text-sm mb-2">Query Parameters:</h5>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-2 text-sm">
-                    <div className="flex items-start space-x-2">
-                      <code className="text-[#07D7FF]">period</code>
-                      <span className="text-muted-foreground">(required) - Time period: 24h, 7d, 30d, 90d, 1y, all</span>
-                    </div>
-                    <div className="flex items-start space-x-2">
-                      <code className="text-[#07D7FF]">groupBy</code>
-                      <span className="text-muted-foreground">(optional) - Group data by: day, week, month</span>
-                    </div>
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
+                    <h5 className="font-semibold mb-2">💬 Live Chat</h5>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Available Monday-Friday, 9am-5pm EST
+                    </p>
+                    <Button className="rounded-full">Start Chat</Button>
                   </div>
                 </div>
 
-                <div>
-                  <h5 className="font-semibold text-sm mb-2">Response: <Badge className="ml-2 rounded-full">200 OK</Badge></h5>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`{
-  "success": true,
-  "data": {
-    "totalVolume": "125847.32",
-    "completedPayments": 4521,
-    "averagePaymentValue": "27.83",
-    "period": "30d",
-    "volumeByChain": {
-      "ethereum": "45234.12",
-      "polygon": "52341.23",
-      "arbitrum": "18765.45",
-      "optimism": "9506.52"
-    },
-    "volumeByToken": {
-      "USDC": "62341.56",
-      "USDT": "45234.12",
-      "DAI": "18271.64"
-    },
-    "timeSeriesData": [
-      {
-        "date": "2025-10-15",
-        "volume": "4532.23",
-        "count": 152
-      },
-      {
-        "date": "2025-10-16",
-        "volume": "5123.45",
-        "count": 168
-      }
-    ]
-  }
-}`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                      onClick={() => copyToClipboard(`{
-  "success": true,
-  "data": {
-    "totalVolume": "125847.32",
-    "completedPayments": 4521,
-    "averagePaymentValue": "27.83",
-    "period": "30d",
-    "volumeByChain": {
-      "ethereum": "45234.12",
-      "polygon": "52341.23",
-      "arbitrum": "18765.45",
-      "optimism": "9506.52"
-    },
-    "volumeByToken": {
-      "USDC": "62341.56",
-      "USDT": "45234.12",
-      "DAI": "18271.64"
-    },
-    "timeSeriesData": [
-      {
-        "date": "2025-10-15",
-        "volume": "4532.23",
-        "count": 152
-      },
-      {
-        "date": "2025-10-16",
-        "volume": "5123.45",
-        "count": 168
-      }
-    ]
-  }
-}`, 'analytics-res')}
-                    >
-                      {copiedCode === 'analytics-res' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-3xl p-4">
+                  <h5 className="font-semibold mb-2">📚 Additional Resources</h5>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <span>Quick Start Guide - Get started in 5 minutes</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <span>Code Examples - Copy-paste integration snippets</span>
+                    </li>
+                    <li className="flex items-center space-x-2">
+                      <CheckCircle className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <span>Help Center - FAQ and troubleshooting</span>
+                    </li>
+                  </ul>
                 </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-
-      {/* Pricing & Fees */}
-      <Card id="pricing">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <DollarSign className="w-4 h-4" />
-            </div>
-            <span>Pricing & Fees</span>
-          </CardTitle>
-          <CardDescription>
-            Simple, transparent pricing with no hidden fees
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Pricing Tiers */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Free Tier */}
-            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3 hover:border-[#07D7FF]/30 transition-colors">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Zap className="w-5 h-5 text-blue-600" />
-                  <h4 className="font-semibold">Free</h4>
-                </div>
-                <div className="space-y-1">
-                  <div>
-                    <span className="text-3xl font-bold">0%</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-tight">Up to $20K<br />processed</p>
-                </div>
-              </div>
-              
-              <div className="space-y-1.5 text-sm">
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Perfect for testing</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">All core features</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">API access</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Dashboard & Analytics</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Starter Tier */}
-            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3 hover:border-[#07D7FF]/30 transition-colors">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <TrendingUp className="w-5 h-5 text-green-600" />
-                  <h4 className="font-semibold">Starter</h4>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-3xl font-bold">2.5%</div>
-                  <p className="text-xs text-muted-foreground leading-tight">per transaction<br />up to $2.5M</p>
-                </div>
-              </div>
-              
-              <div className="space-y-1.5 text-sm">
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Payment Links</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Basic Analytics</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">API access</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Email support</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Professional Tier */}
-            <div className="border-2 border-[#07D7FF] rounded-3xl p-4 pt-6 space-y-3 relative bg-[#07D7FF]/5">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <Badge className="bg-[#07D7FF] text-white rounded-full">Popular</Badge>
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Building2 className="w-5 h-5 text-[#07D7FF]" />
-                  <h4 className="font-semibold">Professional</h4>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-3xl font-bold">2%</div>
-                  <p className="text-xs text-muted-foreground leading-tight">per transaction<br />up to $10M</p>
-                </div>
-              </div>
-              
-              <div className="space-y-1.5 text-sm">
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Everything in Starter</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Advanced API</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Webhooks</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Team (up to 5)</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Priority support</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Enterprise Tier */}
-            <div className="border-2 border-gray-200 dark:border-gray-800 rounded-3xl p-4 space-y-3 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Building2 className="w-5 h-5 text-purple-600" />
-                  <h4 className="font-semibold">Enterprise</h4>
-                </div>
-                <div className="space-y-1">
-                  <div className="text-3xl font-bold">1.5%</div>
-                  <p className="text-xs text-muted-foreground leading-tight">per transaction<br />from $10M</p>
-                </div>
-              </div>
-              
-              <div className="space-y-1.5 text-sm">
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Everything in Pro</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Custom rates</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Unlimited team</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">Account manager</span>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                  <span className="text-muted-foreground">SLA guarantee</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Network Gas Fees */}
-          <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-3xl p-4">
-            <h5 className="font-semibold text-sm mb-2 text-blue-800 dark:text-blue-300">Network Gas Fees</h5>
-            <p className="text-sm text-blue-800 dark:text-blue-300">
-              All blockchain gas fees are covered by PYMSTR infrastructure via Account Abstraction (Pimlico). 
-              Your customers only pay the stablecoin amount - no hidden blockchain fees.
-            </p>
-          </div>
-
-          {/* What's Included */}
-          <div className="space-y-3">
-            <h5 className="font-semibold">What's Included (All Tiers)</h5>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="flex items-start space-x-2 text-sm">
-                <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                <div>
-                  <span className="font-semibold">Supported Assets:</span> USDC, USDT, EURC
-                </div>
-              </div>
-              <div className="flex items-start space-x-2 text-sm">
-                <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                <div>
-                  <span className="font-semibold">Supported Chains:</span> Ethereum, Polygon, Arbitrum, Optimism, Base
-                </div>
-              </div>
-              <div className="flex items-start space-x-2 text-sm">
-                <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                <div>
-                  <span className="font-semibold">Settlement:</span> Instant to your wallet
-                </div>
-              </div>
-              <div className="flex items-start space-x-2 text-sm">
-                <Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
-                <div>
-                  <span className="font-semibold">No hold periods or reserves</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* No Hidden Fees */}
-          <div className="space-y-3">
-            <h5 className="font-semibold">No Hidden Fees</h5>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="flex items-start space-x-2 text-sm">
-                <X className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
-                <span className="text-muted-foreground">No monthly fees</span>
-              </div>
-              <div className="flex items-start space-x-2 text-sm">
-                <X className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
-                <span className="text-muted-foreground">No setup fees</span>
-              </div>
-              <div className="flex items-start space-x-2 text-sm">
-                <X className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
-                <span className="text-muted-foreground">No chargeback fees</span>
-              </div>
-              <div className="flex items-start space-x-2 text-sm">
-                <X className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
-                <span className="text-muted-foreground">No failed transaction fees</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Note */}
-          <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
-            <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> Blockchain payments are final and irreversible, eliminating chargeback risks. 
-              Transaction fees are only charged on completed payments. API access is included in all tiers at no additional cost.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Webhooks */}
-      <Card id="webhooks">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <Webhook className="w-4 h-4" />
-            </div>
-            <span>Webhooks</span>
-          </CardTitle>
-          <CardDescription>Receive real-time notifications for payment events</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">
-            Webhooks allow you to receive real-time notifications when events occur in your PYMSTR account.
-          </p>
-
-          <div>
-            <h4 className="font-semibold mb-2">Setting Up Webhooks</h4>
-            <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
-              <li>Navigate to Settings → Webhooks in your dashboard</li>
-              <li>Click "Add Webhook Endpoint"</li>
-              <li>Enter your endpoint URL</li>
-              <li>Select events to subscribe to</li>
-              <li>Save and copy your webhook secret</li>
-            </ol>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Webhook Events</h4>
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-2">
-              <div className="flex items-center space-x-2 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <code className="text-[#07D7FF]">payment.completed</code>
-                <span className="text-muted-foreground">- Payment successfully completed</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <code className="text-[#07D7FF]">payment.pending</code>
-                <span className="text-muted-foreground">- Payment initiated, waiting for confirmation</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <code className="text-[#07D7FF]">payment.failed</code>
-                <span className="text-muted-foreground">- Payment failed or expired</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <code className="text-[#07D7FF]">payment_link.created</code>
-                <span className="text-muted-foreground">- New payment link created</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm">
-                <CheckCircle className="w-4 h-4 text-green-600" />
-                <code className="text-[#07D7FF]">refund.completed</code>
-                <span className="text-muted-foreground">- Refund processed</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Webhook Payload Example</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`{
-  "id": "evt_1a2b3c4d5e",
-  "event": "payment.completed",
-  "createdAt": "2025-10-22T10:36:15Z",
-  "data": {
-    "paymentLinkId": "550e8400-e29b-41d4-a716-446655440000",
-    "price": "29.99",
-    "currency": "USD",
-    "token": "USDC",
-    "chain": "polygon",
-    "txHash": "0x1234567890abcdef...",
-    "fromAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-  }
-}`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`{
-  "id": "evt_1a2b3c4d5e",
-  "event": "payment.completed",
-  "createdAt": "2025-10-22T10:36:15Z",
-  "data": {
-    "paymentLinkId": "550e8400-e29b-41d4-a716-446655440000",
-    "price": "29.99",
-    "currency": "USD",
-    "token": "USDC",
-    "chain": "polygon",
-    "txHash": "0x1234567890abcdef...",
-    "fromAddress": "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"
-  }
-}`, 'webhook-payload')}
-              >
-                {copiedCode === 'webhook-payload' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Verifying Webhook Signatures</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`const crypto = require('crypto');
-
-function verifyWebhookSignature(payload, signature, secret) {
-  const computedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(computedSignature)
-  );
-}
-
-app.post('/webhooks/pymstr', express.raw({ type: 'application/json' }), (req, res) => {
-  const signature = req.headers['x-pymstr-signature'];
-  const payload = req.body;
-  
-  if (!verifyWebhookSignature(payload, signature, process.env.PYMSTR_WEBHOOK_SECRET)) {
-    return res.status(401).send('Invalid signature');
-  }
-  
-  const event = JSON.parse(payload);
-  
-  switch (event.event) {
-    case 'payment.completed':
-      console.log('Payment completed:', event.data);
-      break;
-  }
-  
-  res.status(200).send('Webhook received');
-});`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`const crypto = require('crypto');
-
-function verifyWebhookSignature(payload, signature, secret) {
-  const computedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(computedSignature)
-  );
-}
-
-app.post('/webhooks/pymstr', express.raw({ type: 'application/json' }), (req, res) => {
-  const signature = req.headers['x-pymstr-signature'];
-  const payload = req.body;
-  
-  if (!verifyWebhookSignature(payload, signature, process.env.PYMSTR_WEBHOOK_SECRET)) {
-    return res.status(401).send('Invalid signature');
-  }
-  
-  const event = JSON.parse(payload);
-  
-  switch (event.event) {
-    case 'payment.completed':
-      console.log('Payment completed:', event.data);
-      break;
-  }
-  
-  res.status(200).send('Webhook received');
-});`, 'webhook-verify')}
-              >
-                {copiedCode === 'webhook-verify' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Error Codes */}
-      <Card id="errors">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <AlertCircle className="w-4 h-4" />
-            </div>
-            <span>Error Codes</span>
-          </CardTitle>
-          <CardDescription>HTTP status codes and error handling</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold mb-3">HTTP Status Codes</h4>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2 px-3">Code</th>
-                    <th className="text-left py-2 px-3">Description</th>
-                  </tr>
-                </thead>
-                <tbody className="text-muted-foreground">
-                  <tr className="border-b">
-                    <td className="py-2 px-3"><code className="text-green-600">200</code></td>
-                    <td className="py-2 px-3">OK - Request succeeded</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3"><code className="text-green-600">201</code></td>
-                    <td className="py-2 px-3">Created - Resource created successfully</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3"><code className="text-red-600">400</code></td>
-                    <td className="py-2 px-3">Bad Request - Invalid parameters</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3"><code className="text-red-600">401</code></td>
-                    <td className="py-2 px-3">Unauthorized - Invalid or missing API key</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3"><code className="text-red-600">404</code></td>
-                    <td className="py-2 px-3">Not Found - Resource doesn't exist</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3"><code className="text-red-600">429</code></td>
-                    <td className="py-2 px-3">Too Many Requests - Rate limit exceeded</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-3"><code className="text-red-600">500</code></td>
-                    <td className="py-2 px-3">Internal Server Error - Server error</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Error Response Format</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-              <pre className="text-xs font-mono">{`{
-  "success": false,
-  "error": {
-    "code": "invalid_request",
-    "message": "The 'price' field must be a positive number",
-    "field": "price"
-  }
-}`}</pre>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                onClick={() => copyToClipboard(`{
-  "success": false,
-  "error": {
-    "code": "invalid_request",
-    "message": "The 'price' field must be a positive number",
-    "field": "price"
-  }
-}`, 'error-format')}
-              >
-                {copiedCode === 'error-format' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-3">Common Error Codes</h4>
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4 space-y-2 text-sm">
-              <div className="flex items-start space-x-2">
-                <code className="text-red-600">invalid_request</code>
-                <span className="text-muted-foreground">- Malformed request or invalid parameters</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <code className="text-red-600">authentication_failed</code>
-                <span className="text-muted-foreground">- Invalid API key</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <code className="text-red-600">resource_not_found</code>
-                <span className="text-muted-foreground">- Requested resource doesn't exist</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <code className="text-red-600">rate_limit_exceeded</code>
-                <span className="text-muted-foreground">- Too many API requests</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <code className="text-red-600">invalid_chain</code>
-                <span className="text-muted-foreground">- Unsupported blockchain network</span>
-              </div>
-              <div className="flex items-start space-x-2">
-                <code className="text-red-600">transaction_failed</code>
-                <span className="text-muted-foreground">- Blockchain transaction failed</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Code Examples */}
-      <Card id="examples">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <Code2 className="w-4 h-4" />
-            </div>
-            <span>Code Examples</span>
-          </CardTitle>
-          <CardDescription>Integration examples in different languages</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="javascript" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 rounded-full">
-              <TabsTrigger value="javascript" className="rounded-full">JavaScript</TabsTrigger>
-              <TabsTrigger value="python" className="rounded-full">Python</TabsTrigger>
-              <TabsTrigger value="php" className="rounded-full">PHP</TabsTrigger>
-              <TabsTrigger value="curl" className="rounded-full">cURL</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="javascript" className="mt-4">
-              <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                <pre className="text-xs font-mono">{`const PYMSTR_API_KEY = 'your_api_key_here';
-const BASE_URL = 'https://api.pymstr.com/v1';
-
-async function createPaymentLink(data) {
-  const response = await fetch(\`\${BASE_URL}/payment-links\`, {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${PYMSTR_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
-  
-  return await response.json();
-}
-
-// Usage
-const paymentLink = await createPaymentLink({
-  name: 'Product Purchase',
-  description: 'Premium widget',
-  price: '49.99',
-  currency: 'USD',
-  acceptedTokens: ['USDC', 'USDT'],
-  acceptedChains: ['polygon', 'arbitrum']
-});
-
-console.log('Payment URL:', paymentLink.data.url);`}</pre>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                  onClick={() => copyToClipboard(`const PYMSTR_API_KEY = 'your_api_key_here';
-const BASE_URL = 'https://api.pymstr.com/v1';
-
-async function createPaymentLink(data) {
-  const response = await fetch(\`\${BASE_URL}/payment-links\`, {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${PYMSTR_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
-  
-  return await response.json();
-}
-
-// Usage
-const paymentLink = await createPaymentLink({
-  name: 'Product Purchase',
-  description: 'Premium widget',
-  price: '49.99',
-  currency: 'USD',
-  acceptedTokens: ['USDC', 'USDT'],
-  acceptedChains: ['polygon', 'arbitrum']
-});
-
-console.log('Payment URL:', paymentLink.data.url);`, 'js-example')}
-                >
-                  {copiedCode === 'js-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="python" className="mt-4">
-              <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                <pre className="text-xs font-mono">{`import requests
-
-PYMSTR_API_KEY = 'your_api_key_here'
-BASE_URL = 'https://api.pymstr.com/v1'
-
-def create_payment_link(data):
-    headers = {
-        'Authorization': f'Bearer {PYMSTR_API_KEY}',
-        'Content-Type': 'application/json'
-    }
-    
-    response = requests.post(
-        f'{BASE_URL}/payment-links',
-        json=data,
-        headers=headers
-    )
-    
-    return response.json()
-
-# Usage
-payment_link = create_payment_link({
-    'name': 'Product Purchase',
-    'description': 'Premium widget',
-    'price': '49.99',
-    'currency': 'USD',
-    'acceptedTokens': ['USDC', 'USDT'],
-    'acceptedChains': ['polygon', 'arbitrum']
-})
-
-print('Payment URL:', payment_link['data']['url'])`}</pre>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                  onClick={() => copyToClipboard(`import requests
-
-PYMSTR_API_KEY = 'your_api_key_here'
-BASE_URL = 'https://api.pymstr.com/v1'
-
-def create_payment_link(data):
-    headers = {
-        'Authorization': f'Bearer {PYMSTR_API_KEY}',
-        'Content-Type': 'application/json'
-    }
-    
-    response = requests.post(
-        f'{BASE_URL}/payment-links',
-        json=data,
-        headers=headers
-    )
-    
-    return response.json()
-
-# Usage
-payment_link = create_payment_link({
-    'name': 'Product Purchase',
-    'description': 'Premium widget',
-    'price': '49.99',
-    'currency': 'USD',
-    'acceptedTokens': ['USDC', 'USDT'],
-    'acceptedChains': ['polygon', 'arbitrum']
-})
-
-print('Payment URL:', payment_link['data']['url'])`, 'python-example')}
-                >
-                  {copiedCode === 'python-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="php" className="mt-4">
-              <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                <pre className="text-xs font-mono">{`<?php
-
-$apiKey = 'your_api_key_here';
-$baseUrl = 'https://api.pymstr.com/v1';
-
-function createPaymentLink($data, $apiKey, $baseUrl) {
-    $data = [
-        'name' => 'Product Purchase',
-        'description' => 'Premium widget',
-        'price' => '49.99',
-        'currency' => 'USD',
-        'acceptedTokens' => ['USDC', 'USDT'],
-        'acceptedChains' => ['polygon', 'arbitrum']
-    ];
-    
-    $ch = curl_init($baseUrl . '/payment-links');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . $apiKey,
-        'Content-Type: application/json'
-    ]);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    return json_decode($response, true);
-}
-
-// Usage
-$paymentLink = createPaymentLink($data, $apiKey, $baseUrl);
-echo 'Payment URL: ' . $paymentLink['data']['url'];
-
-?>`}</pre>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                  onClick={() => copyToClipboard(`<?php
-
-$apiKey = 'your_api_key_here';
-$baseUrl = 'https://api.pymstr.com/v1';
-
-function createPaymentLink($data, $apiKey, $baseUrl) {
-    $data = [
-        'name' => 'Product Purchase',
-        'description' => 'Premium widget',
-        'price' => '49.99',
-        'currency' => 'USD',
-        'acceptedTokens' => ['USDC', 'USDT'],
-        'acceptedChains' => ['polygon', 'arbitrum']
-    ];
-    
-    $ch = curl_init($baseUrl . '/payment-links');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . $apiKey,
-        'Content-Type: application/json'
-    ]);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    return json_decode($response, true);
-}
-
-// Usage
-$paymentLink = createPaymentLink($data, $apiKey, $baseUrl);
-echo 'Payment URL: ' . $paymentLink['data']['url'];
-
-?>`, 'php-example')}
-                >
-                  {copiedCode === 'php-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="curl" className="mt-4">
-              <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                <pre className="text-xs font-mono">{`# Create a payment link
-curl -X POST https://api.pymstr.com/v1/payment-links \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Product Purchase",
-    "price": "49.99",
-    "currency": "USD",
-    "acceptedTokens": ["USDC", "USDT"],
-    "acceptedChains": ["polygon", "arbitrum"]
-  }'
-
-# Get payment link details
-curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\
-  -H "Authorization: Bearer YOUR_API_KEY"
-
-# List all payment links
-curl -X GET "https://api.pymstr.com/v1/payment-links?status=completed&limit=10" \\
-  -H "Authorization: Bearer YOUR_API_KEY"`}</pre>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute top-2 right-2 text-gray-400 hover:text-white"
-                  onClick={() => copyToClipboard(`# Create a payment link
-curl -X POST https://api.pymstr.com/v1/payment-links \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Product Purchase",
-    "price": "49.99",
-    "currency": "USD",
-    "acceptedTokens": ["USDC", "USDT"],
-    "acceptedChains": ["polygon", "arbitrum"]
-  }'
-
-# Get payment link details
-curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\
-  -H "Authorization: Bearer YOUR_API_KEY"
-
-# List all payment links
-curl -X GET "https://api.pymstr.com/v1/payment-links?status=completed&limit=10" \\
-  -H "Authorization: Bearer YOUR_API_KEY"`, 'curl-example')}
-                >
-                  {copiedCode === 'curl-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-
-      {/* Rate Limits */}
-      <Card id="rate-limits">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <BarChart3 className="w-4 h-4" />
-            </div>
-            <span>Rate Limits</span>
-          </CardTitle>
-          <CardDescription>API request limits and throttling</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
-              <h5 className="font-semibold text-sm mb-2">Standard Plan</h5>
-              <p className="text-muted-foreground">100 requests per minute</p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
-              <h5 className="font-semibold text-sm mb-2">Pro Plan</h5>
-              <p className="text-muted-foreground">500 requests per minute</p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
-              <h5 className="font-semibold text-sm mb-2">Enterprise Plan</h5>
-              <p className="text-muted-foreground">Custom rate limits</p>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Rate Limit Headers</h4>
-            <div className="bg-black text-[#05df72] rounded-3xl p-4">
-              <pre className="text-xs font-mono">{`X-RateLimit-Limit: 100
-X-RateLimit-Remaining: 87
-X-RateLimit-Reset: 1698012345`}</pre>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Support */}
-      <Card id="support">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-              <CheckCircle className="w-4 h-4" />
-            </div>
-            <span>Support & Resources</span>
-          </CardTitle>
-          <CardDescription>Documentation and support channels</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="border-2 border-[#07D7FF]/20 bg-[#07D7FF]/5 rounded-3xl p-4">
-              <h5 className="font-semibold text-sm mb-2 flex items-center space-x-2">
-                <Globe className="w-4 h-4" />
-                <span>Documentation</span>
-              </h5>
-              <p className="text-sm text-muted-foreground mb-3">Comprehensive guides and tutorials</p>
-              <a href="#" className="text-sm text-[#07D7FF] hover:underline">Visit Docs →</a>
-            </div>
-            <div className="border-2 border-[#07D7FF]/20 bg-[#07D7FF]/5 rounded-3xl p-4">
-              <h5 className="font-semibold text-sm mb-2 flex items-center space-x-2">
-                <Code2 className="w-4 h-4" />
-                <span>Support</span>
-              </h5>
-              <p className="text-sm text-muted-foreground mb-3">Get help from our team</p>
-              <a href="#" className="text-sm text-[#07D7FF] hover:underline">Contact Support →</a>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );

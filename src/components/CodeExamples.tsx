@@ -1,542 +1,534 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Button } from './ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Copy, CheckCircle, Code2, Menu, ArrowLeft } from 'lucide-react';
+import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } from './ui/primary-tabs';
+import { Copy, CheckCircle, Code2, ArrowLeft, Check } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 
 interface CodeExamplesProps {
   onBack?: () => void;
 }
 
-const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<string>('javascript');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+// Code block component
+const PymstrCodeBlock: React.FC<{ code: string; language: string; copyable?: boolean }> = ({ code, language, copyable = false }) => {
+  const [copied, setCopied] = useState(false);
 
-  const sections = [
-    { id: 'javascript', label: 'JavaScript' },
-    { id: 'python', label: 'Python' },
-    { id: 'php', label: 'PHP' },
-    { id: 'curl', label: 'cURL' },
-  ];
-
-  // Scroll to top when component mounts
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  // Scroll spy effect
-  React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      {
-        rootMargin: '-20% 0px -70% 0px',
-        threshold: 0,
-      }
-    );
-
-    sections.forEach((section) => {
-      const element = document.getElementById(section.id);
-      if (element) {
-        observer.observe(element);
-      }
-    });
-
-    return () => {
-      sections.forEach((section) => {
-        const element = document.getElementById(section.id);
-        if (element) {
-          observer.unobserve(element);
-        }
-      });
-    };
-  }, []);
-
-  const scrollToSection = (sectionId: string) => {
-    setActiveSection(sectionId);
-    setMobileMenuOpen(false);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  const copyToClipboard = (text: string, id: string) => {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
-    textarea.select();
-    
-    try {
-      document.execCommand('copy');
-      setCopiedCode(id);
-      toast('Copied to clipboard!');
-      setTimeout(() => setCopiedCode(null), 2000);
-    } catch (err) {
-      toast('Failed to copy to clipboard');
-    } finally {
-      document.body.removeChild(textarea);
-    }
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    toast('Copied to clipboard!');
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
-      {/* Sticky Side Navigation - Desktop */}
-      <aside className="hidden lg:block fixed left-[120px] top-0 bottom-0 w-80 bg-white dark:bg-[#0a0a0a] overflow-y-auto border-r border-[#43586C]">
-        <div className="p-6 space-y-4">
-          <Button 
-            variant="outline" 
-            onClick={onBack}
-            className="rounded-full w-full"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Documents
-          </Button>
-          
-          <nav className="space-y-1">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => scrollToSection(section.id)}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-sm transition-colors ${
-                  activeSection === section.id
-                    ? 'bg-black text-white dark:bg-white dark:text-black'
-                    : 'text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800'
-                }`}
-              >
-                <Code2 className="w-4 h-4 shrink-0" />
-                <span className="text-left">{section.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-      </aside>
-
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <>
-          <div 
-            className="lg:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setMobileMenuOpen(false)}
-          />
-          <aside className="lg:hidden fixed left-0 top-0 bottom-0 w-80 bg-white dark:bg-gray-900 z-50 p-6 overflow-y-auto">
-            <div className="space-y-1">
-              <nav className="space-y-1">
-                {sections.map((section) => (
-                  <button
-                    key={section.id}
-                    onClick={() => scrollToSection(section.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-full text-sm transition-colors ${
-                      activeSection === section.id
-                        ? 'bg-black text-white dark:bg-white dark:text-black'
-                        : 'text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    <Code2 className="w-4 h-4 shrink-0" />
-                    <span className="text-left">{section.label}</span>
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </aside>
-        </>
+    <div className="relative bg-[#123653] text-[#05df72] rounded-2xl p-4">
+      <pre className="text-sm font-mono overflow-x-auto">
+        <code>{code}</code>
+      </pre>
+      {copyable && (
+        <Button
+          size="sm"
+          variant="ghost"
+          className="absolute top-2 right-2 text-gray-400 hover:text-white h-8 w-8 p-0"
+          onClick={handleCopy}
+        >
+          {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+        </Button>
       )}
+    </div>
+  );
+};
 
-      {/* Mobile Sticky Header with Back Button and Menu */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white dark:bg-[#0a0a0a] shadow-sm">
-        <div className="flex items-center justify-between px-4 h-14">
-          <button
-            onClick={onBack}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] active:scale-95 transition-all duration-200"
-            aria-label="Back to Documents"
-          >
-            <ArrowLeft className="w-[18px] h-[18px] text-[#1C1B1F] dark:text-[#F6F7F9]" />
-          </button>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] active:scale-95 transition-all duration-200"
-            aria-label="Open navigation menu"
-          >
-            <Menu className="w-[18px] h-[18px] text-[#1C1B1F] dark:text-[#F6F7F9]" />
-          </button>
-        </div>
+const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
+  const [activeTab, setActiveTab] = useState('javascript');
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
+      {/* Mobile Back Button - NOT STICKY, scrolls away */}
+      <div className="lg:hidden p-4 border-b border-[#43586C]/10">
+        <button
+          onClick={onBack}
+          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] active:scale-95 transition-all duration-200"
+          aria-label="Back to Documents"
+        >
+          <ArrowLeft className="w-[18px] h-[18px] text-[#1C1B1F] dark:text-[#F6F7F9]" />
+        </button>
       </div>
 
       {/* Main Content */}
-      <div className="lg:ml-[440px] min-h-screen p-6 lg:p-8 space-y-6 pt-20 lg:pt-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Back Button + Header - Desktop */}
-        <div className="lg:block hidden">
+        <div className="lg:block hidden mb-6">
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#1C1B1F] dark:hover:text-[#F6F7F9] mb-6 transition-colors duration-200"
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-[#1C1B1F] dark:hover:text-[#F6F7F9] mb-4 transition-colors duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Documents
           </button>
           <h1 className="flex items-center gap-3">
-            <Code2 className="w-6 h-6 text-[#FF5914]" />
+            <FileText className="w-6 h-6 text-[#FF5914]" />
             Code Examples
           </h1>
           <p className="text-muted-foreground mt-2">
-            Integration examples in different programming languages
+            Ready-to-use integration code in multiple languages
           </p>
         </div>
 
         {/* Header - Mobile */}
-        <div className="lg:hidden">
+        <div className="lg:hidden mb-6">
           <h1 className="flex items-center gap-3">
-            <Code2 className="w-6 h-6 text-[#FF5914]" />
+            <FileText className="w-6 h-6 text-[#FF5914]" />
             Code Examples
           </h1>
           <p className="text-muted-foreground mt-2">
-            Integration examples in different programming languages
+            Ready-to-use integration code in multiple languages
           </p>
         </div>
+      </div>
 
-        {/* Code Examples */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#07D7FF] text-white">
-                <Code2 className="w-4 h-4" />
-              </div>
-              <span>API Integration Examples</span>
-            </CardTitle>
-            <CardDescription>Choose your preferred language to get started</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="javascript" className="w-full" onValueChange={setActiveSection}>
-              <TabsList className="grid w-full grid-cols-4 rounded-full">
-                <TabsTrigger value="javascript" className="rounded-full">JavaScript</TabsTrigger>
-                <TabsTrigger value="python" className="rounded-full">Python</TabsTrigger>
-                <TabsTrigger value="php" className="rounded-full">PHP</TabsTrigger>
-                <TabsTrigger value="curl" className="rounded-full">cURL</TabsTrigger>
-              </TabsList>
+      {/* MD3 Primary Tabs - Sticky Navigation - Mobile: top-0, Desktop: top-16 */}
+      <div className="sticky top-0 lg:top-16 z-40 bg-white dark:bg-[#0a0a0a] shadow-sm border-b border-[#43586C]/20 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex w-full items-center overflow-x-auto scrollbar-hide gap-1">
+            <button onClick={() => setActiveTab('javascript')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'javascript' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>JavaScript / Node.js</button>
+            <button onClick={() => setActiveTab('python')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'python' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>Python</button>
+            <button onClick={() => setActiveTab('php')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'php' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>PHP</button>
+            <button onClick={() => setActiveTab('curl')} className={`inline-flex items-center justify-center whitespace-nowrap px-4 py-3 min-h-12 font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:transition-all after:duration-200 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${activeTab === 'curl' ? 'text-[#1E88E5] after:bg-[#1E88E5]' : 'text-[#798A9B] after:bg-transparent'}`}>cURL</button>
+          </div>
+        </div>
+      </div>
 
-              <TabsContent value="javascript" id="javascript" className="mt-6 space-y-4">
-                <div>
-                  <h4 className="mb-3">JavaScript / Node.js Example</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    This example demonstrates how to create a payment link using JavaScript with the Fetch API.
-                  </p>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`const PYMSTR_API_KEY = 'your_api_key_here';
-const BASE_URL = 'https://api.pymstr.com/v1';
+      {/* Tab Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="space-y-4">
+          {/* JavaScript Tab */}
+          {activeTab === 'javascript' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>JavaScript / Node.js Examples</CardTitle>
+                <CardDescription>Integration using Axios or Fetch API</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Create Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Create Payment Link</h4>
+                  <PymstrCodeBlock
+                    code={`const axios = require('axios');
 
-async function createPaymentLink(data) {
-  const response = await fetch(\`\${BASE_URL}/payment-links\`, {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${PYMSTR_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
+const createPaymentLink = async () => {
+  try {
+    const response = await axios.post(
+      'https://api.pymstr.com/v1/payment-links',
+      {
+        name: 'Premium Subscription',
+        price: '99.99',
+        currency: 'USD',
+        acceptedTokens: ['USDC', 'USDT', 'EURC'],
+        acceptedChains: ['polygon', 'ethereum']
+      },
+      {
+        headers: {
+          'Authorization': \`Bearer \${process.env.PYMSTR_API_KEY}\`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    
+    console.log('Payment link created:', response.data.data.url);
+    return response.data;
+  } catch (error) {
+    console.error('Error:', error.response?.data);
+  }
+};
+
+createPaymentLink();`}
+                    language="javascript"
+                    copyable
+                  />
+                </div>
+
+                {/* Get Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Get Payment Link Status</h4>
+                  <PymstrCodeBlock
+                    code={`const getPaymentLink = async (linkId) => {
+  try {
+    const response = await axios.get(
+      \`https://api.pymstr.com/v1/payment-links/\${linkId}\`,
+      {
+        headers: {
+          'Authorization': \`Bearer \${process.env.PYMSTR_API_KEY}\`
+        }
+      }
+    );
+    
+    const payment = response.data.data;
+    console.log('Status:', payment.status);
+    console.log('TxHash:', payment.txHash);
+    
+    return payment;
+  } catch (error) {
+    console.error('Error:', error.response?.data);
+  }
+};
+
+getPaymentLink('550e8400-e29b-41d4-a716-446655440000');`}
+                    language="javascript"
+                    copyable
+                  />
+                </div>
+
+                {/* Webhook Handler */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Webhook Event Handler (Express.js)</h4>
+                  <PymstrCodeBlock
+                    code={`const express = require('express');
+const app = express();
+
+app.post('/api/pymstr-webhook', express.json(), (req, res) => {
+  const event = req.body;
   
-  return await response.json();
-}
-
-// Usage
-const paymentLink = await createPaymentLink({
-  name: 'Product Purchase',
-  description: 'Premium widget',
-  price: '49.99',
-  currency: 'USD',
-  acceptedTokens: ['USDC', 'USDT', 'EURC'],
-  acceptedChains: ['polygon', 'arbitrum']
+  // Verify webhook signature (recommended)
+  const signature = req.headers['x-pymstr-signature'];
+  if (!verifySignature(signature, req.body)) {
+    return res.status(401).send('Invalid signature');
+  }
+  
+  // Handle the event
+  switch(event.type) {
+    case 'payment.completed':
+      console.log('Payment completed:', event.data);
+      fulfillOrder(event.data.payment_id);
+      break;
+      
+    case 'payment.failed':
+      console.log('Payment failed:', event.data);
+      break;
+      
+    case 'payment.pending':
+      console.log('Payment pending:', event.data);
+      break;
+  }
+  
+  // Always respond with 200
+  res.status(200).send('Webhook received');
 });
 
-console.log('Payment URL:', paymentLink.data.url);`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white rounded-full"
-                      onClick={() => copyToClipboard(`const PYMSTR_API_KEY = 'your_api_key_here';
-const BASE_URL = 'https://api.pymstr.com/v1';
-
-async function createPaymentLink(data) {
-  const response = await fetch(\`\${BASE_URL}/payment-links\`, {
-    method: 'POST',
-    headers: {
-      'Authorization': \`Bearer \${PYMSTR_API_KEY}\`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  });
-  
-  return await response.json();
-}
-
-// Usage
-const paymentLink = await createPaymentLink({
-  name: 'Product Purchase',
-  description: 'Premium widget',
-  price: '49.99',
-  currency: 'USD',
-  acceptedTokens: ['USDC', 'USDT', 'EURC'],
-  acceptedChains: ['polygon', 'arbitrum']
-});
-
-console.log('Payment URL:', paymentLink.data.url);`, 'js-example')}
-                    >
-                      {copiedCode === 'js-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+app.listen(3000);`}
+                    language="javascript"
+                    copyable
+                  />
                 </div>
-              </TabsContent>
+              </CardContent>
+            </Card>
+          )}
 
-              <TabsContent value="python" id="python" className="mt-6 space-y-4">
-                <div>
-                  <h4 className="mb-3">Python Example</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    This example uses the requests library to interact with the PYMSTR API.
-                  </p>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`import requests
+          {/* Python Tab */}
+          {activeTab === 'python' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Python Examples</CardTitle>
+                <CardDescription>Integration using requests library</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Create Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Create Payment Link</h4>
+                  <PymstrCodeBlock
+                    code={`import requests
+import os
 
-PYMSTR_API_KEY = 'your_api_key_here'
-BASE_URL = 'https://api.pymstr.com/v1'
-
-def create_payment_link(data):
+def create_payment_link():
+    url = 'https://api.pymstr.com/v1/payment-links'
     headers = {
-        'Authorization': f'Bearer {PYMSTR_API_KEY}',
+        'Authorization': f'Bearer {os.getenv("PYMSTR_API_KEY")}',
         'Content-Type': 'application/json'
     }
-    
-    response = requests.post(
-        f'{BASE_URL}/payment-links',
-        json=data,
-        headers=headers
-    )
-    
-    return response.json()
-
-# Usage
-payment_link = create_payment_link({
-    'name': 'Product Purchase',
-    'description': 'Premium widget',
-    'price': '49.99',
-    'currency': 'USD',
-    'acceptedTokens': ['USDC', 'USDT', 'EURC'],
-    'acceptedChains': ['polygon', 'arbitrum']
-})
-
-print('Payment URL:', payment_link['data']['url'])`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white rounded-full"
-                      onClick={() => copyToClipboard(`import requests
-
-PYMSTR_API_KEY = 'your_api_key_here'
-BASE_URL = 'https://api.pymstr.com/v1'
-
-def create_payment_link(data):
-    headers = {
-        'Authorization': f'Bearer {PYMSTR_API_KEY}',
-        'Content-Type': 'application/json'
+    payload = {
+        'name': 'Premium Subscription',
+        'price': '99.99',
+        'currency': 'USD',
+        'acceptedTokens': ['USDC', 'USDT', 'EURC'],
+        'acceptedChains': ['polygon', 'ethereum']
     }
     
-    response = requests.post(
-        f'{BASE_URL}/payment-links',
-        json=data,
-        headers=headers
-    )
+    response = requests.post(url, json=payload, headers=headers)
     
-    return response.json()
+    if response.status_code == 201:
+        data = response.json()
+        print(f'Payment link created: {data["data"]["url"]}')
+        return data
+    else:
+        print(f'Error: {response.json()}')
 
-# Usage
-payment_link = create_payment_link({
-    'name': 'Product Purchase',
-    'description': 'Premium widget',
-    'price': '49.99',
-    'currency': 'USD',
-    'acceptedTokens': ['USDC', 'USDT', 'EURC'],
-    'acceptedChains': ['polygon', 'arbitrum']
-})
-
-print('Payment URL:', payment_link['data']['url'])`, 'python-example')}
-                    >
-                      {copiedCode === 'python-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+create_payment_link()`}
+                    language="python"
+                    copyable
+                  />
                 </div>
-              </TabsContent>
 
-              <TabsContent value="php" id="php" className="mt-6 space-y-4">
-                <div>
-                  <h4 className="mb-3">PHP Example</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    This example demonstrates payment link creation using PHP with cURL.
-                  </p>
-                  <div className="bg-black text-[#05df72] rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`<?php
+                {/* Get Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Get Payment Link Status</h4>
+                  <PymstrCodeBlock
+                    code={`def get_payment_link(link_id):
+    url = f'https://api.pymstr.com/v1/payment-links/{link_id}'
+    headers = {
+        'Authorization': f'Bearer {os.getenv("PYMSTR_API_KEY")}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    
+    if response.status_code == 200:
+        payment = response.json()['data']
+        print(f'Status: {payment["status"]}')
+        print(f'TxHash: {payment["txHash"]}')
+        return payment
+    else:
+        print(f'Error: {response.json()}')
 
-$apiKey = 'your_api_key_here';
-$baseUrl = 'https://api.pymstr.com/v1';
+get_payment_link('550e8400-e29b-41d4-a716-446655440000')`}
+                    language="python"
+                    copyable
+                  />
+                </div>
 
-function createPaymentLink($data, $apiKey, $baseUrl) {
-    $data = [
-        'name' => 'Product Purchase',
-        'description' => 'Premium widget',
-        'price' => '49.99',
-        'currency' => 'USD',
-        'acceptedTokens' => ['USDC', 'USDT', 'EURC'],
-        'acceptedChains' => ['polygon', 'arbitrum']
-    ];
+                {/* Webhook Handler */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Webhook Event Handler (Flask)</h4>
+                  <PymstrCodeBlock
+                    code={`from flask import Flask, request, jsonify
+import hmac
+import hashlib
+
+app = Flask(__name__)
+
+@app.route('/api/pymstr-webhook', methods=['POST'])
+def webhook():
+    event = request.json
+    signature = request.headers.get('x-pymstr-signature')
     
-    $ch = curl_init($baseUrl . '/payment-links');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . $apiKey,
-        'Content-Type: application/json'
-    ]);
+    # Verify webhook signature (recommended)
+    if not verify_signature(signature, event):
+        return 'Invalid signature', 401
     
-    $response = curl_exec($ch);
-    curl_close($ch);
+    # Handle the event
+    if event['type'] == 'payment.completed':
+        print(f'Payment completed: {event["data"]}')
+        fulfill_order(event['data']['payment_id'])
+    elif event['type'] == 'payment.failed':
+        print(f'Payment failed: {event["data"]}')
+    elif event['type'] == 'payment.pending':
+        print(f'Payment pending: {event["data"]}')
     
-    return json_decode($response, true);
+    # Always respond with 200
+    return 'Webhook received', 200
+
+if __name__ == '__main__':
+    app.run(port=3000)`}
+                    language="python"
+                    copyable
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* PHP Tab */}
+          {activeTab === 'php' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>PHP Examples</CardTitle>
+                <CardDescription>Integration using cURL or file_get_contents</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Create Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Create Payment Link</h4>
+                  <PymstrCodeBlock
+                    code={`<?php
+
+$apiKey = getenv('PYMSTR_API_KEY');
+$url = 'https://api.pymstr.com/v1/payment-links';
+
+$data = [
+    'name' => 'Premium Subscription',
+    'price' => '99.99',
+    'currency' => 'USD',
+    'acceptedTokens' => ['USDC', 'USDT', 'EURC'],
+    'acceptedChains' => ['polygon', 'ethereum']
+];
+
+$options = [
+    'http' => [
+        'header'  => [
+            "Content-Type: application/json",
+            "Authorization: Bearer $apiKey"
+        ],
+        'method'  => 'POST',
+        'content' => json_encode($data)
+    ]
+];
+
+$context = stream_context_create($options);
+$result = file_get_contents($url, false, $context);
+
+if ($result !== false) {
+    $response = json_decode($result, true);
+    echo "Payment link created: " . $response['data']['url'];
+} else {
+    echo "Error creating payment link";
 }
 
-// Usage
-$paymentLink = createPaymentLink($data, $apiKey, $baseUrl);
-echo 'Payment URL: ' . $paymentLink['data']['url'];
+?>`}
+                    language="php"
+                    copyable
+                  />
+                </div>
 
-?>`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white rounded-full"
-                      onClick={() => copyToClipboard(`<?php
+                {/* Get Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Get Payment Link Status</h4>
+                  <PymstrCodeBlock
+                    code={`<?php
 
-$apiKey = 'your_api_key_here';
-$baseUrl = 'https://api.pymstr.com/v1';
+$apiKey = getenv('PYMSTR_API_KEY');
+$linkId = '550e8400-e29b-41d4-a716-446655440000';
+$url = "https://api.pymstr.com/v1/payment-links/$linkId";
 
-function createPaymentLink($data, $apiKey, $baseUrl) {
-    $data = [
-        'name' => 'Product Purchase',
-        'description' => 'Premium widget',
-        'price' => '49.99',
-        'currency' => 'USD',
-        'acceptedTokens' => ['USDC', 'USDT', 'EURC'],
-        'acceptedChains' => ['polygon', 'arbitrum']
-    ];
-    
-    $ch = curl_init($baseUrl . '/payment-links');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Bearer ' . $apiKey,
-        'Content-Type: application/json'
-    ]);
-    
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    return json_decode($response, true);
+$options = [
+    'http' => [
+        'header' => "Authorization: Bearer $apiKey",
+        'method' => 'GET'
+    ]
+];
+
+$context = stream_context_create($options);
+$result = file_get_contents($url, false, $context);
+
+if ($result !== false) {
+    $payment = json_decode($result, true)['data'];
+    echo "Status: " . $payment['status'] . "\n";
+    echo "TxHash: " . $payment['txHash'] . "\n";
+} else {
+    echo "Error retrieving payment link";
 }
 
-// Usage
-$paymentLink = createPaymentLink($data, $apiKey, $baseUrl);
-echo 'Payment URL: ' . $paymentLink['data']['url'];
-
-?>`, 'php-example')}
-                    >
-                      {copiedCode === 'php-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+?>`}
+                    language="php"
+                    copyable
+                  />
                 </div>
-              </TabsContent>
 
-              <TabsContent value="curl" id="curl" className="mt-6 space-y-4">
-                <div>
-                  <h4 className="mb-3">cURL Examples</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Command-line examples for testing the API using cURL.
-                  </p>
-                  <div className="bg-gray-900 text-gray-100 rounded-3xl p-4 relative overflow-x-auto">
-                    <pre className="text-xs font-mono">{`# Create a payment link
-curl -X POST https://api.pymstr.com/v1/payment-links \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Product Purchase",
-    "price": "49.99",
-    "currency": "USD",
-    "acceptedTokens": ["USDC", "USDT", "EURC"],
-    "acceptedChains": ["polygon", "arbitrum"]
-  }'
+                {/* Webhook Handler */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Webhook Event Handler</h4>
+                  <PymstrCodeBlock
+                    code={`<?php
 
-# Get payment link details
-curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\
-  -H "Authorization: Bearer YOUR_API_KEY"
+// webhook.php
+$rawBody = file_get_contents('php://input');
+$event = json_decode($rawBody, true);
+$signature = $_SERVER['HTTP_X_PYMSTR_SIGNATURE'] ?? '';
 
-# List all payment links
-curl -X GET "https://api.pymstr.com/v1/payment-links?status=completed&limit=10" \\
-  -H "Authorization: Bearer YOUR_API_KEY"`}</pre>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="absolute top-2 right-2 text-gray-400 hover:text-white rounded-full"
-                      onClick={() => copyToClipboard(`# Create a payment link
-curl -X POST https://api.pymstr.com/v1/payment-links \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "name": "Product Purchase",
-    "price": "49.99",
-    "currency": "USD",
-    "acceptedTokens": ["USDC", "USDT", "EURC"],
-    "acceptedChains": ["polygon", "arbitrum"]
-  }'
+// Verify webhook signature (recommended)
+if (!verifySignature($signature, $rawBody)) {
+    http_response_code(401);
+    echo 'Invalid signature';
+    exit;
+}
 
-# Get payment link details
-curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\
-  -H "Authorization: Bearer YOUR_API_KEY"
+// Handle the event
+switch ($event['type']) {
+    case 'payment.completed':
+        error_log('Payment completed: ' . json_encode($event['data']));
+        fulfillOrder($event['data']['payment_id']);
+        break;
+        
+    case 'payment.failed':
+        error_log('Payment failed: ' . json_encode($event['data']));
+        break;
+        
+    case 'payment.pending':
+        error_log('Payment pending: ' . json_encode($event['data']));
+        break;
+}
 
-# List all payment links
-curl -X GET "https://api.pymstr.com/v1/payment-links?status=completed&limit=10" \\
-  -H "Authorization: Bearer YOUR_API_KEY"`, 'curl-example')}
-                    >
-                      {copiedCode === 'curl-example' ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </Button>
-                  </div>
+// Always respond with 200
+http_response_code(200);
+echo 'Webhook received';
+
+?>`}
+                    language="php"
+                    copyable
+                  />
                 </div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Additional Resources */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Next Steps</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <p className="text-sm text-muted-foreground">
-              After implementing these code examples, make sure to:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground ml-2">
-              <li>Replace <code className="bg-gray-200 dark:bg-gray-800 px-1 rounded">YOUR_API_KEY</code> with your actual API key from the dashboard</li>
-              <li>Test your integration in a development environment first</li>
-              <li>Implement webhook handlers to receive payment notifications</li>
-              <li>Handle errors appropriately in your application</li>
-              <li>Review the security best practices in the API Reference</li>
-            </ul>
-          </CardContent>
-        </Card>
+          {/* cURL Tab */}
+          {activeTab === 'curl' && (
+            <Card>
+              <CardHeader>
+                <CardTitle>cURL Examples</CardTitle>
+                <CardDescription>Command-line API testing and integration</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Create Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Create Payment Link</h4>
+                  <PymstrCodeBlock
+                    code={`curl -X POST https://api.pymstr.com/v1/payment-links \\\\\\\\\\n  -H "Authorization: Bearer YOUR_API_KEY" \\\\\\\\\\n  -H "Content-Type: application/json" \\\\\\\\\\n  -d '{\\n    \"name\": \"Premium Subscription\",\\n    \"price\": \"99.99\",\\n    \"currency\": \"USD\",\\n    \"acceptedTokens\": [\"USDC\", \"USDT\", \"EURC\"],\\n    \"acceptedChains\": [\"polygon\", \"ethereum\"]\\n  }'`}
+                    language="bash"
+                    copyable
+                  />
+                </div>
+
+                {/* Get Payment Link */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Get Payment Link Status</h4>
+                  <PymstrCodeBlock
+                    code={`curl -X GET https://api.pymstr.com/v1/payment-links/550e8400-e29b-41d4-a716-446655440000 \\\\\\\\\\n  -H "Authorization: Bearer YOUR_API_KEY" \\\\\\\\\\n  -H "Content-Type: application/json"`}
+                    language="bash"
+                    copyable
+                  />
+                </div>
+
+                {/* List Payment Links */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">List Payment Links (with filters)</h4>
+                  <PymstrCodeBlock
+                    code={`# List all payment links
+curl -X GET "https://api.pymstr.com/v1/payment-links" \\\\\\\\\\n  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Filter by status
+curl -X GET "https://api.pymstr.com/v1/payment-links?status=completed" \\\\\\\\\\n  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Filter by source (API-generated only)
+curl -X GET "https://api.pymstr.com/v1/payment-links?source=api" \\\\\\\\\\n  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Pagination
+curl -X GET "https://api.pymstr.com/v1/payment-links?limit=20&offset=40" \\\\\\\\\\n  -H "Authorization: Bearer YOUR_API_KEY"`}
+                    language="bash"
+                    copyable
+                  />
+                </div>
+
+                {/* Get Analytics */}
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Get Analytics Summary</h4>
+                  <PymstrCodeBlock
+                    code={`curl -X GET https://api.pymstr.com/v1/analytics/summary \\\\\\\\\\n  -H "Authorization: Bearer YOUR_API_KEY" \\\\\\\\\\n  -H "Content-Type: application/json"`}
+                    language="bash"
+                    copyable
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
     </div>
   );
