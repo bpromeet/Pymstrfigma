@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Link as LinkIcon, Key, Users, Webhook, Shield, BarChart3, User, Wallet, ChevronLeft, ChevronRight, BookOpen, HelpCircle } from 'lucide-react';
+import { Activity, Link as LinkIcon, Key, Webhook, BarChart3, Wallet, ChevronLeft, ChevronRight, BookOpen, HelpCircle } from 'lucide-react';
 
 export interface NavigationItem {
   id: string;

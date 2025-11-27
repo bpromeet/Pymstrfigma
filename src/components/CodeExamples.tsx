@@ -1,43 +1,11 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
-import { Button } from './ui/button';
-import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } from './ui/primary-tabs';
-import { Copy, CheckCircle, Code2, ArrowLeft, Check, FileText } from 'lucide-react';
-import { toast } from 'sonner@2.0.3';
+import { ArrowLeft, Code2, FileText } from 'lucide-react';
+import { PymstrCodeBlock } from './PymstrCodeBlock';
 
 interface CodeExamplesProps {
   onBack?: () => void;
 }
-
-// Code block component
-const PymstrCodeBlock: React.FC<{ code: string; language: string; copyable?: boolean }> = ({ code, language, copyable = false }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast('Copied to clipboard!');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="relative bg-[#123653] text-[#05df72] rounded-2xl p-4">
-      <pre className="text-sm font-mono overflow-x-auto">
-        <code>{code}</code>
-      </pre>
-      {copyable && (
-        <Button
-          size="sm"
-          variant="ghost"
-          className="absolute top-2 right-2 text-gray-400 hover:text-white h-8 w-8 p-0"
-          onClick={handleCopy}
-        >
-          {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-        </Button>
-      )}
-    </div>
-  );
-};
 
 const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState('javascript');
@@ -45,10 +13,10 @@ const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
       {/* STICKY HEADER WITH BACK BUTTON + TITLE + TABS */}
-      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a] shadow-sm border-b border-[#43586C]/20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button + Title Section */}
-          <div className="pt-4 pb-3 border-b border-[#43586C]/10">
+          <div className="pt-4 pb-3">
             {onBack && (
               <button
                 onClick={onBack}
@@ -78,7 +46,7 @@ const CodeExamples: React.FC<CodeExamplesProps> = ({ onBack }) => {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6 bg-white dark:bg-[#0a0a0a]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-[#0a0a0a]">
         <div className="space-y-4">
           {/* JavaScript Tab */}
           {activeTab === 'javascript' && (

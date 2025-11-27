@@ -1,21 +1,10 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
 import { ArrowLeft, Zap, Code, Wallet, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
 
 interface QuickStartGuideProps {
   onBack: () => void;
 }
-
-/**
- * QUICK START GUIDE - Documentation Page with Sticky Tabs
- * 
- * CRITICAL PATTERN (from TestDocumentPage):
- * 1. React Fragment <> as root (NO PageLayout, NO div wrapper)
- * 2. Scrollable header section (back button + title)
- * 3. Sticky tabs: sticky top-0 lg:top-16 z-40
- * 4. Tab content with space-y
- */
 
 const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
   const [activeTab, setActiveTab] = useState('setup');
@@ -23,10 +12,10 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
       {/* STICKY HEADER WITH BACK BUTTON + TITLE + TABS */}
-      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a] shadow-sm border-b border-[#43586C]/20">
+      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button + Title Section */}
-          <div className="pt-4 pb-3 border-b border-[#43586C]/10">
+          <div className="pt-4 pb-3">
             <button
               onClick={onBack}
               className="inline-flex items-center gap-2 px-4 py-2 min-h-10 mb-4 bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-200 rounded-full"
@@ -185,8 +174,8 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
                     </div>
                   </div>
 
-                  <div className="bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl p-4 border border-[#43586C]">
-                    <code className="text-sm">
+                  <div className="bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl p-4 border border-[#43586C] overflow-x-auto">
+                    <code className="text-sm block min-w-max">
                       <div className="text-[#798A9B]">// Example: Creating a payment session</div>
                       <div className="mt-2">
                         <span className="text-[#F90BD5]">const</span>{' '}

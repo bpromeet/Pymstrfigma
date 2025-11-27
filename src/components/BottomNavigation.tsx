@@ -16,7 +16,7 @@
    ======================================== */
 
 import React from 'react';
-import { Activity, Link as LinkIcon, Key, MoreHorizontal, Wallet, BarChart3, LogOut, HelpCircle, Scale, BookOpen, Users, User } from 'lucide-react';
+import { Activity, Link as LinkIcon, Key, MoreHorizontal, Wallet, BarChart3, LogOut, HelpCircle, BookOpen, Users, User } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -139,7 +139,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
           - Touch targets: 48px minimum
           - Hidden on desktop: md:hidden
           ======================================== */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0a0a0a] border-t border-[#43586C] md:hidden shadow-md transition-all duration-[1500ms] ease-out">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0a0a0a] md:hidden shadow-md transition-all duration-[1500ms] ease-out">
         <div className="flex items-center justify-around h-20 px-2">
           {navItems.map((item) => {
             const Icon = item.icon;

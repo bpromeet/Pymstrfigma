@@ -359,6 +359,9 @@ const App = () => {
       } else if (hashLower.includes("code-example")) {
         setActiveTab("codeexamples");
         setIsStandalonePage(true);
+      } else if (hashLower.includes("documents")) {
+        setActiveTab("documents");
+        setIsStandalonePage(false);
       } else if (hash === "#/pay") {
         setActiveTab("checkout");
         setIsStandalonePage(false);

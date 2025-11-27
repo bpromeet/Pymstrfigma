@@ -5,7 +5,7 @@ import { Separator } from './ui/separator';
 import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } from './ui/primary-tabs';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Badge } from './ui/badge';
-import { ArrowLeft, Copy, CheckCircle, AlertCircle, Globe, Code2, Webhook, BarChart3, DollarSign, Zap, TrendingUp, Building2, Check, X } from 'lucide-react';
+import { ArrowLeft, Copy, CheckCircle, AlertCircle, Globe, Code2, Webhook, BarChart3, DollarSign, Check } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { PymstrCodeBlock } from './PymstrCodeBlock';
 
@@ -40,10 +40,10 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
       {/* STICKY HEADER WITH BACK BUTTON + TITLE + TABS */}
-      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a] shadow-sm border-b border-[#43586C]/20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button + Title Section */}
-          <div className="pt-4 pb-3 border-b border-[#43586C]/10">
+          <div className="pt-4 pb-3">
             {onBack && (
               <button
                 onClick={onBack}
@@ -79,7 +79,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
       </div>
       
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-6 bg-white dark:bg-[#0a0a0a]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-[#0a0a0a]">
         <div className="space-y-4">
           {/* Overview Tab */}
           {activeTab === 'overview' && (
@@ -96,19 +96,19 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
               <CardContent className="space-y-4">
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 space-y-3">
                   <div className="flex items-start space-x-2">
-                    <span className="font-semibold min-w-[140px]">Base URL:</span>
-                    <code className="text-sm text-muted-foreground">https://api.pymstr.com/v1</code>
+                    <span className="font-semibold min-w-[140px] flex-shrink-0">Base URL:</span>
+                    <code className="text-sm text-muted-foreground break-all">https://api.pymstr.com/v1</code>
                   </div>
                   <div className="flex items-start space-x-2">
-                    <span className="font-semibold min-w-[140px]">Protocol:</span>
+                    <span className="font-semibold min-w-[140px] flex-shrink-0">Protocol:</span>
                     <span className="text-muted-foreground">HTTPS/REST</span>
                   </div>
                   <div className="flex items-start space-x-2">
-                    <span className="font-semibold min-w-[140px]">Format:</span>
+                    <span className="font-semibold min-w-[140px] flex-shrink-0">Format:</span>
                     <span className="text-muted-foreground">JSON</span>
                   </div>
                   <div className="flex items-start space-x-2">
-                    <span className="font-semibold min-w-[140px]">Authentication:</span>
+                    <span className="font-semibold min-w-[140px] flex-shrink-0">Authentication:</span>
                     <span className="text-muted-foreground">Bearer Token (API Key)</span>
                   </div>
                 </div>
@@ -600,9 +600,9 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                 <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
                   <h5 className="font-semibold mb-2">Rate Limit Headers:</h5>
                   <div className="space-y-1 text-sm font-mono">
-                    <div><code>X-RateLimit-Limit:</code> Total requests allowed</div>
-                    <div><code>X-RateLimit-Remaining:</code> Requests remaining</div>
-                    <div><code>X-RateLimit-Reset:</code> Unix timestamp for reset</div>
+                    <div className="break-words"><code>X-RateLimit-Limit:</code> Total requests allowed</div>
+                    <div className="break-words"><code>X-RateLimit-Remaining:</code> Requests remaining</div>
+                    <div className="break-words"><code>X-RateLimit-Reset:</code> Unix timestamp for reset</div>
                   </div>
                 </div>
 
@@ -634,7 +634,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                     <p className="text-sm text-muted-foreground mb-2">
                       For technical issues and integration help:
                     </p>
-                    <a href="mailto:support@pymstr.com" className="text-[#07D7FF] hover:underline text-sm">
+                    <a href="mailto:support@pymstr.com" className="text-[#07D7FF] hover:underline text-sm break-all">
                       support@pymstr.com
                     </a>
                   </div>

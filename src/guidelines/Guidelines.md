@@ -2740,7 +2740,7 @@ export const PaymentLinksDashboard = () => {
   return (
     <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#2E3C49] pb-24">
       {/* Mobile Header (Sticky) */}
-      <header className="sticky top-0 bg-white dark:bg-[#303030] border-b border-[#43586C] p-4 z-40 shadow-sm">
+      <header className="sticky top-0 bg-white dark:bg-[#303030] p-4 z-40">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-medium">Payment Links</h1>
           
@@ -2853,6 +2853,122 @@ Sticky headers should feel seamless and integrated. Adding borders creates unnec
 **When in doubt:**
 If you're considering adding a border or separator to a sticky header, STOP and verify it's explicitly requested in Guidelines.md or user requirements. If not found, DO NOT add it.
 
+### Documentation Page Pattern (Standard)
+
+**MANDATORY: All documentation pages (Quick Start, API Reference, Code Examples) follow this pattern:**
+
+**Structure:**
+```tsx
+<div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
+  {/* STICKY HEADER WITH BACK BUTTON + TITLE + TABS */}
+  <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a]">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Back Button + Title Section */}
+      <div className="pt-4 pb-3">
+        <button onClick={onBack} className="...">
+          <ArrowLeft /> Back to Documents
+        </button>
+        <div className="flex items-center gap-3">
+          <Icon className="w-6 h-6 text-[#FF5914]" />
+          <h1 className="text-gray-900 dark:text-white">Page Title</h1>
+        </div>
+        <p className="text-[#798A9B] mt-1">Page description</p>
+      </div>
+
+      {/* Tabs Section */}
+      <div className="py-3">
+        <div className="flex w-full items-center overflow-x-auto scrollbar-hide gap-2">
+          <button onClick={() => setActiveTab('tab1')} className={...}>
+            Tab 1
+          </button>
+          {/* More tabs */}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Content */}
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-white dark:bg-[#0a0a0a]">
+    <div className="space-y-6">
+      {/* Tab content */}
+    </div>
+  </div>
+</div>
+```
+
+**Key Requirements:**
+- ✅ Sticky header with `sticky top-0 z-40`
+- ✅ NO borders on sticky header (unless explicitly requested)
+- ✅ Responsive padding: `px-4 sm:px-6 lg:px-8`
+- ✅ Content spacing: `space-y-6` (24px between sections)
+- ✅ Max width: `max-w-7xl mx-auto`
+- ✅ Tab overflow: `overflow-x-auto scrollbar-hide`
+- ✅ Background matches page: `bg-white dark:bg-[#0a0a0a]`
+
+### ⚠️ CRITICAL: Mobile Overflow Prevention (Documentation Pages)
+
+**MANDATORY: All documentation pages must prevent horizontal overflow on mobile:**
+
+**Code Blocks & Long Content:**
+* ❌ **DO NOT** use inline code blocks without `overflow-x-auto`
+* ✅ **DO** use `PymstrCodeBlock` component for all code examples (has built-in overflow handling)
+* ✅ **DO** add `overflow-x-auto` to any custom code containers
+* ✅ **DO** add `min-w-max` to code elements that shouldn't wrap
+
+**Long Text & URLs:**
+* ❌ **DO NOT** put long URLs in plain `<code>` tags without `break-all`
+* ✅ **DO** add `break-all` to URLs: `<code className="break-all">https://api.pymstr.com/v1</code>`
+* ✅ **DO** add `break-words` to long header names or technical terms
+* ✅ **DO** add `break-all` to email addresses: `<a className="break-all">support@pymstr.com</a>`
+
+**Flex Containers:**
+* ✅ **DO** add `flex-shrink-0` to badges/icons in flex layouts
+* ✅ **DO** add `flex-1 min-w-0` to content divs in flex layouts
+* ✅ **DO** ensure long text can wrap or scroll
+
+**Example Patterns:**
+
+```tsx
+// ✅ CORRECT: Inline code block with overflow
+<div className="bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl p-4 border border-[#43586C] overflow-x-auto">
+  <code className="text-sm block min-w-max">
+    {/* Long code here */}
+  </code>
+</div>
+
+// ✅ CORRECT: Long URL with break-all
+<div className="flex items-start space-x-2">
+  <span className="font-semibold min-w-[140px] flex-shrink-0">Base URL:</span>
+  <code className="text-sm text-muted-foreground break-all">https://api.pymstr.com/v1</code>
+</div>
+
+// ✅ CORRECT: Email with break-all
+<a href="mailto:support@pymstr.com" className="text-[#07D7FF] hover:underline text-sm break-all">
+  support@pymstr.com
+</a>
+
+// ✅ CORRECT: Header names with break-words
+<div className="break-words"><code>X-RateLimit-Remaining:</code> Requests remaining</div>
+
+// ❌ WRONG: No overflow handling
+<div className="bg-[#FAFAFA] rounded-xl p-4">
+  <code className="text-sm">
+    {/* Long code will overflow on mobile */}
+  </code>
+</div>
+
+// ❌ WRONG: Long URL without break-all
+<code className="text-sm">https://api.pymstr.com/v1/payment-links</code>
+```
+
+**Testing Checklist:**
+- [ ] All code blocks use `PymstrCodeBlock` or have `overflow-x-auto`
+- [ ] All URLs have `break-all` class
+- [ ] All emails have `break-all` class
+- [ ] All long header names have `break-words` class
+- [ ] All flex containers have proper `flex-shrink-0` and `min-w-0` classes
+- [ ] Test on 320px width viewport (smallest mobile)
+
 **Example Responsive Layout:**
 ```tsx
 // Responsive container with MD3 margins
@@ -2870,6 +2986,158 @@ If you're considering adding a border or separator to a sticky header, STOP and 
   {/* Items */}
 </div>
 ```
+
+### ⚠️ CRITICAL: Documentation Page Routing (MANDATORY)
+
+**PROBLEM:** When creating documentation pages (Quick Start, API Reference, Code Examples), the "Back to Documents" button MUST navigate to the Documents page, NOT dashboard or history.back().
+
+**ROOT CAUSE:** Missing hash route handler in App.tsx causes unknown routes to default to dashboard.
+
+**MANDATORY PATTERN FOR ALL DOCUMENTATION PAGES:**
+
+**1. Component Pattern (QuickStartGuide.tsx, APIReference.tsx, CodeExamples.tsx):**
+```tsx
+// Component receives onBack prop
+interface QuickStartGuideProps {
+  onBack: () => void;
+}
+
+const QuickStartGuide: React.FC<QuickStartGuideProps> = ({ onBack }) => {
+  return (
+    <div className="min-h-screen bg-white dark:bg-[#0a0a0a]">
+      <div className="sticky top-0 z-40 bg-white dark:bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="pt-4 pb-3">
+            {/* ✅ CORRECT: Use onBack prop */}
+            <button onClick={onBack} className="...">
+              <ArrowLeft /> Back to Documents
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+**2. Page Wrapper Pattern (QuickStartPage.tsx, APIReferencePage.tsx, CodeExamplesPage.tsx):**
+```tsx
+// ✅ CORRECT: Navigate to #/documents
+const QuickStartPage: React.FC = () => {
+  const handleBack = () => {
+    // Navigate to Documents page by updating URL hash
+    // This will trigger the app's navigation system to show the Documents page
+    window.location.hash = '#/documents';
+  };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  return <QuickStartGuide onBack={handleBack} />;
+};
+
+// ❌ WRONG: Using window.history.back()
+const QuickStartPage: React.FC = () => {
+  return <QuickStartGuide onBack={() => window.history.back()} />;
+  // This will go to previous page (could be dashboard, landing, etc.)
+};
+
+// ❌ WRONG: Navigate to dashboard
+const QuickStartPage: React.FC = () => {
+  const navigate = useNavigate();
+  return <QuickStartGuide onBack={() => navigate('/dashboard')} />;
+  // Button says "Back to Documents" but goes to dashboard!
+};
+```
+
+**3. Hash Routing in App.tsx (MANDATORY FOR NEW ROUTES):**
+
+When adding a new route, you MUST add it to the hash routing logic in App.tsx:
+
+```tsx
+// In App.tsx useEffect hash change handler
+useEffect(() => {
+  const handleHashChange = () => {
+    const hash = window.location.hash;
+    const hashLower = hash.toLowerCase();
+
+    // Documentation pages
+    if (hashLower.includes("quickstart")) {
+      setActiveTab("quickstart");
+      setIsStandalonePage(true);
+    } else if (hashLower.includes("api-reference") || hashLower.includes("apireference")) {
+      setActiveTab("apireference");
+      setIsStandalonePage(true);
+    } else if (hashLower.includes("code-example")) {
+      setActiveTab("codeexamples");
+      setIsStandalonePage(true);
+    } else if (hashLower.includes("documents")) {
+      // ✅ CRITICAL: Add this handler or "Back to Documents" defaults to dashboard!
+      setActiveTab("documents");
+      setIsStandalonePage(false);
+    } else if (hash === "#/pay") {
+      setActiveTab("checkout");
+      setIsStandalonePage(false);
+    } else {
+      // Unknown route - defaults to dashboard
+      setActiveTab("admin");
+      setIsStandalonePage(false);
+    }
+  };
+
+  handleHashChange();
+  window.addEventListener("hashchange", handleHashChange);
+  return () => window.removeEventListener("hashchange", handleHashChange);
+}, []);
+```
+
+**4. App.tsx Switch Case (MANDATORY):**
+
+Ensure the activeTab has a corresponding case:
+
+```tsx
+// In App.tsx renderContent()
+switch (activeTab) {
+  case "quickstart":
+    return <QuickStartGuide onBack={() => setActiveTab("documents")} />;
+  case "apireference":
+    return <APIReference onBack={() => setActiveTab("documents")} />;
+  case "codeexamples":
+    return <CodeExamples onBack={() => setActiveTab("documents")} />;
+  case "documents":
+    // ✅ CRITICAL: Must have this case
+    return <DocumentsPage onNavigateToQuickStart={...} />;
+  default:
+    return <DashboardPage />;
+}
+```
+
+**CHECKLIST FOR NEW DOCUMENTATION PAGES:**
+
+When creating a new documentation page, you MUST:
+- [ ] Component accepts `onBack: () => void` prop
+- [ ] Component calls `onBack` when clicking "Back to Documents" button
+- [ ] Page wrapper calls `window.location.hash = '#/documents'` in handleBack
+- [ ] Hash routing in App.tsx includes route handler (e.g., `hashLower.includes("newpage")`)
+- [ ] Switch case in App.tsx has corresponding case (e.g., `case "newpage"`)
+- [ ] Test that "Back to Documents" navigates to Documents page, NOT dashboard
+
+**WHY THIS MATTERS:**
+
+Without proper hash routing:
+1. `window.location.hash = '#/documents'` sets hash to `#/documents`
+2. App.tsx `handleHashChange` runs
+3. No handler for `documents` found
+4. Falls through to `else` block
+5. Defaults to `setActiveTab("admin")` (dashboard)
+6. User clicks "Back to Documents" but goes to Dashboard 🚨
+
+**NEVER DO:**
+- ❌ Use `window.history.back()` for "Back to Documents"
+- ❌ Navigate to dashboard when button says "Back to Documents"
+- ❌ Forget to add hash route handler in App.tsx
+- ❌ Use different navigation logic than pattern above
 
 ---
 
