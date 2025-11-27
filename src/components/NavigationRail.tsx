@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Link as LinkIcon, Key, Users, Webhook, Shield, FileText, User, Wallet, ChevronLeft, ChevronRight, BookOpen, HelpCircle } from 'lucide-react';
+import { Activity, Link as LinkIcon, Key, Users, Webhook, Shield, BarChart3, User, Wallet, ChevronLeft, ChevronRight, BookOpen, HelpCircle } from 'lucide-react';
 
 export interface NavigationItem {
   id: string;
@@ -27,7 +27,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
     { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'api', label: 'API Keys', icon: Key },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
-    { id: 'reports', label: 'Reports', icon: FileText },
+    { id: 'reports', label: 'Reports', icon: BarChart3 },
     { id: 'documents', label: 'Documents', icon: BookOpen },
     { id: 'help', label: 'Help', icon: HelpCircle },
   ];
