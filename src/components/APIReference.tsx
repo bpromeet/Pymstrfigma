@@ -362,13 +362,6 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
                     <p className="text-sm text-muted-foreground mt-1">Monthly Fee</p>
                   </div>
                 </div>
-
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-4">
-                  <h5 className="font-semibold mb-2">Gas Fee Coverage</h5>
-                  <p className="text-sm text-muted-foreground">
-                    PYMSTR uses Account Abstraction (Pimlico) to sponsor gas fees for end users. Customers pay <strong>zero gas fees</strong> on all transactions.
-                  </p>
-                </div>
               </CardContent>
             </Card>
           )}
