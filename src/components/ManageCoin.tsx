@@ -17,6 +17,7 @@ import { CryptoIcon } from "./CryptoIcon";
 import { ChainIcon } from "./ChainIcon";
 import { WalletAddressCopyButton } from "./WalletAddressCopyButton";
 import QRCode from "qrcode";
+import { toast } from "sonner@2.0.3";
 
 interface ManageCoinProps {
   selectedCrypto: string;
@@ -69,12 +70,14 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
     if (manageView === "deposit" && walletAddress) {
       QRCode.toDataURL(walletAddress)
         .then(setQrCode)
-        .catch(console.error);
+        .catch((err) => {
+          toast.error('Failed to generate QR code');
+        });
     }
   }, [manageView, walletAddress]);
 
   const handleSend = () => {
-    console.log(`Sending ${sendAmt} ${selectedCrypto} to ${sendAddr} on ${selectedNetwork}`);
+    toast.success(`Sending ${sendAmt} ${selectedCrypto} to ${sendAddr.slice(0, 6)}...${sendAddr.slice(-4)}`);
     // Reset form
     setSendAmt("");
     setSendAddr("");

@@ -151,6 +151,8 @@ import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
 import MerchantProfile from "./components/MerchantProfile";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
+import merchantAvatar from "figma:asset/051bc05187a59593d6e6d887b10e548bdc2feacc.png";
+import endUserAvatar from "figma:asset/00ca28c2f9ee090f1607e7ae95dfdd10dbd133ec.png";
 import QuickStartPage from "./pages/QuickStartPage";
 import APIReferencePage from "./pages/APIReferencePage";
 import CodeExamplesPage from "./pages/CodeExamplesPage";
@@ -176,7 +178,7 @@ import {
 } from "./components/CryptoSelector";
 import { ManageCoin } from "./components/ManageCoin";
 import { BottomNavigation, type BottomNavItem } from "./components/BottomNavigation";
-import { Scale, Receipt, MoreHorizontal } from "lucide-react";
+import { Scale, Receipt, MoreHorizontal, Building2 } from "lucide-react";
 import UserDashboardPage from "./pages/UserDashboardPage";
 import EndUserDashboardPage from "./pages/EndUserDashboardPage";
 import EndUserWalletsPage from "./pages/EndUserWalletsPage";
@@ -367,6 +369,9 @@ const App = () => {
         setIsStandalonePage(false);
       } else if (hashLower === "#/dashboard") {
         setActiveTab("admin");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/user-dashboard") {
+        setActiveTab("user-dashboard");
         setIsStandalonePage(false);
       } else if (hash === "#/" || hash === "") {
         // Default to dashboard for app.pymstr.com
@@ -1273,6 +1278,32 @@ const App = () => {
               <span>Back</span>
             </Button>
           </div>
+
+          {/* User Avatar in top right - shows from Screen #3 onwards */}
+          {(showCryptoSelection || showPaymentForm || showFundingOptions || showFundingSuccess || paymentStatus === "processing" || paymentStatus === "completed") && (
+            <div className="absolute top-6 right-6">
+              <Button
+                variant="ghost"
+                className="w-12 h-12 rounded-full p-0 transition-all duration-200 hover:bg-[#E3F2FD]"
+                onClick={() => {
+                  // Auto-login user and navigate to dashboard
+                  if (!isUserLoggedIn) {
+                    setIsUserLoggedIn(true);
+                    setUserLoginMethod('Google');
+                    setUserContext('enduser');
+                  }
+                  window.location.hash = '#/user-dashboard';
+                }}
+                aria-label="Open your account"
+              >
+                <img
+                  src={endUserAvatar}
+                  alt="Your Account"
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              </Button>
+            </div>
+          )}
 
           <div className="flex justify-center">
             <span className="text-[#FF5914]">PYMSTR</span>
@@ -2357,7 +2388,7 @@ const App = () => {
         return (
           <MerchantProfile
             onSave={(profile) => {
-              console.log("Profile saved:", profile);
+              toast.success('Profile updated successfully');
             }}
           />
         );
@@ -2514,55 +2545,98 @@ const App = () => {
                         className="rounded-full"
                       >
                         <img
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=faces"
-                          alt="User"
-                          className="w-8 h-8 rounded-full"
+                          src={userContext === 'enduser' ? endUserAvatar : merchantAvatar}
+                          alt={userContext === 'enduser' ? "Your Account" : "Merchant Profile"}
+                          className="w-8 h-8 rounded-full object-cover"
                         />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[#262626] rounded-xl p-0">
                       {/* User Info Header */}
                       <div className="px-4 py-3 border-b border-[#43586C]">
-                        <p className="font-medium text-gray-900 dark:text-white">John Doe</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">john@pymstr.com</p>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          {userContext === 'enduser' ? 'Alex Johnson' : 'John Doe'}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {userContext === 'enduser' ? 'alex@example.com' : 'john@pymstr.com'}
+                        </p>
                       </div>
                       
                       {/* Menu Items */}
                       <div className="p-2">
-                        <DropdownMenuItem
-                          onClick={() => setActiveTab("profile")}
-                          className="cursor-pointer rounded-lg h-10 px-3"
-                        >
-                          <User className="mr-2 h-[18px] w-[18px]" />
-                          Profile
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setActiveTab("wallets")}
-                          className="cursor-pointer rounded-lg h-10 px-3"
-                        >
-                          <Wallet className="mr-2 h-[18px] w-[18px]" />
-                          Wallets
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setActiveTab("team")}
-                          className="cursor-pointer rounded-lg h-10 px-3"
-                        >
-                          <Users className="mr-2 h-[18px] w-[18px]" />
-                          Team
-                        </DropdownMenuItem>
+                        {userContext === 'enduser' ? (
+                          <>
+                            {/* End User Menu Items */}
+                            <DropdownMenuItem
+                              onClick={() => setActiveTab("user-dashboard")}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <Activity className="mr-2 h-[18px] w-[18px]" />
+                              Dashboard
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setActiveTab("user-wallets")}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <Wallet className="mr-2 h-[18px] w-[18px]" />
+                              Wallets
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setActiveTab("user-transactions")}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <Receipt className="mr-2 h-[18px] w-[18px]" />
+                              Transactions
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setActiveTab("user-settings")}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <Settings className="mr-2 h-[18px] w-[18px]" />
+                              Settings
+                            </DropdownMenuItem>
+                          </>
+                        ) : (
+                          <>
+                            {/* Merchant Menu Items */}
+                            <DropdownMenuItem
+                              onClick={() => setActiveTab("profile")}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <User className="mr-2 h-[18px] w-[18px]" />
+                              Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setActiveTab("wallets")}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <Wallet className="mr-2 h-[18px] w-[18px]" />
+                              Wallets
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setActiveTab("team")}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <Users className="mr-2 h-[18px] w-[18px]" />
+                              Team
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </div>
 
                       <DropdownMenuSeparator />
 
                       {/* Lower Section */}
                       <div className="p-2">
-                        <DropdownMenuItem
-                          onClick={() => setActiveTab("documents")}
-                          className="cursor-pointer rounded-lg h-10 px-3"
-                        >
-                          <BookOpen className="mr-2 h-[18px] w-[18px]" />
-                          Documents
-                        </DropdownMenuItem>
+                        {userContext === 'merchant' && (
+                          <DropdownMenuItem
+                            onClick={() => setActiveTab("documents")}
+                            className="cursor-pointer rounded-lg h-10 px-3"
+                          >
+                            <BookOpen className="mr-2 h-[18px] w-[18px]" />
+                            Documents
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           onClick={() => setActiveTab("legal")}
                           className="cursor-pointer rounded-lg h-10 px-3"
@@ -2577,13 +2651,24 @@ const App = () => {
                           <HelpCircle className="mr-2 h-[18px] w-[18px]" />
                           Help
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => setActiveTab("user-dashboard")}
-                          className="cursor-pointer rounded-lg h-10 px-3"
-                        >
-                          <User className="mr-2 h-[18px] w-[18px]" />
-                          End User View
-                        </DropdownMenuItem>
+                        {userContext === 'merchant' && (
+                          <DropdownMenuItem
+                            onClick={() => setActiveTab("user-dashboard")}
+                            className="cursor-pointer rounded-lg h-10 px-3"
+                          >
+                            <User className="mr-2 h-[18px] w-[18px]" />
+                            End User View
+                          </DropdownMenuItem>
+                        )}
+                        {userContext === 'enduser' && (
+                          <DropdownMenuItem
+                            onClick={() => setActiveTab("admin")}
+                            className="cursor-pointer rounded-lg h-10 px-3"
+                          >
+                            <Building2 className="mr-2 h-[18px] w-[18px]" />
+                            Merchant View
+                          </DropdownMenuItem>
+                        )}
                       </div>
 
                       <DropdownMenuSeparator />

@@ -34,6 +34,8 @@ interface ReportsTransactionTableProps {
   searchQuery: string;
   dateFrom: string;
   dateTo: string;
+  chainFilter?: string;
+  currencyFilter?: string;
   getExplorerUrl: (chain: string, txHash: string) => string;
   isFiltered?: boolean;
 }
@@ -43,6 +45,8 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
   searchQuery,
   dateFrom,
   dateTo,
+  chainFilter = 'all',
+  currencyFilter = 'all',
   getExplorerUrl,
   isFiltered = false,
 }) => {
@@ -63,7 +67,15 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
       (!dateFrom || txDate >= new Date(dateFrom)) &&
       (!dateTo || txDate <= new Date(dateTo + 'T23:59:59'));
 
-    return matchesSearch && matchesDateRange;
+    // Chain filter
+    const matchesChain =
+      chainFilter === 'all' || tx.chain.toLowerCase() === chainFilter.toLowerCase();
+
+    // Currency filter
+    const matchesCurrency =
+      currencyFilter === 'all' || tx.crypto.toUpperCase() === currencyFilter.toUpperCase();
+
+    return matchesSearch && matchesDateRange && matchesChain && matchesCurrency;
   });
 
   return (

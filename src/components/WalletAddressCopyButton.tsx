@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Copy, Check, Wallet } from 'lucide-react';
 import { Button } from './ui/button';
+import { toast } from 'sonner@2.0.3';
 
 interface WalletAddressCopyButtonProps {
   address: string;
@@ -53,7 +54,7 @@ export const WalletAddressCopyButton: React.FC<WalletAddressCopyButtonProps> = (
         onCopy();
       }
     } catch (err) {
-      console.error('Failed to copy address:', err);
+      toast.error('Failed to copy address');
     } finally {
       document.body.removeChild(textarea);
     }

@@ -38,7 +38,6 @@ import { CryptoIcon } from "../components/CryptoIcon";
 interface PaymentLinksPageProps {
   paymentLinks: any[];
   onDeleteLink: (id: string) => void;
-  onDeactivateLink: (id: string) => void;
   onCopyLink: (id: string) => void;
   onViewLink: (link: any) => void;
   showPaymentLinkDialog: boolean;
@@ -49,7 +48,6 @@ interface PaymentLinksPageProps {
 export default function PaymentLinksPage({
   paymentLinks,
   onDeleteLink,
-  onDeactivateLink,
   onCopyLink,
   onViewLink,
   showPaymentLinkDialog,
@@ -57,8 +55,8 @@ export default function PaymentLinksPage({
   onLinkGenerated,
 }: PaymentLinksPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [chainFilter, setChainFilter] = useState("all");
   const [currencyFilter, setCurrencyFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [paymentLinksTab, setPaymentLinksTab] = useState("all");
   const [sharedLinkId, setSharedLinkId] = useState<string | null>(null);
 
@@ -101,17 +99,17 @@ export default function PaymentLinksPage({
   // Filter function
   const getFilteredLinks = (source?: "manual" | "api") => {
     return paymentLinks.filter((link) => {
-      const matchesChain =
-        chainFilter === "all" || link.chain === chainFilter;
       const matchesCurrency =
         currencyFilter === "all" || link.currency === currencyFilter;
+      const matchesStatus =
+        statusFilter === "all" || link.status === statusFilter;
       const matchesSearch =
         link.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         link.price?.toString().includes(searchQuery) ||
         link.linkId?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesSource = !source || link.source === source;
 
-      return matchesChain && matchesCurrency && matchesSearch && matchesSource;
+      return matchesCurrency && matchesStatus && matchesSearch && matchesSource;
     });
   };
 
@@ -180,63 +178,6 @@ export default function PaymentLinksPage({
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 w-full">
                   {/* Left side - Filters */}
                   <div className="flex flex-col sm:flex-row gap-2 flex-shrink-0">
-                    <Select value={chainFilter} onValueChange={setChainFilter}>
-                      <SelectTrigger className="w-full sm:w-40 rounded-full bg-[#EEEEEE] dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9] hover:border-[#757575] transition-all duration-200">
-                        <SelectValue placeholder="All Chains">
-                          <div className="flex items-center gap-2">
-                            {chainFilter !== "all" && (
-                              <ChainIcon
-                                chain={chainFilter}
-                                size={16}
-                              />
-                            )}
-                            <span>
-                              {chainFilter === "all"
-                                ? "All Chains"
-                                : chainFilter.charAt(0).toUpperCase() +
-                                  chainFilter.slice(1)}
-                            </span>
-                          </div>
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">
-                          <div className="flex items-center gap-2">
-                            <span>All Chains</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="ethereum">
-                          <div className="flex items-center gap-2">
-                            <ChainIcon chain="ethereum" size={16} />
-                            <span>Ethereum</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="polygon">
-                          <div className="flex items-center gap-2">
-                            <ChainIcon chain="polygon" size={16} />
-                            <span>Polygon</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="arbitrum">
-                          <div className="flex items-center gap-2">
-                            <ChainIcon chain="arbitrum" size={16} />
-                            <span>Arbitrum</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="optimism">
-                          <div className="flex items-center gap-2">
-                            <ChainIcon chain="optimism" size={16} />
-                            <span>Optimism</span>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="base">
-                          <div className="flex items-center gap-2">
-                            <ChainIcon chain="base" size={16} />
-                            <span>Base</span>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
                     <Select
                       value={currencyFilter}
                       onValueChange={setCurrencyFilter}
@@ -280,6 +221,80 @@ export default function PaymentLinksPage({
                           <div className="flex items-center gap-2">
                             <CryptoIcon symbol="EURC" size={16} />
                             <span>EURC</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={statusFilter}
+                      onValueChange={setStatusFilter}
+                    >
+                      <SelectTrigger className="w-full sm:w-40 rounded-full bg-[#EEEEEE] dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9] hover:border-[#757575] transition-all duration-200">
+                        <SelectValue placeholder="All Statuses">
+                          <div className="flex items-center gap-2">
+                            {statusFilter !== "all" && (
+                              <Badge
+                                variant={
+                                  statusFilter === "active"
+                                    ? "default"
+                                    : statusFilter === "completed"
+                                      ? "default"
+                                      : "secondary"
+                                }
+                                className={`rounded-full whitespace-nowrap ${
+                                  statusFilter === "completed"
+                                    ? "bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400"
+                                    : statusFilter === "active"
+                                      ? "bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]"
+                                      : "bg-[#43586C]/20 text-[#798A9B]"
+                                }`}
+                              >
+                                {statusFilter}
+                              </Badge>
+                            )}
+                            <span>
+                              {statusFilter === "all"
+                                ? "All Statuses"
+                                : statusFilter.charAt(0).toUpperCase() +
+                                  statusFilter.slice(1)}
+                            </span>
+                          </div>
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">
+                          <div className="flex items-center gap-2">
+                            <span>All Statuses</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="active">
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant="default"
+                              className="rounded-full whitespace-nowrap bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72]"
+                            >
+                              Active
+                            </Badge>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="completed">
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant="default"
+                              className="rounded-full whitespace-nowrap bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-400"
+                            >
+                              Completed
+                            </Badge>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="inactive">
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant="secondary"
+                              className="rounded-full whitespace-nowrap bg-[#43586C]/20 text-[#798A9B]"
+                            >
+                              Inactive
+                            </Badge>
                           </div>
                         </SelectItem>
                       </SelectContent>

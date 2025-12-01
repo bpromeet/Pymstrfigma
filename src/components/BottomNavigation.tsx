@@ -24,6 +24,7 @@ import {
   SheetTitle,
 } from './ui/sheet';
 import { Webhook } from 'lucide-react';
+import { toast } from 'sonner@2.0.3';
 
 export interface BottomNavItem {
   id: string;
@@ -111,7 +112,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
     // Handle logout separately
     if (itemId === 'logout') {
       // In a real app, this would call logout logic
-      console.log('Logout clicked');
+      toast.success('Logged out successfully');
       // For now, just close the sheet
       return;
     }
