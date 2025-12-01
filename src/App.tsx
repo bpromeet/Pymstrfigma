@@ -151,8 +151,13 @@ import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
 import MerchantProfile from "./components/MerchantProfile";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
-import merchantAvatar from "figma:asset/051bc05187a59593d6e6d887b10e548bdc2feacc.png";
-import endUserAvatar from "figma:asset/00ca28c2f9ee090f1607e7ae95dfdd10dbd133ec.png";
+import { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar";
+import { User } from "lucide-react";
+
+// Avatar images - YOUR provided pictures stored in /public/
+const merchantAvatar = "/merchant-avatar.png"; // Your picture: Woman with glasses
+const endUserAvatar = "/enduser-avatar.png";   // Your picture: Man with dark hair
+
 import QuickStartPage from "./pages/QuickStartPage";
 import APIReferencePage from "./pages/APIReferencePage";
 import CodeExamplesPage from "./pages/CodeExamplesPage";
@@ -1295,11 +1300,15 @@ const App = () => {
                 }}
                 aria-label="Open your account"
               >
-                <ImageWithFallback
-                  src={endUserAvatar}
-                  alt="Your Account"
-                  className="w-10 h-10 rounded-full object-cover"
-                />
+                <Avatar className="w-10 h-10">
+                  <AvatarImage 
+                    src={endUserAvatar}
+                    alt="Your Account"
+                  />
+                  <AvatarFallback>
+                    <User className="w-5 h-5" />
+                  </AvatarFallback>
+                </Avatar>
               </Button>
             </div>
           )}
@@ -2541,13 +2550,17 @@ const App = () => {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-full"
+                        className="rounded-full p-0"
                       >
-                        <ImageWithFallback
-                          src={userContext === 'enduser' ? endUserAvatar : merchantAvatar}
-                          alt={userContext === 'enduser' ? "Your Account" : "Merchant Profile"}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
+                        <Avatar className="w-10 h-10">
+                          <AvatarImage 
+                            src={userContext === 'enduser' ? endUserAvatar : merchantAvatar}
+                            alt={userContext === 'enduser' ? "Your Account" : "Merchant Profile"}
+                          />
+                          <AvatarFallback>
+                            <User className="w-5 h-5" />
+                          </AvatarFallback>
+                        </Avatar>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64 bg-white dark:bg-[#262626] rounded-xl p-0">
