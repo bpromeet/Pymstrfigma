@@ -1290,13 +1290,12 @@ const App = () => {
                   if (!isUserLoggedIn) {
                     setIsUserLoggedIn(true);
                     setUserLoginMethod('Google');
-                    setUserContext('enduser');
                   }
-                  window.location.hash = '#/user-dashboard';
+                  handleNavigate('user-dashboard');
                 }}
                 aria-label="Open your account"
               >
-                <img
+                <ImageWithFallback
                   src={endUserAvatar}
                   alt="Your Account"
                   className="w-10 h-10 rounded-full object-cover"
@@ -2544,7 +2543,7 @@ const App = () => {
                         size="icon"
                         className="rounded-full"
                       >
-                        <img
+                        <ImageWithFallback
                           src={userContext === 'enduser' ? endUserAvatar : merchantAvatar}
                           alt={userContext === 'enduser' ? "Your Account" : "Merchant Profile"}
                           className="w-8 h-8 rounded-full object-cover"
