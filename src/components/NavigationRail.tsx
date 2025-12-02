@@ -24,8 +24,8 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
   const defaultNavItems: NavigationItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: Activity },
     { id: 'wallets', label: 'Wallets', icon: Wallet },
-    { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'api', label: 'API Keys', icon: Key },
+    { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
     { id: 'reports', label: 'Reports', icon: BarChart3 },
     { id: 'documents', label: 'Documents', icon: BookOpen },

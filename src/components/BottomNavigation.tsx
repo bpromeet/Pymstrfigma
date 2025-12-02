@@ -83,8 +83,8 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
 
   // Default merchant more items
   const defaultMoreItems: BottomNavItem[] = [
-    { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'api', label: 'API Keys', icon: Key },
+    { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
     { id: 'team', label: 'Team', icon: Users },
     { id: 'profile', label: 'Profile', icon: User },
