@@ -226,6 +226,8 @@ const App = () => {
   const [isStandalonePage, setIsStandalonePage] =
     useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const [showWeb3Auth, setShowWeb3Auth] = useState(false);
   const [selectedCrypto, setSelectedCrypto] = useState("USDC");
   const [selectedChain, setSelectedChain] =
@@ -297,6 +299,25 @@ const App = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
+
+  // Header hide/show on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show header when scrolling up, hide when scrolling down
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setShowHeader(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setShowHeader(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   // URL hash routing for documentation pages and payment links
   useEffect(() => {
@@ -2497,7 +2518,9 @@ const App = () => {
       >
         {/* Top Header/App Bar - Hide for standalone pages (checkout, login) */}
         {shouldShowNavigation() && (
-            <header className="sticky top-0 z-40 bg-white dark:bg-[#0A0A0A]">
+            <header className={`fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0A0A0A] transition-transform duration-300 ${
+              showHeader ? 'translate-y-0' : '-translate-y-full'
+            }`}>
               <div className="flex items-center justify-between px-4 md:px-6 h-16">
                 {/* Mobile: Logo */}
                 <div className="md:hidden">
@@ -2703,7 +2726,7 @@ const App = () => {
           )}
 
         {/* Main Content */}
-        <main className="pb-24 md:pb-6">
+        <main className="pt-16 pb-24 md:pb-6">
           {renderContent()}
         </main>
 

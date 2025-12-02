@@ -19,7 +19,6 @@ import {
 } from "../components/ui/accordion";
 import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } from "../components/ui/primary-tabs";
 import {
-  Search,
   HelpCircle,
   Mail,
   MessageSquare,
@@ -34,7 +33,6 @@ import {
 import { toast } from "sonner@2.0.3";
 
 const HelpPage: React.FC = () => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactMessage, setContactMessage] = useState("");
@@ -68,21 +66,6 @@ const HelpPage: React.FC = () => {
 
           {/* FAQ Section */}
           <PrimaryTabsContent value="faq" className="space-y-6">
-            {/* Search */}
-            <Card className="rounded-2xl">
-              <CardContent className="pt-6">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    placeholder="Search for answers..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 rounded"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
             {/* General Questions */}
             <Card className="rounded-2xl">
               <CardHeader>
@@ -433,16 +416,16 @@ const HelpPage: React.FC = () => {
                   className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <Book className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <div className="font-medium text-foreground">Understanding Blockchain Networks</div>
-                      <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Book className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="font-medium text-foreground truncate">Understanding Blockchain Networks</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Ethereum, Polygon, Arbitrum, Optimism, Base
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
 
                 <Button
@@ -450,16 +433,16 @@ const HelpPage: React.FC = () => {
                   className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <Shield className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <div className="font-medium text-foreground">Account Abstraction Explained</div>
-                      <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Shield className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="font-medium text-foreground truncate">Account Abstraction Explained</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         How PYMSTR uses AA for better UX
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
 
                 <Button
@@ -467,16 +450,16 @@ const HelpPage: React.FC = () => {
                   className="w-full justify-between rounded-full h-auto py-4"
                   onClick={() => toast("Opening guide...")}
                 >
-                  <div className="flex items-center gap-3">
-                    <Settings className="w-5 h-5 text-[#07D7FF]" />
-                    <div className="text-left">
-                      <div className="font-medium text-foreground">Gas Fees Optimization</div>
-                      <div className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Settings className="w-5 h-5 text-[#07D7FF] flex-shrink-0" />
+                    <div className="text-left flex-1 min-w-0">
+                      <div className="font-medium text-foreground truncate">Gas Fees Optimization</div>
+                      <div className="text-sm text-muted-foreground truncate">
                         Save on transaction costs
                       </div>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                 </Button>
               </CardContent>
             </Card>
