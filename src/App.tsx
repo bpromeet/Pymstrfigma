@@ -274,12 +274,25 @@ const App = () => {
   
   const [isNavRailExpanded, setIsNavRailExpanded] =
     useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    // Check localStorage first
+    const savedTheme = localStorage.getItem("pymstr-theme");
+    if (savedTheme === "light" || savedTheme === "dark") {
+      return savedTheme;
+    }
+    // Fallback to system preference
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    // Final fallback to light
+    return "light";
+  });
 
   // Theme toggle function
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
+    localStorage.setItem("pymstr-theme", newTheme);
     if (newTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
@@ -287,7 +300,7 @@ const App = () => {
     }
   };
 
-  // Initialize theme on mount (theme already set in state line 266)
+  // Initialize theme on mount
   useEffect(() => {
     const isDark = theme === "dark";
     if (isDark) {
@@ -2548,7 +2561,7 @@ const App = () => {
             }`}>
               <div className="flex items-center justify-between px-4 md:px-6 h-16">
                 {/* Mobile: Logo */}
-                <div className="md:hidden">
+                <button onClick={() => setActiveTab("admin")} className="md:hidden">
                   {/* Light mode logo */}
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 dark:hidden">
                     <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
@@ -2571,7 +2584,7 @@ const App = () => {
                     <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
                     <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
                   </svg>
-                </div>
+                </button>
 
                 {/* Desktop: Empty spacer (rail logo is sufficient) */}
                 <div className="hidden md:block flex-1"></div>
