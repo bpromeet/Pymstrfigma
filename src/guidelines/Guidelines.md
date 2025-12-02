@@ -18,6 +18,191 @@
 - **No explicit text colors** → invisible text in buttons/cards
 - **Fixed button widths** → breaks mobile layout
 
+## ⚠️ CRITICAL: React Performance & Re-rendering Prevention
+
+**MANDATORY: Prevent unnecessary component re-renders that cause chart flickering and performance issues**
+
+### Problem: Wrapper Components Cause Unmount/Remount
+
+**❌ NEVER create wrapper components inside the parent component:**
+
+```tsx
+// ❌ WRONG: Wrapper component recreated on every App render
+function App() {
+  const AdminDashboard = () => (
+    <DashboardPage {...props} />
+  );
+  
+  return (
+    <div>
+      {activeTab === 'admin' && <AdminDashboard />}
+    </div>
+  );
+}
+```
+
+**Why this is wrong:**
+1. `AdminDashboard` function is recreated on every App render
+2. React sees it as a **new component type** each time
+3. React **unmounts** old DashboardPage and **mounts** new one
+4. Charts rebuild from scratch → **flickering**
+5. React.memo is **useless** because component is being unmounted, not just re-rendered
+
+**✅ CORRECT: Render components directly in JSX:**
+
+```tsx
+// ✅ CORRECT: Render DashboardPage directly
+function App() {
+  const handleCreatePaymentLink = useCallback(() => {
+    setActiveTab("links");
+    setShowPaymentLinkDialog(true);
+  }, []);
+
+  return (
+    <div>
+      {activeTab === 'admin' && (
+        <DashboardPage
+          dashboardStats={dashboardStats}
+          recentTransactions={recentTransactions}
+          chartData={chartData}
+          onCreatePaymentLink={handleCreatePaymentLink}
+          getExplorerUrl={getExplorerUrl}
+        />
+      )}
+    </div>
+  );
+}
+```
+
+**Why this works:**
+1. `DashboardPage` is a stable component reference
+2. React can properly compare props and skip re-renders
+3. Component stays mounted, only props update
+4. Charts remain stable, no flickering
+
+### Problem: State Updates in Scroll Handlers
+
+**❌ NEVER use state for scroll tracking values:**
+
+```tsx
+// ❌ WRONG: State update on every scroll event
+const [lastScrollY, setLastScrollY] = useState(0);
+
+useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    setLastScrollY(currentScrollY); // Triggers re-render on EVERY scroll
+  };
+  
+  window.addEventListener('scroll', handleScroll);
+  return () => window.removeEventListener('scroll', handleScroll);
+}, [lastScrollY]); // Re-creates listener on every scroll
+```
+
+**Why this is wrong:**
+1. `setLastScrollY` triggers App re-render on **every scroll event**
+2. App re-renders → All child components re-render
+3. Charts flicker continuously during scroll
+4. Dependency array `[lastScrollY]` recreates listener constantly
+
+**✅ CORRECT: Use useRef for scroll tracking:**
+
+```tsx
+// ✅ CORRECT: Ref updates don't trigger re-renders
+const lastScrollYRef = useRef(0);
+
+useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    
+    if (currentScrollY < lastScrollYRef.current) {
+      setShowHeader(true); // Only update state when needed
+    } else if (currentScrollY > lastScrollYRef.current) {
+      setShowHeader(false);
+    }
+    
+    lastScrollYRef.current = currentScrollY; // No re-render
+  };
+  
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  return () => window.removeEventListener('scroll', handleScroll);
+}, []); // Empty array - listener created once
+```
+
+**Why this works:**
+1. `lastScrollYRef.current` updates without triggering re-renders
+2. Only `setShowHeader` triggers re-render, and only when header visibility changes
+3. Empty dependency array means listener is created once and stable
+4. Charts remain mounted and stable during scroll
+
+### useCallback for Stable Function References
+
+**Always wrap callback props in useCallback:**
+
+```tsx
+// ✅ CORRECT: Stable function reference
+const handleCreatePaymentLink = useCallback(() => {
+  setActiveTab("links");
+  setShowPaymentLinkDialog(true);
+}, []); // Empty deps - function reference never changes
+
+<DashboardPage
+  onCreatePaymentLink={handleCreatePaymentLink}
+  {...otherProps}
+/>
+```
+
+**Why this matters:**
+- Without `useCallback`, a new function is created on every render
+- Child component receives "different" prop → triggers re-render
+- With `useCallback`, same function reference is reused → no re-render
+
+### Performance Debugging Checklist
+
+When experiencing chart flickering or unnecessary re-renders:
+
+1. **Check for wrapper components:**
+   - [ ] Are components declared inside parent component body?
+   - [ ] Are components rendered directly in JSX?
+
+2. **Check scroll handlers:**
+   - [ ] Are you using `useState` for scroll position tracking?
+   - [ ] Should you use `useRef` instead?
+
+3. **Check callback functions:**
+   - [ ] Are callback props wrapped in `useCallback`?
+   - [ ] Are dependency arrays correct?
+
+4. **Check component mounting:**
+   - [ ] Add console.log to see if component is mounting or updating
+   - [ ] If component mounts on every render, find the wrapper component
+
+### When to Use React.memo
+
+**React.memo is ONLY useful when:**
+1. Component is rendered directly (not through wrapper)
+2. Props are stable references (useCallback, useMemo, or primitive values)
+3. Component is expensive to render (charts, tables, complex calculations)
+
+**React.memo is USELESS when:**
+1. Component is wrapped in a function that's recreated each render
+2. Props are new objects/functions on every render
+3. Parent is using state for non-visual tracking (scroll position)
+
+### Summary
+
+**Golden Rules:**
+1. ✅ **Render components directly** - No wrapper functions inside parent
+2. ✅ **Use useRef for tracking** - Scroll position, previous values, etc.
+3. ✅ **Use useCallback for callbacks** - Stable function references
+4. ✅ **Empty dependency arrays** - When listeners/callbacks don't need updates
+5. ❌ **Never create components inside components** - Causes unmount/remount
+6. ❌ **Never use state for scroll tracking** - Triggers excessive re-renders
+
+**Result:** Stable, performant dashboards with smooth charts and no flickering.
+
+---
+
 ## MD3 Compliance Overview
 
 PYMSTR achieves **100% Material Design 3 compliance** across all components:
@@ -96,14 +281,17 @@ All users (merchants and end users) experience the **same layout structure**:
   * Follows MD3 grid system
 
 **Mobile Layout:**
-* **Top App Bar** (sticky header)
+* **Top App Bar** (scroll-hide header)
   * Back button (left)
   * Page title (center)
   * Actions (right)
+  * **Scroll Behavior**: Hides when scrolling down, slides back when scrolling up
+  * **Implementation**: Fixed positioning with transform transitions
   
 * **Main Content Area**
   * Scrollable content
   * Mobile-optimized padding
+  * Top padding to account for fixed header (`pt-16`)
   
 * **Bottom Navigation Bar** (sticky footer)
   * 4-5 primary navigation items
@@ -2433,6 +2621,96 @@ Material Design 3 follows a mobile-first approach with responsive breakpoints.
 * Use `w-full sm:w-auto` for responsive button widths
 * Mobile navigation: Bottom navigation or drawer
 * Desktop navigation: Top app bar or rail
+
+---
+
+## Scroll-Hide Header Pattern (MD3 Modern UX)
+
+PYMSTR implements a modern scroll-based header pattern that maximizes screen real estate while maintaining easy access to navigation.
+
+### Header Scroll Behavior
+
+**Pattern:**
+* **Scroll down** → Header slides up and disappears
+* **Scroll up** → Header slides down and reappears
+* **Near top** (< 10px) → Header always visible
+* **Smooth transition** → 300ms slide animation
+
+### Implementation
+
+**1. State Management:**
+```tsx
+const [showHeader, setShowHeader] = useState(true);
+const [lastScrollY, setLastScrollY] = useState(0);
+```
+
+**2. Scroll Event Listener:**
+```tsx
+useEffect(() => {
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+    
+    // Show header when scrolling up, hide when scrolling down
+    if (currentScrollY < lastScrollY || currentScrollY < 10) {
+      setShowHeader(true);
+    } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      setShowHeader(false);
+    }
+    
+    setLastScrollY(currentScrollY);
+  };
+
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  return () => window.removeEventListener('scroll', handleScroll);
+}, [lastScrollY]);
+```
+
+**3. Header Styling:**
+```tsx
+<header className={`fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0A0A0A] transition-transform duration-300 ${
+  showHeader ? 'translate-y-0' : '-translate-y-full'
+} ${
+  isNavRailExpanded ? 'md:left-64' : 'md:left-20'
+}`}>
+  {/* Header content */}
+</header>
+```
+
+**4. Content Padding:**
+```tsx
+<main className="pt-16 pb-24 md:pb-6">
+  {/* Add pt-16 (64px) to account for fixed header height */}
+  {renderContent()}
+</main>
+```
+
+### Key Implementation Notes
+
+**Positioning:**
+* Use `fixed` instead of `sticky` for smooth slide transitions
+* Mobile: `left-0 right-0` (full width)
+* Desktop: `md:left-20` (collapsed rail) or `md:left-64` (expanded rail)
+
+**Transitions:**
+* Header: `transition-transform duration-300` (smooth slide)
+* Transform: `translate-y-0` (visible) or `-translate-y-full` (hidden)
+
+**Scroll Thresholds:**
+* Hide threshold: > 100px scroll down
+* Show threshold: Any scroll up movement
+* Always show: < 10px from top
+
+**Content Spacing:**
+* Main content needs `pt-16` to prevent content from hiding under fixed header
+* Desktop: Adjust left positioning to account for navigation rail width
+
+### Benefits
+
+* ✅ **Maximizes screen real estate** - Hides on scroll down for more content
+* ✅ **Easy access** - Reappears instantly on scroll up
+* ✅ **Modern UX pattern** - Common in mobile apps and progressive web apps
+* ✅ **Smooth animations** - 300ms transitions feel natural
+* ✅ **Responsive** - Adapts to navigation rail on desktop
 
 ---
 

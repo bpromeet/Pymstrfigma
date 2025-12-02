@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -80,13 +81,13 @@ interface DashboardPageProps {
   getExplorerUrl: (chain: string, txHash: string) => string;
 }
 
-export default function DashboardPage({
+const DashboardPage: React.FC<DashboardPageProps> = ({
   dashboardStats,
   recentTransactions,
   chartData,
   onCreatePaymentLink,
   getExplorerUrl,
-}: DashboardPageProps) {
+}) => {
   return (
     <PageLayout>
       <PageLayout.Header
@@ -639,4 +640,6 @@ export default function DashboardPage({
       </PageLayout.Content>
     </PageLayout>
   );
-}
+};
+
+export default DashboardPage;

@@ -149,7 +149,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
         <div className="p-2">
           <button
             onClick={() => onExpandedChange(!isExpanded)}
-            className="flex items-center justify-center w-full h-12 rounded-full text-[#FF5914] hover:bg-[#FF5914]/12 transition-all duration-200"
+            className="flex items-center justify-center w-full h-12 rounded-full bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914] hover:bg-[#e8e4dc]/30 dark:hover:bg-[#FF5914]/20 transition-all duration-200"
             aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
           >
             {isExpanded ? (
