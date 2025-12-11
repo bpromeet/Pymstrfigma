@@ -90,6 +90,9 @@ import {
   Edit,
   Send,
   Download,
+  ArrowDownToLine,
+  ShoppingCart,
+  Coins,
   UserPlus,
   UserCheck,
   UserX,
@@ -114,6 +117,9 @@ import {
   BookOpen,
   Save,
   Webhook,
+  Sparkles,
+  Building,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Alert, AlertDescription } from "./components/ui/alert";
 import {
@@ -144,15 +150,22 @@ import DateField from "./components/DateField";
 import ReportsTransactionTable from "./components/ReportsTransactionTable";
 import { ChainIcon } from "./components/ChainIcon";
 import { CryptoIcon } from "./components/CryptoIcon";
+import { MetaMaskLogo, WalletConnectLogo, CoinbaseLogo, GoogleLogo, TwitterLogo, GithubLogo } from "./components/WalletLogos";
+import PymstrLogo from "./components/PymstrLogo";
 import PaymentLinkForm from "./components/PaymentLinkForm";
 import APIKeyManagement from "./components/APIKeyManagement";
 import QuickStartGuide from "./components/QuickStartGuide";
 import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
 import MerchantProfile from "./components/MerchantProfile";
+import { OnboardingPage } from "./components/OnboardingPage";
+import EndUserBuyPage from "./components/EndUserBuyPage";
+import EndUserSendPage from "./components/EndUserSendPage";
+import EndUserReceivePage from "./components/EndUserReceivePage";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar";
 import { User } from "lucide-react";
+import { useOnboarding } from "./hooks/useOnboarding";
 
 // Avatar images - YOUR provided pictures stored in /public/
 const merchantAvatar = "/merchant-avatar.png"; // Your picture: Woman with glasses
@@ -164,6 +177,7 @@ import CodeExamplesPage from "./pages/CodeExamplesPage";
 import DocumentsPage from "./pages/DocumentsPage";
 import DashboardPage from "./pages/DashboardPage";
 import PaymentLinksPage from "./pages/PaymentLinksPage";
+import { TransactionsPage } from "./pages/TransactionsPage";
 import ReportsPage from "./pages/ReportsPage";
 import WalletsPage from "./pages/WalletsPage";
 import TeamManagementPage from "./pages/TeamManagementPage";
@@ -215,6 +229,17 @@ import {
 } from "./utils/helpers";
 
 const App = () => {
+  // Onboarding state tracking
+  const { 
+    markStepComplete, 
+    status: onboardingStatus,
+    shouldAutoRedirect,
+    shouldShowBanner,
+    progress,
+    steps,
+    dismissOnboardingBanner
+  } = useOnboarding();
+  
   // Initialize activeTab based on hash (for dev mode)
   const getInitialTab = () => {
     const hash = window.location.hash.toLowerCase();
@@ -238,8 +263,13 @@ const App = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectedWallet, setConnectedWallet] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-  const [userLoginMethod, setUserLoginMethod] = useState("");
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(() => {
+    const saved = localStorage.getItem('isUserLoggedIn');
+    return saved === 'true';
+  });
+  const [userLoginMethod, setUserLoginMethod] = useState(() => {
+    return localStorage.getItem('userLoginMethod') || '';
+  });
   const [showCryptoSelection, setShowCryptoSelection] =
     useState(false);
   const [showFundingOptions, setShowFundingOptions] =
@@ -255,6 +285,7 @@ const App = () => {
   const [showTestMode, setShowTestMode] = useState(false);
   const [showOnRamper, setShowOnRamper] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+  
   const [paymentLinks, setPaymentLinks] = useState(
     INITIAL_PAYMENT_LINKS,
   );
@@ -310,6 +341,31 @@ const App = () => {
     }
   }, [theme]);
 
+  // Initialize selectedChain and selectedCrypto from currentPayment
+  useEffect(() => {
+    if (currentPayment) {
+      // Type assertion to access chain and currency properties
+      const payment = currentPayment as any;
+      
+      // Set currency from payment link, or use USDC as default
+      if (payment.currency) {
+        setSelectedCrypto(payment.currency);
+      } else {
+        setSelectedCrypto("USDC");
+      }
+      
+      // Set chain from payment link, or pick first available chain as default
+      if (payment.chain) {
+        setSelectedChain(payment.chain);
+      } else if (payment.availableChains && payment.availableChains.length > 0) {
+        setSelectedChain(payment.availableChains[0]);
+      } else {
+        // Fallback to ethereum if no chains specified
+        setSelectedChain("ethereum");
+      }
+    }
+  }, [currentPayment]);
+
   // Scroll to top when navigating between pages
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -342,6 +398,31 @@ const App = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Auto-redirect new merchants to onboarding (Phase 4)
+  // CRITICAL: This should ONLY run ONCE on mount, not on every navigation
+  // Empty dependency array ensures it only checks on initial page load
+  useEffect(() => {
+    // Only redirect if:
+    // 1. They haven't completed any onboarding steps (shouldAutoRedirect = true)
+    // 2. Not already on the onboarding page
+    // 3. Not in dev mode
+    // 4. ONLY on root or dashboard hash (prevent hijacking explicit navigation)
+    const hash = window.location.hash.toLowerCase();
+    const isDevMode = hash === "#/dev";
+    const isAlreadyOnboarding = hash.includes("onboarding") || hash.includes("getting-started");
+    const isRootOrDashboard = hash === "" || hash === "#/" || hash === "#/dashboard";
+    
+    // ONLY redirect if we're on the root/dashboard page on mount
+    // This prevents hijacking explicit navigation to other pages
+    if (shouldAutoRedirect && !isAlreadyOnboarding && !isDevMode && isRootOrDashboard) {
+      // Small delay to allow state to settle
+      setTimeout(() => {
+        window.location.hash = '#/onboarding';
+      }, 100);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty array - only run once on mount, never again
+
   // URL hash routing for documentation pages and payment links
   useEffect(() => {
     const handleHashChange = () => {
@@ -369,6 +450,8 @@ const App = () => {
             description: payment.description,
             merchantName: "PYMSTR Merchant",
             baseCurrency: payment.baseCurrency,
+            chain: payment.chain,
+            currency: payment.currency,
             availableCurrencies:
               payment.availableCurrencies || [
                 "USDC",
@@ -383,6 +466,7 @@ const App = () => {
               "base",
             ],
           });
+          
           setActiveTab("checkout");
           setIsStandalonePage(false);
         } else if (payment && payment.status === "completed") {
@@ -397,8 +481,13 @@ const App = () => {
         return;
       }
 
+      // Handle onboarding page (part of merchant navigation)
+      if (hashLower.includes("onboarding")) {
+        setActiveTab("onboarding");
+        setIsStandalonePage(false);
+      }
       // Handle documentation pages
-      if (hashLower.includes("quickstart")) {
+      else if (hashLower.includes("quickstart")) {
         setActiveTab("quickstart");
         setIsStandalonePage(true);
       } else if (
@@ -421,6 +510,58 @@ const App = () => {
         setIsStandalonePage(false);
       } else if (hashLower === "#/user-dashboard") {
         setActiveTab("user-dashboard");
+        setIsStandalonePage(false);
+      }
+      // Handle all merchant navigation pages
+      else if (hashLower.startsWith("#/links") || hashLower.startsWith("#/payment-links")) {
+        setActiveTab("links");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/wallets") {
+        setActiveTab("wallets");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/reports") {
+        setActiveTab("reports");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/transactions") {
+        setActiveTab("transactions");
+        setIsStandalonePage(false);
+      } else if (hashLower.startsWith("#/api-keys") || hashLower === "#/api") {
+        setActiveTab("api");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/webhooks") {
+        setActiveTab("webhooks");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/team") {
+        setActiveTab("team");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/settings") {
+        setActiveTab("settings");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/help") {
+        setActiveTab("help");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/legal") {
+        setActiveTab("legal");
+        setIsStandalonePage(false);
+      }
+      // Handle end user pages
+      else if (hashLower === "#/user-wallets") {
+        setActiveTab("user-wallets");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/user-send") {
+        setActiveTab("user-send");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/user-receive") {
+        setActiveTab("user-receive");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/user-buy") {
+        setActiveTab("user-buy");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/user-transactions") {
+        setActiveTab("user-transactions");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/user-settings") {
+        setActiveTab("user-settings");
         setIsStandalonePage(false);
       } else if (hash === "#/" || hash === "") {
         // Default to dashboard for app.pymstr.com
@@ -495,13 +636,20 @@ const App = () => {
   );
 
   // Track user context (merchant or end-user) for shared pages like Help and Legal
-  const [userContext, setUserContext] = useState<'merchant' | 'enduser'>('merchant');
+  // Persist to localStorage so it survives page refresh
+  const [userContext, setUserContext] = useState<'merchant' | 'enduser'>(() => {
+    const savedContext = localStorage.getItem('pymstr-user-context');
+    return (savedContext === 'enduser' || savedContext === 'merchant') ? savedContext : 'merchant';
+  });
 
   // End-user navigation menu items (per Guidelines.md)
   // Use unique IDs to differentiate from merchant pages
   const endUserNavItems: NavigationItem[] = [
     { id: 'user-dashboard', label: 'Dashboard', icon: Activity },
     { id: 'user-wallets', label: 'Wallets', icon: Wallet },
+    { id: 'user-send', label: 'Send', icon: Send },
+    { id: 'user-receive', label: 'Receive', icon: ArrowDownToLine },
+    { id: 'user-buy', label: 'Buy', icon: Coins },
     { id: 'user-transactions', label: 'Transactions', icon: Receipt },
     { id: 'user-settings', label: 'Settings', icon: Settings },
     { id: 'help', label: 'Help', icon: HelpCircle },
@@ -522,6 +670,21 @@ const App = () => {
     { id: 'logout', label: 'Logout', icon: LogOut },
   ];
 
+  // Persist userContext to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('pymstr-user-context', userContext);
+  }, [userContext]);
+
+  // Persist login state to localStorage
+  useEffect(() => {
+    localStorage.setItem('isUserLoggedIn', isUserLoggedIn.toString());
+  }, [isUserLoggedIn]);
+
+  // Persist login method to localStorage
+  useEffect(() => {
+    localStorage.setItem('userLoginMethod', userLoginMethod);
+  }, [userLoginMethod]);
+
   // Custom navigation handler that tracks user context
   const handleNavigate = (tab: string) => {
     // Determine if this is an end-user navigation
@@ -536,7 +699,25 @@ const App = () => {
     }
     // For 'help' and 'legal', keep existing context
     
-    setActiveTab(tab);
+    // Update URL hash instead of directly setting activeTab
+    // This ensures proper navigation history and allows going back
+    const hashMap: { [key: string]: string } = {
+      'admin': '#/dashboard',
+      'dashboard': '#/dashboard',
+      'userdashboard': '#/user-dashboard',
+      'onboarding': '#/onboarding',
+      'quickstart': '#/quickstart',
+      'apireference': '#/api-reference',
+      'codeexamples': '#/code-examples',
+      'documents': '#/documents',
+      'checkout': '#/pay',
+      'api': '#/api-keys',
+      'apikeys': '#/api-keys',
+    };
+    
+    // Use hash if mapped, otherwise use tab name directly
+    const hash = hashMap[tab] || `#/${tab}`;
+    window.location.hash = hash;
   };
 
   // Logout function
@@ -668,7 +849,9 @@ const App = () => {
         crypto,
       ),
     );
+    
     const available = getWalletBalance(crypto, selectedChain);
+    
     return available >= required;
   };
 
@@ -733,6 +916,7 @@ const App = () => {
       setIsConnecting(false);
       setShowWeb3Auth(false);
       setShowCryptoSelection(true);
+      
       toast(`Connected with ${provider}!`);
     }, 2000);
   };
@@ -849,6 +1033,12 @@ const App = () => {
     const linkWithSource = { ...newLink, source: "manual" };
     setPaymentLinks((links) => [linkWithSource, ...links]);
     setShowPaymentLinkDialog(false);
+    
+    // Mark onboarding Step 2 complete (Test Payment Link)
+    if (!onboardingStatus.step2Complete) {
+      markStepComplete('step2');
+    }
+    
     toast("Payment link created successfully!");
   };
 
@@ -1041,6 +1231,12 @@ const App = () => {
     };
 
     setApiKeys((prev) => [newKey, ...prev]);
+    
+    // Mark onboarding Step 1 complete (Get API Credentials)
+    if (!onboardingStatus.step1Complete) {
+      markStepComplete('step1');
+    }
+    
     return { key: generatedKey };
   };
 
@@ -1094,25 +1290,48 @@ const App = () => {
     );
   };
 
-  const CustomerCheckout = () => (
+  const CustomerCheckout = () => {
+    // Helper function to determine current checkout screen number
+    const getCurrentScreenNumber = (): number => {
+      if (paymentStatus === "completed") return 8; // Screen #8: Success
+      if (paymentStatus === "processing") return 7; // Screen #7: Processing
+      if (showPaymentForm) return 6; // Screen #6: Payment Confirmation Form
+      if (showFundingOptions && showFundingSuccess) return 5; // Screen #5: Funding Success
+      if (showFundingOptions && !showFundingSuccess) return 4; // Screen #4: Insufficient Balance (Funding Options)
+      if (showCryptoSelection) return 3; // Screen #3: Crypto Selection
+      if (showWeb3Auth) return 2; // Screen #2: Login/Register
+      return 1; // Screen #1: Payment Details
+    };
+
+    const currentScreen = getCurrentScreenNumber();
+
+    return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card
-        className="w-full max-w-md relative overflow-hidden flex flex-col rounded-2xl"
+        className="relative overflow-hidden flex flex-col rounded-2xl"
+        style={{ width: '450px', height: '555px' }}
       >
         <CardHeader
-          className={`text-center p-6 flex-shrink-0 ${showCryptoSelection ? "pb-4" : "pb-6"} ${showQRFunding || showOnRamper ? "hidden" : ""}`}
+          className={`absolute top-0 left-0 right-0 z-10 text-center p-6 pb-0 pointer-events-none ${showQRFunding || showOnRamper ? "hidden" : ""}`}
         >
           {/* Back button in top left - conditional based on screen */}
-          <div className="absolute top-6 left-6">
+          <div className="absolute top-6 left-6 pointer-events-auto">
             <Button
               variant="ghost"
               className="min-h-12 px-4 rounded-full transition-all duration-200"
               onClick={() => {
-                // Screen #8: Success - no back button shown, handled by "Return to Dashboard" button
+                // Screen #9: Success - no back button shown, handled by "Return to Dashboard" button
                 if (paymentStatus === "completed") return;
 
-                // Screen #7: Processing - no back button during processing
+                // Screen #8: Processing - no back button during processing
                 if (paymentStatus === "processing") return;
+
+                // Screen #7: Payment Confirmation Form - go back to crypto selection
+                if (showPaymentForm) {
+                  setShowPaymentForm(false);
+                  setShowCryptoSelection(true);
+                  return;
+                }
 
                 // Screen #6: Funding Success - go back to funding options
                 if (showFundingOptions && showFundingSuccess) {
@@ -1128,14 +1347,7 @@ const App = () => {
                   return;
                 }
 
-                // Screen #4: Payment Confirmation Form - go back to crypto selection
-                if (showPaymentForm) {
-                  setShowPaymentForm(false);
-                  setShowCryptoSelection(true);
-                  return;
-                }
-
-                // Screen #3: Crypto Selection - go back to login screen
+                // Screen #4: Crypto Selection - go back to login
                 if (showCryptoSelection) {
                   setShowCryptoSelection(false);
                   setShowWeb3Auth(true);
@@ -1170,7 +1382,7 @@ const App = () => {
 
           {/* User Avatar in top right - shows from Screen #3 onwards */}
           {(showCryptoSelection || showPaymentForm || showFundingOptions || showFundingSuccess || paymentStatus === "processing" || paymentStatus === "completed") && (
-            <div className="absolute top-6 right-6">
+            <div className="absolute top-6 right-6 pointer-events-auto">
               <Button
                 variant="ghost"
                 className="w-12 h-12 rounded-full p-0 transition-all duration-200 hover:bg-[#E3F2FD]"
@@ -1184,25 +1396,41 @@ const App = () => {
                 }}
                 aria-label="Open your account"
               >
-                <Avatar className="w-10 h-10">
-                  <AvatarImage 
-                    src={endUserAvatar}
-                    alt="Your Account"
-                  />
-                  <AvatarFallback>
-                    <User className="w-5 h-5" />
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  {/* Green connected ring */}
+                  <div className="absolute inset-0 rounded-full ring-2 ring-[#7DD069] ring-offset-2 ring-offset-white dark:ring-offset-[#0a0a0a]"></div>
+                  
+                  {/* Avatar */}
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage 
+                      src={endUserAvatar}
+                      alt="Your Account"
+                    />
+                    <AvatarFallback>
+                      <User className="w-5 h-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  {/* Wallet provider badge (bottom-right corner) */}
+                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-white dark:bg-[#0a0a0a] rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#0a0a0a]">
+                    {connectedWallet === "MetaMask" && <MetaMaskLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "WalletConnect" && <WalletConnectLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Coinbase Wallet" && <CoinbaseLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Google" && <GoogleLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Twitter" && <TwitterLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Github" && <GithubLogo className="w-3.5 h-3.5" />}
+                  </div>
+                </div>
               </Button>
             </div>
           )}
 
           <div className="flex justify-center">
-            <span className="text-[#FF5914]">PYMSTR</span>
+            <PymstrLogo variant="icon" size="sm" />
           </div>
         </CardHeader>
         <CardContent
-          className={`px-6 pb-6 flex-1 flex flex-col ${showCryptoSelection ? "pt-0" : showFundingOptions ? "pt-0" : "pt-4"} ${showQRFunding || showOnRamper ? "hidden" : ""}`}
+          className={`px-6 pb-0 pt-20 flex-1 flex flex-col ${showQRFunding || showOnRamper ? "hidden" : ""}`}
         >
           {showWeb3Auth ? (
             <div className="flex flex-col justify-center h-full space-y-6">
@@ -1232,27 +1460,7 @@ const App = () => {
                         handleWalletConnect("Google")
                       }
                     >
-                      <svg
-                        className="w-[18px] h-[18px] flex-shrink-0"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          fill="#4285F4"
-                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        />
-                        <path
-                          fill="#34A853"
-                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        />
-                        <path
-                          fill="#FBBC05"
-                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                        />
-                        <path
-                          fill="#EA4335"
-                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                        />
-                      </svg>
+                      <GoogleLogo className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         Google
                       </span>
@@ -1265,7 +1473,7 @@ const App = () => {
                         handleWalletConnect("Twitter")
                       }
                     >
-                      <Twitter className="w-[18px] h-[18px] flex-shrink-0" />
+                      <TwitterLogo className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         Twitter
                       </span>
@@ -1278,7 +1486,7 @@ const App = () => {
                         handleWalletConnect("Github")
                       }
                     >
-                      <Github className="w-[18px] h-[18px] flex-shrink-0" />
+                      <GithubLogo className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         Github
                       </span>
@@ -1291,7 +1499,7 @@ const App = () => {
                         handleWalletConnect("MetaMask")
                       }
                     >
-                      <Wallet className="w-[18px] h-[18px] flex-shrink-0" />
+                      <MetaMaskLogo className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         MetaMask
                       </span>
@@ -1304,7 +1512,7 @@ const App = () => {
                         handleWalletConnect("WalletConnect")
                       }
                     >
-                      <Wallet className="w-[18px] h-[18px] flex-shrink-0" />
+                      <WalletConnectLogo className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         WalletConnect
                       </span>
@@ -1317,7 +1525,7 @@ const App = () => {
                         handleWalletConnect("Coinbase Wallet")
                       }
                     >
-                      <Wallet className="w-[18px] h-[18px] flex-shrink-0" />
+                      <CoinbaseLogo className="w-[18px] h-[18px] flex-shrink-0" />
                       <span className="flex-1 text-left">
                         Coinbase
                       </span>
@@ -1327,24 +1535,21 @@ const App = () => {
               )}
             </div>
           ) : showCryptoSelection ? (
-            <div className="flex flex-col pt-4 pb-6 px-0 space-y-4">
-              <div className="text-center space-y-2">
-                <h2 className="text-4xl">
+            <div className="flex flex-col pt-0 pb-0 px-0 space-y-4">
+              <div className="text-center space-y-0">
+                <h2 className="text-3xl">
                   {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)}
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {currentPayment
                     ? currentPayment.description
                     : "Payment to CryptoStore"}
                 </p>
-                <p className="text-[#7DD069]">
-                  ✓ {connectedWallet}
-                </p>
               </div>
 
               {/* Chain Selection */}
-              <div className="space-y-2">
-                <Label>Network</Label>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Network</Label>
                 <NetworkSelector
                   networks={supportedChains.filter((chain) => {
                     // First check merchant config - only show chains enabled for selected token
@@ -1387,8 +1592,8 @@ const App = () => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>Currency</Label>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Currency</Label>
                 <CryptoSelector
                   options={supportedCryptos
                     .filter((crypto) => {
@@ -1427,23 +1632,26 @@ const App = () => {
                         isAllowedByPaymentLink
                       );
                     })
-                    .map((crypto) => ({
-                      crypto: {
-                        symbol: crypto.symbol,
-                        name: crypto.name,
-                        logo: crypto.logo,
-                      },
-                      amount: calculateCryptoAmount(
-                        currentPayment?.price || 156.78,
-                        crypto.symbol,
-                      ),
-                      balance: getWalletBalance(
-                        crypto.symbol,
-                        selectedChain,
-                      ).toFixed(2),
-                      hasSufficientBalance:
-                        hasSufficientBalance(crypto.symbol),
-                    }))}
+                    .map((crypto) => {
+                      // For crypto selector display, always use getWalletBalance
+                      // This shows the correct balance for each crypto regardless of selection
+                      const displayBalance = getWalletBalance(crypto.symbol, selectedChain);
+                      
+                      return {
+                        crypto: {
+                          symbol: crypto.symbol,
+                          name: crypto.name,
+                          logo: crypto.logo,
+                        },
+                        amount: calculateCryptoAmount(
+                          currentPayment?.price || 156.78,
+                          crypto.symbol,
+                        ),
+                        balance: displayBalance.toFixed(2),
+                        hasSufficientBalance:
+                          hasSufficientBalance(crypto.symbol),
+                      };
+                    })}
                   selectedCrypto={selectedCrypto}
                   onCryptoChange={(cryptoSymbol) => {
                     setSelectedCrypto(cryptoSymbol);
@@ -1463,7 +1671,300 @@ const App = () => {
               </div>
 
               <Button
-                className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white min-h-12 transition-all duration-200"
+                className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white h-10 transition-all duration-200"
+                onClick={() => {
+                  // Validate token-chain combination with merchant config
+                  if (
+                    !isTokenChainEnabled(
+                      selectedCrypto,
+                      selectedChain,
+                    )
+                  ) {
+                    toast.error(
+                      `${selectedCrypto} is not accepted on ${getChainName(selectedChain)}`,
+                    );
+                    return;
+                  }
+
+                  if (hasSufficientBalance(selectedCrypto)) {
+                    setShowCryptoSelection(false);
+                    setShowPaymentForm(true);
+                  } else {
+                    setShowCryptoSelection(false);
+                    setShowFundingOptions(true);
+                    setShowFundingSuccess(false);
+                  }
+                }}
+              >
+                {hasSufficientBalance(selectedCrypto)
+                  ? `Pay ${selectedCrypto} on ${getChainName(selectedChain)}`
+                  : `Add ${selectedCrypto} to Pay`}
+              </Button>
+            </div>
+          ) : showFundingOptions ? (
+            showFundingSuccess ? (
+              <div className="space-y-6">
+                <div className="text-center space-y-6">
+                  <div className="w-16 h-16 bg-[#7DD069]/20 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle className="w-8 h-8 text-[#7DD069]" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3>Funding Method Ready!</h3>
+                    <p className="text-muted-foreground">
+                      You can now proceed with adding{" "}
+                      {selectedCrypto} funds
+                    </p>
+                  </div>
+                  <div className="bg-[#7DD069]/10 p-6 rounded-2xl border border-[#7DD069]/30">
+                    <p className="text-[#7DD069]">
+                      Your selected funding method is ready to
+                      use. Click continue to proceed with the
+                      payment.
+                    </p>
+                  </div>
+                  <Button
+                    className="w-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
+                    onClick={() => {
+                      setShowFundingOptions(false);
+                      setShowPaymentForm(true);
+                      setShowFundingSuccess(false);
+                      setFundingMethod("");
+                      toast(
+                        `${selectedCrypto} ${getChainName(selectedChain)} funding completed successfully!`,
+                      );
+                    }}
+                  >
+                    Continue to Payment
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col justify-center flex-1 space-y-6">
+                {/* Required Balance Box */}
+                <div className="bg-[#7DD069]/10 p-4 rounded-2xl border border-[#7DD069]/30">
+                  <div className="text-sm text-[#1C1B1F] dark:text-[#F6F7F9] mb-1">
+                    Required
+                  </div>
+                  <div className="text-2xl font-medium text-[#7DD069]">
+                    {(() => {
+                      const requiredAmount = parseFloat(calculateCryptoAmount(
+                        currentPayment?.price || 156.78,
+                        selectedCrypto,
+                      ));
+                      const currentBalance = getWalletBalance(selectedCrypto, selectedChain);
+                      const additionalNeeded = Math.max(0, requiredAmount - currentBalance);
+                      return additionalNeeded.toFixed(2);
+                    })()}{" "}
+                    {selectedCrypto}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    to complete this payment
+                  </div>
+                </div>
+
+                {/* Funding Options */}
+                <div className="space-y-3">
+                  <Label>Choose funding method</Label>
+                  <div className={`grid gap-3 ${connectedWallet === "MetaMask" || connectedWallet === "WalletConnect" || connectedWallet === "Coinbase Wallet" ? "grid-cols-3" : "grid-cols-2"}`}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFundingMethod("qr");
+                        setShowQRFunding(true);
+                      }}
+                      className={`p-4 rounded-2xl border-2 transition-all duration-200 ${
+                        fundingMethod === "qr"
+                          ? "border-[#1E88E5] bg-[#E3F2FD] dark:bg-[#1E88E5]/20"
+                          : "border-[#43586C] hover:border-[#1E88E5] bg-white dark:bg-[#303030]"
+                      }`}
+                    >
+                      <QrCode className="w-6 h-6 mx-auto mb-2 text-[#1E88E5]" />
+                      <div className="text-sm font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">
+                        QR
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFundingMethod("card");
+                        setShowFundingSuccess(true);
+                      }}
+                      className={`p-4 rounded-2xl border-2 transition-all duration-200 ${
+                        fundingMethod === "card"
+                          ? "border-[#1E88E5] bg-[#E3F2FD] dark:bg-[#1E88E5]/20"
+                          : "border-[#43586C] hover:border-[#1E88E5] bg-white dark:bg-[#303030]"
+                      }`}
+                    >
+                      <CreditCard className="w-6 h-6 mx-auto mb-2 text-[#1E88E5]" />
+                      <div className="text-sm font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">
+                        Card
+                      </div>
+                    </button>
+
+                    {(connectedWallet === "MetaMask" || connectedWallet === "WalletConnect" || connectedWallet === "Coinbase Wallet") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFundingMethod("wallet");
+                          setShowFundingSuccess(true);
+                        }}
+                        className={`p-4 rounded-2xl border-2 transition-all duration-200 ${
+                          fundingMethod === "wallet"
+                            ? "border-[#1E88E5] bg-[#E3F2FD] dark:bg-[#1E88E5]/20"
+                            : "border-[#43586C] hover:border-[#1E88E5] bg-white dark:bg-[#303030]"
+                        }`}
+                      >
+                        {connectedWallet === "MetaMask" && <MetaMaskLogo className="w-6 h-6 mx-auto mb-2" />}
+                        {connectedWallet === "WalletConnect" && <WalletConnectLogo className="w-6 h-6 mx-auto mb-2" />}
+                        {connectedWallet === "Coinbase Wallet" && <CoinbaseLogo className="w-6 h-6 mx-auto mb-2" />}
+                        <div className="text-sm font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">
+                          {connectedWallet === "Coinbase Wallet" ? "Coinbase" : connectedWallet}
+                        </div>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          ) : showCryptoSelection ? (
+            <div className="flex flex-col pt-0 pb-0 px-0 space-y-4">
+              <div className="text-center space-y-0">
+                <h2 className="text-3xl">
+                  {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {currentPayment
+                    ? currentPayment.description
+                    : "Payment to CryptoStore"}
+                </p>
+              </div>
+
+              {/* Chain Selection */}
+              <div className="space-y-1.5">
+                <Label className="text-sm">Network</Label>
+                <NetworkSelector
+                  networks={supportedChains.filter((chain) => {
+                    // First check merchant config - only show chains enabled for selected token
+                    const availableChains =
+                      getAvailableChainsForToken(
+                        selectedCrypto,
+                      );
+                    const isEnabledByMerchant =
+                      availableChains.includes(chain.id);
+
+                    // Then check payment link restrictions (if any)
+                    const isAllowedByPaymentLink =
+                      !currentPayment?.availableChains ||
+                      currentPayment.availableChains.length ===
+                        0 ||
+                      currentPayment.availableChains.includes(
+                        chain.id,
+                      );
+
+                    return (
+                      isEnabledByMerchant &&
+                      isAllowedByPaymentLink
+                    );
+                  })}
+                  selectedNetwork={selectedChain}
+                  onNetworkChange={(networkId) => {
+                    setSelectedChain(networkId);
+                    // Auto-adjust currency if current one is not available on new chain
+                    const availableTokens =
+                      getAvailableTokensForChain(networkId);
+                    if (
+                      !availableTokens.includes(selectedCrypto)
+                    ) {
+                      // Select first available token for this chain
+                      if (availableTokens.length > 0) {
+                        setSelectedCrypto(availableTokens[0]);
+                      }
+                    }
+                  }}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-sm">Currency</Label>
+                <CryptoSelector
+                  options={supportedCryptos
+                    .filter((crypto) => {
+                      // First check merchant config - only show tokens enabled for selected chain
+                      const availableTokens =
+                        getAvailableTokensForChain(
+                          selectedChain,
+                        );
+                      const isEnabledByMerchant =
+                        availableTokens.includes(crypto.symbol);
+
+                      // Determine currency variant based on available currencies
+                      const currencyVariant = (currentPayment?.availableCurrencies?.length || 3) === 1 ? "single" : "multiple";
+                      
+                      // Then apply simulation variant filter
+                      const simulatedCurrencies =
+                        currencyVariant === "single"
+                          ? ["USDC"]
+                          : ["USDC", "USDT", "EURC"];
+
+                      // If currentPayment has availableCurrencies set, use that, otherwise use simulation
+                      const allowedCurrencies =
+                        currentPayment?.availableCurrencies &&
+                        currentPayment.availableCurrencies
+                          .length > 0
+                          ? currentPayment.availableCurrencies
+                          : simulatedCurrencies;
+
+                      const isAllowedByPaymentLink =
+                        allowedCurrencies.includes(
+                          crypto.symbol,
+                        );
+
+                      return (
+                        isEnabledByMerchant &&
+                        isAllowedByPaymentLink
+                      );
+                    })
+                    .map((crypto) => {
+                      // For crypto selector display, always use getWalletBalance
+                      // This shows the correct balance for each crypto regardless of selection
+                      const displayBalance = getWalletBalance(crypto.symbol, selectedChain);
+                      
+                      return {
+                        crypto: {
+                          symbol: crypto.symbol,
+                          name: crypto.name,
+                          logo: crypto.logo,
+                        },
+                        amount: calculateCryptoAmount(
+                          currentPayment?.price || 156.78,
+                          crypto.symbol,
+                        ),
+                        balance: displayBalance.toFixed(2),
+                        hasSufficientBalance:
+                          hasSufficientBalance(crypto.symbol),
+                      };
+                    })}
+                  selectedCrypto={selectedCrypto}
+                  onCryptoChange={(cryptoSymbol) => {
+                    setSelectedCrypto(cryptoSymbol);
+                    // Auto-adjust chain if current one is not available for new token
+                    const availableChains =
+                      getAvailableChainsForToken(cryptoSymbol);
+                    if (
+                      !availableChains.includes(selectedChain)
+                    ) {
+                      // Select first available chain for this token
+                      if (availableChains.length > 0) {
+                        setSelectedChain(availableChains[0]);
+                      }
+                    }
+                  }}
+                />
+              </div>
+
+              <Button
+                className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white h-10 transition-all duration-200"
                 onClick={() => {
                   // Validate token-chain combination with merchant config
                   if (
@@ -1654,16 +2155,16 @@ const App = () => {
                 </p>
               </div>
 
-              <div className="text-center space-y-4">
+              <div className="text-center space-y-3">
                 <p className="text-muted-foreground">
                   Login or register to continue with payment
                 </p>
-                <Button
-                  className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white min-h-12 transition-all duration-200"
+                <button
+                  className="w-full h-12 px-8 py-3 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white transition-all duration-200 flex items-center justify-center font-medium"
                   onClick={() => setShowWeb3Auth(true)}
                 >
                   Login / Register
-                </Button>
+                </button>
               </div>
             </div>
           ) : (
@@ -1779,12 +2280,16 @@ const App = () => {
           )}
         </CardContent>
 
-        {/* Secure Footer */}
-        <div className="p-6 border-t border-[#D1D9E1]">
+        {/* Secure Footer - Always visible at bottom */}
+        <div className="p-6 border-t border-[#D1D9E1] flex-shrink-0">
           <div className="flex items-center justify-center gap-3">
             <Shield className="w-5 h-5 text-[#7DD069] fill-[#7DD069]" />
-            <span className="whitespace-nowrap">
-              Non-custodial & bulletproof by design
+            <span className="whitespace-nowrap text-sm">
+              Non-custodial. Powered by Web3Auth
+            </span>
+            {/* Development: Screen Number Indicator */}
+            <span className="ml-2 px-2 py-0.5 rounded-full bg-[#1E88E5] text-white text-xs font-medium">
+              {currentScreen}/9
             </span>
           </div>
         </div>
@@ -1914,23 +2419,8 @@ const App = () => {
               </Button>
             </div>
 
-            {/* Balance & Required - Compact Cards */}
+            {/* Required Amount Card */}
             <div className="space-y-3">
-              {/* Balance Card - Dynamic color based on funding status */}
-              <div className={`p-3 rounded-2xl border-2 ${
-                qrFundingBalance >= parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto))
-                  ? "bg-[#7DD069]/10 dark:bg-[#7DD069]/20 border-[#7DD069]"
-                  : "bg-[#FF5914]/10 dark:bg-[#FF5914]/20 border-[#FF5914]"
-              }`}>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-[#1C1B1F] dark:text-[#F6F7F9]">Balance</p>
-                  <div className="text-right">
-                    <p className="text-2xl font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">{qrFundingBalance.toFixed(2)}</p>
-                    <p className="text-xs text-[#1C1B1F] dark:text-[#F6F7F9]">{selectedCrypto}</p>
-                  </div>
-                </div>
-              </div>
-
               {/* Required Amount Card - Fixed visibility */}
               <div className="bg-[#1E88E5]/10 dark:bg-[#1E88E5]/20 p-3 rounded-2xl border-2 border-[#1E88E5]">
                 <div className="space-y-2">
@@ -2040,7 +2530,8 @@ const App = () => {
         </Dialog>
       )}
     </div>
-  );
+    );
+  };
 
   // User Login - Web3Auth login gate for User Dashboard
   const UserLogin = () => {
@@ -2178,6 +2669,11 @@ const App = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "admin":
+        // Get the first incomplete step for the banner
+        const currentStep = steps.find(step => !step.completed);
+        const currentStepIndex = steps.findIndex(step => !step.completed);
+        const isOnboardingIncomplete = progress < 100;
+        
         return (
           <DashboardPage
             dashboardStats={dashboardStats}
@@ -2185,6 +2681,15 @@ const App = () => {
             chartData={chartData}
             onCreatePaymentLink={handleCreatePaymentLink}
             getExplorerUrl={getExplorerUrl}
+            // Onboarding banner props
+            showOnboardingBanner={shouldShowBanner}
+            onboardingProgress={progress}
+            onboardingIncomplete={isOnboardingIncomplete}
+            currentOnboardingStep={currentStep}
+            onDismissBanner={dismissOnboardingBanner}
+            onNavigateToOnboarding={() => {
+              window.location.hash = '#/onboarding';
+            }}
           />
         );
       case "links":
@@ -2239,7 +2744,10 @@ const App = () => {
             getExplorerUrl={getExplorerUrl}
           />
         );
+      case "transactions":
+        return <TransactionsPage />;
       case "api":
+      case "apikeys":
         return (
           <APIKeysPage
             apiKeys={apiKeys}
@@ -2251,7 +2759,25 @@ const App = () => {
           />
         );
       case "webhooks":
-        return <WebhooksPage />;
+        return <WebhooksPage onWebhookCreated={() => {
+          // Mark onboarding Step 3 complete (Complete Integration)
+          if (!onboardingStatus.step3Complete) {
+            markStepComplete('step3');
+          }
+        }} />;
+      case "onboarding":
+        return (
+          <OnboardingPage 
+            onGenerateApiKey={() => {
+              // Navigate to API Keys page with create parameter
+              window.location.hash = '#/api-keys?create=true';
+            }}
+            onCreatePaymentLink={() => {
+              // Navigate to Payment Links page with create parameter
+              window.location.hash = '#/links?create=true';
+            }}
+          />
+        );
       case "quickstart":
         return (
           <QuickStartGuide
@@ -2319,6 +2845,24 @@ const App = () => {
         );
       case "user-transactions":
         return isUserLoggedIn ? <EndUserTransactionsPage /> : <UserLogin />;
+      case "user-buy":
+        return isUserLoggedIn ? (
+          <EndUserBuyPage walletAddress={walletAddress} />
+        ) : (
+          <UserLogin />
+        );
+      case "user-send":
+        return isUserLoggedIn ? (
+          <EndUserSendPage wallets={wallets} />
+        ) : (
+          <UserLogin />
+        );
+      case "user-receive":
+        return isUserLoggedIn ? (
+          <EndUserReceivePage wallets={wallets} />
+        ) : (
+          <UserLogin />
+        );
       case "user-settings":
         return isUserLoggedIn ? (
           <EndUserSettingsPage
@@ -2334,6 +2878,11 @@ const App = () => {
       case "legal":
         return <LegalPage />;
       default:
+        // Get the first incomplete step for the banner
+        const defaultCurrentStep = steps.find(step => !step.completed);
+        const defaultCurrentStepIndex = steps.findIndex(step => !step.completed);
+        const defaultIsOnboardingIncomplete = progress < 100;
+        
         return (
           <DashboardPage
             dashboardStats={dashboardStats}
@@ -2341,6 +2890,15 @@ const App = () => {
             chartData={chartData}
             onCreatePaymentLink={handleCreatePaymentLink}
             getExplorerUrl={getExplorerUrl}
+            // Onboarding banner props
+            showOnboardingBanner={shouldShowBanner}
+            onboardingProgress={progress}
+            onboardingIncomplete={defaultIsOnboardingIncomplete}
+            currentOnboardingStep={defaultCurrentStep}
+            onDismissBanner={dismissOnboardingBanner}
+            onNavigateToOnboarding={() => {
+              window.location.hash = '#/onboarding';
+            }}
           />
         );
     }
@@ -2382,6 +2940,8 @@ const App = () => {
           isExpanded={isNavRailExpanded}
           onExpandedChange={setIsNavRailExpanded}
           menuItems={userContext === 'enduser' ? endUserNavItems : undefined}
+          theme={theme}
+          onThemeToggle={toggleTheme}
         />
       )}
 
@@ -2401,11 +2961,16 @@ const App = () => {
             - Slides up when scrolling down, slides down when scrolling up
         */}
         {shouldShowNavigation() && (
-            <header className={`fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0A0A0A] transition-transform duration-300 ${
-              showHeader ? 'translate-y-0' : '-translate-y-full'
-            } ${
-              isNavRailExpanded ? 'md:left-64' : 'md:left-20'
-            }`}>
+            <header 
+              className={`fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0A0A0A] ${
+                showHeader ? 'translate-y-0' : '-translate-y-full'
+              } ${
+                isNavRailExpanded ? 'md:left-64' : 'md:left-20'
+              }`}
+              style={{
+                transition: 'transform 300ms ease-out, left 1500ms ease-out'
+              }}
+            >
               <div className="flex items-center justify-between px-4 md:px-6 h-16">
                 {/* Mobile: Logo */}
                 <button onClick={() => setActiveTab("admin")} className="md:hidden">
@@ -2433,17 +2998,44 @@ const App = () => {
                   </svg>
                 </button>
 
-                {/* Desktop: Empty spacer (rail logo is sufficient) */}
+                {/* Desktop: Logo with PYMSTR text (moves with rail) */}
+                <button onClick={() => setActiveTab("admin")} className="hidden md:flex items-center gap-3">
+                  {/* Light mode logo */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 dark:hidden flex-shrink-0">
+                    <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
+                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
+                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+                  </svg>
+                  {/* Dark mode logo */}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 hidden dark:block flex-shrink-0">
+                    <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
+                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
+                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
+                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
+                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+                  </svg>
+                  <span className="text-xl font-bold text-[#FF5914]">PYMSTR</span>
+                </button>
+
+                {/* Desktop: Spacer */}
                 <div className="hidden md:block flex-1"></div>
 
                 {/* Right Side Actions (both mobile and desktop) */}
                 <div className="flex items-center gap-3">
-                  {/* Theme Toggle */}
+                  {/* Theme Toggle - Mobile only (desktop has it in rail) */}
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={toggleTheme}
-                    className="rounded-full"
+                    className="rounded-full md:hidden"
                   >
                     {theme === "dark" ? (
                       <Sun className="h-5 w-5" />
@@ -2519,6 +3111,13 @@ const App = () => {
                         ) : (
                           <>
                             {/* Merchant Menu Items */}
+                            <DropdownMenuItem
+                              onClick={() => window.location.hash = '#/onboarding'}
+                              className="cursor-pointer rounded-lg h-10 px-3"
+                            >
+                              <Sparkles className="mr-2 h-[18px] w-[18px]" />
+                              Getting Started
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => setActiveTab("profile")}
                               className="cursor-pointer rounded-lg h-10 px-3"

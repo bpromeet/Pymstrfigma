@@ -24,6 +24,32 @@ export const CryptoIcon: React.FC<CryptoIconProps> = ({
   className = "", 
   size = 40 
 }) => {
+  // Handle undefined/null symbol
+  if (!symbol) {
+    return (
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 32 32" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        className={className}
+      >
+        <circle cx="16" cy="16" r="16" fill="#6B7280"/>
+        <text 
+          x="16" 
+          y="20" 
+          fontSize="12" 
+          fill="white" 
+          textAnchor="middle" 
+          fontWeight="600"
+        >
+          ?
+        </text>
+      </svg>
+    );
+  }
+
   const upperSymbol = symbol.toUpperCase();
   
   // USDC - Blue circle with USD Coin design

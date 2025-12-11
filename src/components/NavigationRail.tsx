@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Link as LinkIcon, Key, Webhook, BarChart3, Wallet, ChevronLeft, ChevronRight, BookOpen, HelpCircle } from 'lucide-react';
+import { Activity, Link as LinkIcon, Key, Webhook, BarChart3, Wallet, BookOpen, HelpCircle, List, Menu, Sun, Moon } from 'lucide-react';
 
 export interface NavigationItem {
   id: string;
@@ -13,9 +13,11 @@ interface NavigationRailProps {
   isExpanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
   menuItems?: NavigationItem[];
+  theme?: 'light' | 'dark';
+  onThemeToggle?: () => void;
 }
 
-export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNavigate, isExpanded, onExpandedChange, menuItems }) => {
+export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNavigate, isExpanded, onExpandedChange, menuItems, theme, onThemeToggle }) => {
 
   // Map admin tab to dashboard for display
   const normalizedActiveTab = activeTab === 'admin' ? 'dashboard' : activeTab;
@@ -27,6 +29,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
     { id: 'api', label: 'API Keys', icon: Key },
     { id: 'links', label: 'Payment Links', icon: LinkIcon },
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
+    { id: 'transactions', label: 'Transactions', icon: List },
     { id: 'reports', label: 'Reports', icon: BarChart3 },
     { id: 'documents', label: 'Documents', icon: BookOpen },
     { id: 'help', label: 'Help', icon: HelpCircle },
@@ -42,16 +45,6 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
 
   return (
     <>
-      {/* Click-outside backdrop for desktop rail (only when expanded) */}
-      <div 
-        className={`hidden md:block fixed inset-0 z-30 bg-transparent ${
-          isExpanded ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-        style={{transition: 'opacity 1500ms ease-out'}}
-        onClick={() => onExpandedChange(false)}
-        aria-hidden="true"
-      />
-
       {/* ========================================
           MD3 NAVIGATION RAIL (Desktop Only)
           
@@ -71,38 +64,15 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
         }`}
         style={{transition: 'width 1500ms ease-out, padding 1500ms ease-out'}}
       >
-        {/* Logo / Brand Area */}
-        <div className="flex items-center justify-center h-16">
-          <div className={`${isExpanded ? 'px-6' : 'px-0'}`} style={{transition: 'padding 1500ms ease-out'}}>
-            {isExpanded ? (
-              <span className="text-xl font-bold text-[#FF5914]">PYMSTR</span>
-            ) : (
-              <>
-                {/* Light mode logo */}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-10 w-10 dark:hidden">
-                  <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
-                  <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-                  <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-                  <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-                  <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-                  <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-                  <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-                  <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
-                </svg>
-                {/* Dark mode logo */}
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-10 w-10 hidden dark:block">
-                  <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
-                  <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-                  <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-                  <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-                  <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-                  <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-                  <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-                  <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
-                </svg>
-              </>
-            )}
-          </div>
+        {/* Hamburger Menu Button */}
+        <div className="flex items-center justify-center h-16 w-full">
+          <button
+            onClick={() => onExpandedChange(!isExpanded)}
+            className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-200"
+            aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
+          >
+            <Menu className="w-6 h-6 text-black dark:text-white" />
+          </button>
         </div>
 
         {/* Navigation Items */}
@@ -116,21 +86,30 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`group relative flex items-center w-full h-14 rounded-full ${
-                    isExpanded ? 'px-6 gap-4' : 'px-0 justify-center'
-                  } ${
+                  className={`group relative flex items-center w-full h-14 rounded-full transition-colors duration-200 ${ 
                     isActive
                       ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
                       : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                   }`}
-                  style={{transition: 'padding 1500ms ease-out, gap 1500ms ease-out, justify-content 1500ms ease-out'}}
                   aria-label={item.label}
                   aria-current={isActive ? 'page' : undefined}
                 >
-                  <Icon className="w-6 h-6 flex-shrink-0" />
-                  {isExpanded && (
-                    <span className="font-medium truncate">{item.label}</span>
-                  )}
+                  {/* Icon - Perfectly centered in collapsed width */}
+                  <div className="w-16 flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  
+                  {/* Label - Fades in/out, appears to the right of icon */}
+                  <span 
+                    className="font-medium truncate whitespace-nowrap"
+                    style={{
+                      opacity: isExpanded ? 1 : 0,
+                      maxWidth: isExpanded ? '160px' : '0',
+                      transition: 'opacity 1500ms ease-out, max-width 1500ms ease-out'
+                    }}
+                  >
+                    {item.label}
+                  </span>
                   
                   {/* Custom Tooltip - Only show when collapsed */}
                   {!isExpanded && (
@@ -145,20 +124,25 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
           </div>
         </div>
 
-        {/* Toggle Button */}
-        <div className="p-2">
-          <button
-            onClick={() => onExpandedChange(!isExpanded)}
-            className="flex items-center justify-center w-full h-12 rounded-full bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914] hover:bg-[#e8e4dc]/30 dark:hover:bg-[#FF5914]/20 transition-all duration-200"
-            aria-label={isExpanded ? 'Collapse navigation' : 'Expand navigation'}
-          >
-            {isExpanded ? (
-              <ChevronLeft className="w-6 h-6" />
-            ) : (
-              <ChevronRight className="w-6 h-6" />
-            )}
-          </button>
-        </div>
+        {/* Theme Toggle Button */}
+        {onThemeToggle && (
+          <div className="p-2">
+            <button
+              onClick={onThemeToggle}
+              className="flex items-center w-full h-12 rounded-full text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors duration-200"
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            >
+              {/* Icon - Perfectly centered in collapsed width */}
+              <div className="w-16 flex items-center justify-center flex-shrink-0">
+                {theme === 'light' ? (
+                  <Moon className="w-6 h-6" />
+                ) : (
+                  <Sun className="w-6 h-6" />
+                )}
+              </div>
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* Spacer to prevent content from going under nav rail */}

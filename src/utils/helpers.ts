@@ -105,7 +105,7 @@ export const getWalletBalance = (crypto: string, chain: string): number => {
     USDC: {
       ethereum: 0.0,    // Zero balance on Ethereum
       polygon: 245.67,   // Has balance on Polygon
-      arbitrum: 150.23,
+      arbitrum: 75.00,   // PARTIAL BALANCE for PL003 testing ($150 needed, only $75 available)
       optimism: 89.45,
       base: 425.90,      // Has balance on Base
     },
@@ -119,7 +119,7 @@ export const getWalletBalance = (crypto: string, chain: string): number => {
     EURC: {
       ethereum: 500.78,
       polygon: 0.0,
-      arbitrum: 0.0,
+      arbitrum: 500.78,  // Has sufficient balance on Arbitrum
       optimism: 312.45,
       base: 0.0,         // Zero balance on Base for EURC
     },

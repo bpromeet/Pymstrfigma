@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -51,6 +51,16 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
   const [showApiKeySecret, setShowApiKeySecret] = useState<string | null>(null);
   const [apiKeyDetailsTab, setApiKeyDetailsTab] = useState('info');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  // Check URL parameters on mount to auto-open create dialog
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes('create=true')) {
+      setShowCreateApiKey(true);
+      // Clean up the URL parameter
+      window.history.replaceState(null, '', window.location.pathname + '#/api-keys');
+    }
+  }, []);
 
   const handleCreateApiKey = () => {
     if (!newApiKey.name) {

@@ -302,7 +302,7 @@ export default function TeamManagementPage({
                                   );
                                 }}
                               >
-                                <SelectTrigger className="w-full max-w-[110px] h-9 bg-transparent border-[#43586C] rounded">
+                                <SelectTrigger className="w-full max-w-[110px] h-9">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-[#262626] rounded-xl">
@@ -472,7 +472,7 @@ export default function TeamManagementPage({
                           );
                         }}
                       >
-                        <SelectTrigger className="w-full h-10 bg-transparent border-[#43586C] rounded">
+                        <SelectTrigger className="w-full h-10">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-white dark:bg-[#262626] rounded-xl">

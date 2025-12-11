@@ -273,7 +273,7 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                     onValueChange={(value) => setProfile({ ...profile, businessType: value })}
                     disabled={!isEditing}
                   >
-                    <SelectTrigger className="rounded bg-[#EEEEEE] dark:bg-[#262626] border-[#43586C] dark:border-[#43586C]">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -519,7 +519,7 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                   onValueChange={(value) => setProfile({ ...profile, timezone: value })}
                   disabled={!isEditing}
                 >
-                  <SelectTrigger className="rounded bg-[#EEEEEE] dark:bg-[#262626] border-[#43586C] dark:border-[#43586C]">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

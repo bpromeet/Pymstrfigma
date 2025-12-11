@@ -93,7 +93,11 @@ const mockApiKeys: APIKey[] = [
   { id: "key_3", name: "Development API Key", environment: "test", status: "active" },
 ];
 
-export default function WebhooksPage() {
+interface WebhooksPageProps {
+  onWebhookCreated?: () => void;
+}
+
+export default function WebhooksPage({ onWebhookCreated }: WebhooksPageProps = {}) {
   const [webhooks, setWebhooks] = useState<WebhookEndpoint[]>([
     {
       id: "wh_1",
@@ -196,6 +200,12 @@ export default function WebhooksPage() {
     setWebhooks([webhook, ...webhooks]); // Add new webhook at the TOP
     setNewWebhook({ url: "", description: "", events: [], apiKeyId: "" });
     setShowCreateDialog(false);
+    
+    // Notify parent component that a webhook was created (for onboarding tracking)
+    if (onWebhookCreated) {
+      onWebhookCreated();
+    }
+    
     toast.success("Webhook endpoint added successfully");
   };
 
@@ -371,7 +381,7 @@ export default function WebhooksPage() {
                   value={newWebhook.apiKeyId}
                   onValueChange={(value) => setNewWebhook({ ...newWebhook, apiKeyId: value })}
                 >
-                  <SelectTrigger className="rounded-full">
+                  <SelectTrigger>
                     <SelectValue placeholder="Select an API key" />
                   </SelectTrigger>
                   <SelectContent>

@@ -24,10 +24,38 @@ export const ChainIcon: React.FC<ChainIconProps> = ({
   className = "",
   size = 40,
 }) => {
+  // Handle undefined/null chain
+  if (!chain) {
+    return (
+      <svg 
+        width={size} 
+        height={size} 
+        viewBox="0 0 32 32" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg" 
+        className={className}
+      >
+        <circle cx="16" cy="16" r="16" fill="#6B7280"/>
+        <text 
+          x="16" 
+          y="20" 
+          fontSize="12" 
+          fill="white" 
+          textAnchor="middle" 
+          fontWeight="600"
+        >
+          ?
+        </text>
+      </svg>
+    );
+  }
+
   const chainLowerCase = chain.toLowerCase();
+  // Handle base-sepolia (treat as base)
+  const normalizedChain = chainLowerCase.includes('base') ? 'base' : chainLowerCase;
 
   // Ethereum - Purple diamond
-  if (chainLowerCase === 'ethereum') {
+  if (normalizedChain === 'ethereum') {
     return (
       <svg 
         width={size} 
@@ -47,7 +75,7 @@ export const ChainIcon: React.FC<ChainIconProps> = ({
   }
 
   // Polygon - Purple interconnected network
-  if (chainLowerCase === "polygon") {
+  if (normalizedChain === "polygon") {
     return (
       <svg 
         width={size} 
@@ -63,7 +91,7 @@ export const ChainIcon: React.FC<ChainIconProps> = ({
   }
 
   // Arbitrum - Blue geometric logo
-  if (chainLowerCase === 'arbitrum') {
+  if (normalizedChain === 'arbitrum') {
     return (
       <svg 
         width={size} 
@@ -86,7 +114,7 @@ export const ChainIcon: React.FC<ChainIconProps> = ({
   }
 
   // Optimism - Red circle with OP logo
-  if (chainLowerCase === 'optimism') {
+  if (normalizedChain === 'optimism') {
     return (
       <svg 
         width={size} 
@@ -104,7 +132,7 @@ export const ChainIcon: React.FC<ChainIconProps> = ({
   }
 
   // Base - Blue rounded square (official Base logo)
-  if (chainLowerCase === 'base') {
+  if (normalizedChain === 'base') {
     return (
       <svg 
         width={size} 

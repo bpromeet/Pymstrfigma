@@ -18,6 +18,9 @@ import {
   Globe,
   Plus,
   ExternalLink,
+  Sparkles,
+  ArrowRight,
+  X,
 } from "lucide-react";
 import {
   ChartContainer,
@@ -79,6 +82,20 @@ interface DashboardPageProps {
   chartData: ChartDataPoint[];
   onCreatePaymentLink: () => void;
   getExplorerUrl: (chain: string, txHash: string) => string;
+  
+  // Onboarding props
+  showOnboardingBanner?: boolean;
+  onboardingProgress?: number;
+  onboardingIncomplete?: boolean;
+  currentOnboardingStep?: {
+    title: string;
+    description: string;
+    action: { label: string; route: string };
+  };
+  onDismissBanner?: () => void;
+  onNavigateToOnboarding?: () => void;
+  showOnboardingReminderButton?: boolean; // NEW: Show small reminder button when banner dismissed
+  onReminderButtonClick?: () => void; // NEW: Handler for reminder button
 }
 
 const DashboardPage: React.FC<DashboardPageProps> = ({
@@ -87,6 +104,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
   chartData,
   onCreatePaymentLink,
   getExplorerUrl,
+  showOnboardingBanner = false,
+  onboardingProgress = 0,
+  onboardingIncomplete = false,
+  currentOnboardingStep,
+  onDismissBanner,
+  onNavigateToOnboarding,
+  showOnboardingReminderButton = false,
+  onReminderButtonClick,
 }) => {
   return (
     <PageLayout>
@@ -98,25 +123,101 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       <PageLayout.Content>
         <div className="space-y-6">
           {/* ========================================
-          DESKTOP ACTION BUTTON (Left-aligned, below subtitle)
+          ONBOARDING BANNER
           
-          Position: Top of content area, left-aligned
-          Hidden on mobile (md:hidden) - mobile uses FAB instead
+          Shows when merchant hasn't completed setup (any of 3 steps incomplete)
+          Dynamic CTA button shows current step's action:
+          - Step 1 incomplete: "Generate API Keys"
+          - Step 2 incomplete: "Test Payment Link"  
+          - Step 3 incomplete: "Add Webhook"
+          
+          Progress bar shows completion percentage (0%, 33%, 67%, 100%)
+          Dismissible but reappears on next visit if setup still incomplete
           ======================================== */}
-          <Button
-            onClick={onCreatePaymentLink}
-            size={undefined}
-            className="hidden md:inline-flex items-center justify-center px-6 h-10 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
-          >
-            <Plus className="w-[18px] h-[18px] mr-2" />
-            Generate Payment Link
-          </Button>
-
-          {/* Tier 1 - Primary Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          {showOnboardingBanner && currentOnboardingStep && (
+            <Card className="bg-gradient-to-r from-[#1E88E5]/10 to-[#07D7FF]/5 border-[#1E88E5]/30 rounded-2xl">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1">
+                    <div className="flex-shrink-0 w-12 h-12 bg-[#1E88E5] rounded-full flex items-center justify-center">
+                      <Sparkles className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-gray-900 dark:text-white font-medium">
+                          Complete Your Setup
+                        </h3>
+                        <span className="text-sm font-medium text-[#1E88E5]">
+                          {onboardingProgress}% Complete
+                        </span>
+                      </div>
+                      <p className="text-sm text-[#798A9B] mb-4">
+                        {currentOnboardingStep.description}
+                      </p>
+                      
+                      {/* Progress Bar */}
+                      <div className="h-2 bg-[#43586C]/20 rounded-full overflow-hidden mb-4">
+                        <div 
+                          className="h-full bg-gradient-to-r from-[#1E88E5] to-[#07D7FF] rounded-full transition-all duration-1000 ease-out"
+                          style={{ width: `${onboardingProgress}%` }}
+                        />
+                      </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Button
+                          onClick={() => {
+                            if (onNavigateToOnboarding) {
+                              onNavigateToOnboarding();
+                            }
+                          }}
+                          size={undefined}
+                          className="px-6 h-10 bg-[#1E88E5] text-white hover:bg-[#1565C0] rounded-full transition-all duration-200 inline-flex items-center gap-2"
+                        >
+                          {currentOnboardingStep.action.label}
+                          <ArrowRight className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            if (onDismissBanner) {
+                              onDismissBanner();
+                            }
+                          }}
+                          variant="ghost"
+                          size={undefined}
+                          className="px-4 h-10 text-[#798A9B] hover:text-[#1E88E5] rounded-full transition-all duration-200"
+                        >
+                          Dismiss
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Close Button */}
+                  <button
+                    onClick={() => {
+                      if (onDismissBanner) {
+                        onDismissBanner();
+                      }
+                    }}
+                    className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-[#798A9B] hover:text-[#1E88E5] hover:bg-[#1E88E5]/10 rounded-full transition-all duration-200"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {/* ========================================
+          TIER 1 - PRIMARY METRICS (Line 1: 4 boxes in one row)
+          T.V, S.T, Avg Tr, A.C
+          ALWAYS 4 columns on desktop/laptop screens (including 13 inch)
+          ======================================== */}
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>Total Volume</CardTitle>
+                <CardTitle>Volume</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="-mt-4">
@@ -125,14 +226,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                   {dashboardStats.totalVolumeProcessed.toLocaleString()}
                 </div>
                 <p className="text-muted-foreground">
-                  +12.5% from last month
+                  +12.5%
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>Successful Transactions</CardTitle>
+                <CardTitle>Transactions</CardTitle>
                 <CheckCircle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="-mt-4">
@@ -140,14 +241,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                   {dashboardStats.successfulTransactions.toLocaleString()}
                 </div>
                 <p className="text-muted-foreground">
-                  +8.2% from last month
+                  +8.2%
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>Avg Transaction</CardTitle>
+                <CardTitle>Avg Trx</CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="-mt-4">
@@ -158,17 +259,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                   )}
                 </div>
                 <p className="text-muted-foreground">
-                  +3.1% from last month
+                  +3.1%
                 </p>
               </CardContent>
             </Card>
-          </div>
 
-          {/* Tier 2 - Secondary Metrics */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>Active Customers</CardTitle>
+                <CardTitle>Customers</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="-mt-4">
@@ -176,8 +274,70 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                   {dashboardStats.activePayors.toLocaleString()}
                 </div>
                 <p className="text-muted-foreground">
-                  +15.3% from last month
+                  +15.3%
                 </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* ========================================
+          TIER 2 - VOLUME BREAKDOWN (Line 2: 2 boxes)
+          VbC (Volume by Currency), VbC (Volume by Chain)
+          ======================================== */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle>Volume by Currency</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="-mt-4">
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <CryptoIcon
+                        symbol="USDC"
+                        size={20}
+                      />
+                      <span className="text-muted-foreground">
+                        USDC
+                      </span>
+                    </div>
+                    <span>
+                      $
+                      {dashboardStats.currencyVolume.USDC.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <CryptoIcon
+                        symbol="USDT"
+                        size={20}
+                      />
+                      <span className="text-muted-foreground">
+                        USDT
+                      </span>
+                    </div>
+                    <span>
+                      $
+                      {dashboardStats.currencyVolume.USDT.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <CryptoIcon
+                        symbol="EURC"
+                        size={20}
+                      />
+                      <span className="text-muted-foreground">
+                        EURC
+                      </span>
+                    </div>
+                    <span>
+                      $
+                      {dashboardStats.currencyVolume.EURC.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -263,66 +423,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                 </div>
               </CardContent>
             </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>Volume by Currency</CardTitle>
-                <DollarSign className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="-mt-4">
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <CryptoIcon
-                        symbol="USDC"
-                        size={20}
-                      />
-                      <span className="text-muted-foreground">
-                        USDC
-                      </span>
-                    </div>
-                    <span>
-                      $
-                      {dashboardStats.currencyVolume.USDC.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <CryptoIcon
-                        symbol="USDT"
-                        size={20}
-                      />
-                      <span className="text-muted-foreground">
-                        USDT
-                      </span>
-                    </div>
-                    <span>
-                      $
-                      {dashboardStats.currencyVolume.USDT.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <CryptoIcon
-                        symbol="EURC"
-                        size={20}
-                      />
-                      <span className="text-muted-foreground">
-                        EURC
-                      </span>
-                    </div>
-                    <span>
-                      $
-                      {dashboardStats.currencyVolume.EURC.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Tier 3 - Charts (2 charts side by side) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Transaction Volume</CardTitle>
@@ -623,19 +727,51 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
           Position: fixed bottom-24 right-6 (96px from bottom, 24px from right)
           Note: bottom-24 positions FAB above 80px bottom nav with 16px spacing
           Size: w-14 h-14 (56px × 56px - MD3 standard)
-          Color: #07D7FF (PYMSTR secondary/cyan)
           Icon: w-6 h-6 (24px)
           Elevation: shadow-lg (Level 3)
           Hidden on desktop: md:hidden
-          Navigates to Payment Links section and opens dialog
+          
+          Shows Sparkles icon when onboarding incomplete (navigates to onboarding page)
+          Shows Plus icon when onboarding complete (creates payment link)
           ======================================== */}
           <button
-            onClick={onCreatePaymentLink}
-            aria-label="Create payment link"
+            onClick={onboardingIncomplete ? onNavigateToOnboarding : onCreatePaymentLink}
+            aria-label={onboardingIncomplete ? "Continue setup" : "Create payment link"}
             className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white shadow-lg hover:bg-[#1565C0] hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 focus:outline-none transition-all duration-200 flex items-center justify-center md:hidden"
           >
-            <Plus className="w-6 h-6" />
+            {onboardingIncomplete ? (
+              <Sparkles className="w-6 h-6" />
+            ) : (
+              <Plus className="w-6 h-6" />
+            )}
           </button>
+          
+          {/* ========================================
+          MD3 MOBILE ONBOARDING REMINDER BUTTON
+          
+          Position: fixed bottom-10 right-6 (40px from bottom, 24px from right)
+          Note: bottom-10 positions button above 80px bottom nav with 40px spacing
+          Size: w-14 h-14 (56px × 56px - MD3 standard)
+          Icon: w-6 h-6 (24px)
+          Elevation: shadow-lg (Level 3)
+          Hidden on desktop: md:hidden
+          
+          Shows Sparkles icon when onboarding incomplete (navigates to onboarding page)
+          Shows Plus icon when onboarding complete (creates payment link)
+          ======================================== */}
+          {showOnboardingReminderButton && (
+            <button
+              onClick={onboardingIncomplete ? onNavigateToOnboarding : onCreatePaymentLink}
+              aria-label={onboardingIncomplete ? "Continue setup" : "Create payment link"}
+              className="fixed bottom-10 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white shadow-lg hover:bg-[#1565C0] hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 focus:outline-none transition-all duration-200 flex items-center justify-center md:hidden"
+            >
+              {onboardingIncomplete ? (
+                <Sparkles className="w-6 h-6" />
+              ) : (
+                <Plus className="w-6 h-6" />
+              )}
+            </button>
+          )}
         </div>
       </PageLayout.Content>
     </PageLayout>

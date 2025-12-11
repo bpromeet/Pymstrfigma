@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Plus,
-  Search,
   Trash2,
   ExternalLink,
   Share2,
@@ -11,7 +10,6 @@ import {
 } from "lucide-react";
 import { formatPrice } from "../utils/currency";
 import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
 import { Card, CardContent, CardHeader } from "../components/ui/card";
 import {
@@ -34,6 +32,7 @@ import { toast } from "sonner@2.0.3";
 import PageLayout from "../components/PageLayout";
 import { ChainIcon } from "../components/ChainIcon";
 import { CryptoIcon } from "../components/CryptoIcon";
+import SearchField from "../components/SearchField";
 
 interface PaymentLinksPageProps {
   paymentLinks: any[];
@@ -59,6 +58,16 @@ export default function PaymentLinksPage({
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentLinksTab, setPaymentLinksTab] = useState("all");
   const [sharedLinkId, setSharedLinkId] = useState<string | null>(null);
+
+  // Check URL parameters on mount to auto-open create dialog
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.includes('create=true')) {
+      setShowPaymentLinkDialog(true);
+      // Clean up the URL parameter
+      window.history.replaceState(null, '', window.location.pathname + '#/links');
+    }
+  }, [setShowPaymentLinkDialog]);
 
   // Handle share button click
   const handleShare = (linkId: string) => {
@@ -182,7 +191,7 @@ export default function PaymentLinksPage({
                       value={currencyFilter}
                       onValueChange={setCurrencyFilter}
                     >
-                      <SelectTrigger className="w-full sm:w-40 rounded-full bg-[#EEEEEE] dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9] hover:border-[#757575] transition-all duration-200">
+                      <SelectTrigger className="w-full sm:w-40">
                         <SelectValue placeholder="All Currencies">
                           <div className="flex items-center gap-2">
                             {currencyFilter !== "all" && (
@@ -229,7 +238,7 @@ export default function PaymentLinksPage({
                       value={statusFilter}
                       onValueChange={setStatusFilter}
                     >
-                      <SelectTrigger className="w-full sm:w-40 rounded-full bg-[#EEEEEE] dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9] hover:border-[#757575] transition-all duration-200">
+                      <SelectTrigger className="w-full sm:w-40">
                         <SelectValue placeholder="All Statuses">
                           <div className="flex items-center gap-2">
                             {statusFilter !== "all" && (
@@ -303,12 +312,11 @@ export default function PaymentLinksPage({
 
                   {/* Right side - Search */}
                   <div className="relative w-full md:w-64 lg:w-72 md:flex-shrink-0 min-w-0">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-[#798A9B] w-4 h-4 pointer-events-none" />
-                    <Input
+                    <SearchField
                       placeholder="Search payment links..."
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 pr-4 w-full rounded bg-[#EEEEEE] dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9] placeholder:text-gray-500 dark:placeholder:text-[#798A9B] focus:border-[#07D7FF] focus:ring-[#07D7FF]/20 transition-all duration-200"
+                      onChange={setSearchQuery}
+                      className="w-full"
                     />
                   </div>
                 </div>

@@ -1,0 +1,1 @@
+Lines 1506 to 1678 need to be removed - this is the entire Payment Method Selection screen

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BarChart3, Search, X } from "lucide-react";
+import { BarChart3, X } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import {
@@ -99,7 +99,7 @@ export default function ReportsPage({
                 : 'bg-transparent border border-[#43586C] text-[#798A9B] cursor-not-allowed opacity-60'
             }`}
           >
-            <Search className="w-[18px] h-[18px] mr-2" />
+            <BarChart3 className="w-[18px] h-[18px] mr-2" />
             Filter
           </Button>
 
@@ -207,7 +207,7 @@ export default function ReportsPage({
           {/* Chain and Currency Filters for Transaction Table */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Select value={chainFilter} onValueChange={setChainFilter}>
-              <SelectTrigger className="w-full sm:w-48 rounded-full bg-[#EEEEEE] dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9] hover:border-[#757575] transition-all duration-200">
+              <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="All Chains">
                   <div className="flex items-center gap-2">
                     {chainFilter !== "all" && (
@@ -261,7 +261,7 @@ export default function ReportsPage({
             </Select>
 
             <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-              <SelectTrigger className="w-full sm:w-48 rounded-full bg-[#EEEEEE] dark:bg-[#262626] border text-gray-900 dark:text-[#F6F7F9] hover:border-[#757575] transition-all duration-200">
+              <SelectTrigger className="w-full sm:w-48">
                 <SelectValue placeholder="All Currencies">
                   <div className="flex items-center gap-2">
                     {currencyFilter !== "all" && (
