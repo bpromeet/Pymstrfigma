@@ -128,7 +128,7 @@ const MOCK_TRANSACTIONS = [
     paidFiat: 99.99,
     customerEmail: 'alice@crypto.io',
     exchangeRate: 1.000000,
-    txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890def123',
+    txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890def123',
   },
 ];
 
@@ -304,21 +304,26 @@ export const TransactionsPage: React.FC = () => {
             </Card>
           ) : (
             filteredTransactions.map((tx) => (
-              <Card key={tx.id} className="rounded-2xl p-6 space-y-4">
-                {/* Transaction Header */}
-                <div className="flex items-start justify-between gap-4 flex-wrap">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-                      <Receipt className="w-5 h-5 text-muted-foreground" />
+              <Card key={tx.id} className="rounded-2xl p-6">
+                {/* Transaction Header - Single Row */}
+                <div className="flex items-center justify-between gap-4 flex-wrap mb-4">
+                  {/* Left: Icon + Title */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-[#07D7FF]/10 flex items-center justify-center flex-shrink-0">
+                      <Receipt className="w-6 h-6 text-[#07D7FF]" />
                     </div>
                     <div>
-                      <h3 className="font-medium">Transaction {tx.id}</h3>
+                      <h3 className="font-semibold">Transaction {tx.id}</h3>
                       <p className="text-sm text-muted-foreground">Link {tx.linkId}</p>
                     </div>
                   </div>
 
+                  {/* Right: Date, Badges, Explorer Link */}
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm text-muted-foreground">{tx.date}</p>
+                    <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                      <span className="inline-block w-1 h-1 rounded-full bg-muted-foreground"></span>
+                      {tx.date}
+                    </p>
                     <Badge variant="outline" className="rounded-full flex items-center gap-1.5">
                       <ChainIcon chain={tx.chain} className="w-3.5 h-3.5" />
                       {tx.chain}
@@ -330,59 +335,22 @@ export const TransactionsPage: React.FC = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="rounded-full w-12 h-12 p-0 transition-all duration-200"
+                      className="rounded-full w-10 h-10 p-0 transition-all duration-200"
                       onClick={() => window.open(getExplorerUrl(tx.chain, tx.txHash), '_blank')}
                       aria-label="View on explorer"
                     >
-                      <ExternalLink className="w-5 h-5" />
+                      <ExternalLink className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
 
                 {/* Transaction Details Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-border">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-2 pt-4 border-t border-border">
                   {/* Price */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Price</p>
                     <p className="font-semibold">{formatPrice(tx.price, tx.baseCurrency)}</p>
                     <p className="text-xs text-muted-foreground">{tx.baseCurrency}</p>
-                  </div>
-
-                  {/* Commission */}
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Commission</p>
-                    <p className="font-semibold">
-                      {tx.commission.toFixed(6)} {tx.currency}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      ≈ {formatPrice(tx.commissionFiat, tx.baseCurrency)} ({tx.commissionPercent}%)
-                    </p>
-                  </div>
-
-                  {/* Merchant Received */}
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Merchant Received</p>
-                    <p className="font-semibold">
-                      {tx.merchantReceived.toFixed(6)} {tx.currency}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      ≈ {formatPrice(tx.merchantReceivedFiat, tx.baseCurrency)}
-                    </p>
-                    <p className="text-xs text-muted-foreground break-all flex items-center gap-1">
-                      <span className="inline-block w-3 h-3 rounded-full bg-muted flex-shrink-0"></span>
-                      {tx.merchantEmail}
-                    </p>
-                  </div>
-
-                  {/* Gas Fee */}
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Gas Fee</p>
-                    <p className="font-semibold">
-                      {tx.gasFee.toFixed(6)} {tx.currency}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      ≈ {formatPrice(tx.gasFeeFiat, tx.baseCurrency)}
-                    </p>
                   </div>
 
                   {/* Paid */}
@@ -399,11 +367,51 @@ export const TransactionsPage: React.FC = () => {
                       {tx.customerEmail}
                     </p>
                   </div>
+
+                  {/* Gas Fee */}
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Gas Fee</p>
+                    <p className="font-semibold">
+                      {tx.gasFee.toFixed(6)} {tx.currency}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      ≈ {formatPrice(tx.gasFeeFiat, tx.baseCurrency)}
+                    </p>
+                  </div>
+
+                  {/* Fee */}
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Fee</p>
+                    <p className="font-semibold">
+                      {tx.commission.toFixed(6)} {tx.currency}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      ≈ {formatPrice(tx.commissionFiat, tx.baseCurrency)} ({tx.commissionPercent}%)
+                    </p>
+                  </div>
+
+                  {/* Received */}
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Received</p>
+                    <p className="font-semibold">
+                      {tx.merchantReceived.toFixed(6)} {tx.currency}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      ≈ {formatPrice(tx.merchantReceivedFiat, tx.baseCurrency)}
+                    </p>
+                    <p className="text-xs text-muted-foreground break-all flex items-center gap-1">
+                      <span className="inline-block w-3 h-3 rounded-full bg-muted flex-shrink-0"></span>
+                      {tx.merchantEmail}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Transaction Footer */}
-                <div className="flex items-center gap-4 pt-4 border-t border-border text-xs text-muted-foreground flex-wrap">
-                  <span>Exchange Rate: {tx.exchangeRate.toFixed(6)}</span>
+                <div className="flex items-center gap-3 pt-4 border-t border-border text-xs text-muted-foreground flex-wrap">
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block w-1 h-1 rounded-full bg-muted-foreground"></span>
+                    Exchange Rate: {tx.exchangeRate.toFixed(6)}
+                  </span>
                   <span>•</span>
                   <code className="break-all">{truncateAddress(tx.txHash, 10, 8)}</code>
                 </div>

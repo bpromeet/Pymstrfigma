@@ -2112,6 +2112,10 @@
     background-color: var(--muted);
   }
 
+  .bg-muted-foreground {
+    background-color: var(--muted-foreground);
+  }
+
   .bg-muted\/50 {
     background-color: var(--muted);
   }
@@ -4258,6 +4262,12 @@
   }
 
   @media (width >= 48rem) {
+    .md\:grid-cols-5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (width >= 48rem) {
     .md\:gap-6 {
       gap: calc(var(--spacing) * 6);
     }
@@ -4309,12 +4319,6 @@
   @media (width >= 64rem) {
     .lg\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
-  @media (width >= 64rem) {
-    .lg\:grid-cols-5 {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
   }
 
