@@ -268,12 +268,9 @@ export default function PaymentLinksPage({
                           {statusFilter}
                         </Badge>
                       )}
-                      <span>
-                        {statusFilter === "all"
-                          ? "All Statuses"
-                          : statusFilter.charAt(0).toUpperCase() +
-                            statusFilter.slice(1)}
-                      </span>
+                      {statusFilter === "all" && (
+                        <span>All Statuses</span>
+                      )}
                     </div>
                   </SelectValue>
                 </SelectTrigger>

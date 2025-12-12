@@ -356,8 +356,9 @@ export const TransactionsPage: React.FC = () => {
                   {/* Paid */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Paid</p>
-                    <p className="font-semibold">
-                      {tx.paid.toFixed(6)} {tx.currency}
+                    <p className="font-semibold flex items-center gap-1.5">
+                      {tx.paid.toFixed(6)}
+                      <CryptoIcon symbol={tx.currency} size={16} />
                     </p>
                     <p className="text-xs text-muted-foreground">
                       ≈ {formatPrice(tx.paidFiat, tx.baseCurrency)}
@@ -371,8 +372,9 @@ export const TransactionsPage: React.FC = () => {
                   {/* Gas Fee */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Gas Fee</p>
-                    <p className="font-semibold">
-                      {tx.gasFee.toFixed(6)} {tx.currency}
+                    <p className="font-semibold flex items-center gap-1.5">
+                      {tx.gasFee.toFixed(6)}
+                      <CryptoIcon symbol={tx.currency} size={16} />
                     </p>
                     <p className="text-xs text-muted-foreground">
                       ≈ {formatPrice(tx.gasFeeFiat, tx.baseCurrency)}
@@ -382,8 +384,9 @@ export const TransactionsPage: React.FC = () => {
                   {/* Fee */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Fee</p>
-                    <p className="font-semibold">
-                      {tx.commission.toFixed(6)} {tx.currency}
+                    <p className="font-semibold flex items-center gap-1.5">
+                      {tx.commission.toFixed(6)}
+                      <CryptoIcon symbol={tx.currency} size={16} />
                     </p>
                     <p className="text-xs text-muted-foreground">
                       ≈ {formatPrice(tx.commissionFiat, tx.baseCurrency)} ({tx.commissionPercent}%)
@@ -393,8 +396,9 @@ export const TransactionsPage: React.FC = () => {
                   {/* Received */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Received</p>
-                    <p className="font-semibold">
-                      {tx.merchantReceived.toFixed(6)} {tx.currency}
+                    <p className="font-semibold flex items-center gap-1.5">
+                      {tx.merchantReceived.toFixed(6)}
+                      <CryptoIcon symbol={tx.currency} size={16} />
                     </p>
                     <p className="text-xs text-muted-foreground">
                       ≈ {formatPrice(tx.merchantReceivedFiat, tx.baseCurrency)}
