@@ -98,7 +98,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
                 <TableRow>
                   <TableHead className="pl-6">Chain</TableHead>
                   <TableHead>Balance</TableHead>
-                  <TableHead>USD Value</TableHead>
+                  <TableHead>$Value</TableHead>
                   <TableHead className="text-right pr-6">Percentage</TableHead>
                 </TableRow>
               </TableHeader>
@@ -164,7 +164,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">USD Value</p>
+                      <p className="text-sm text-muted-foreground">$Value</p>
                       <p className="text-muted-foreground">≈ ${balance.toFixed(2)}</p>
                     </div>
                   </div>
@@ -317,12 +317,11 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
             <div className="flex items-center space-x-3">
               <CryptoIcon symbol={selectedCrypto} />
               <div>
-                <h2 className="text-xl font-medium">{selectedCrypto}</h2>
                 <p className="font-mono text-gray-900 dark:text-white">
                   {totalBalance.toFixed(2)} {selectedCrypto}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  ≈ ${totalBalance.toFixed(2)} USD
+                  ≈ ${totalBalance.toFixed(2)}
                 </p>
               </div>
             </div>
@@ -330,7 +329,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
 
           {/* Tabs */}
           <Tabs value={manageView} onValueChange={(value) => setManageView(value as "breakdown" | "deposit" | "send")}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid grid-cols-3">
               <TabsTrigger value="breakdown">
                 <Activity className="w-[18px] h-[18px] mr-2" />
                 Chains
@@ -363,12 +362,11 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
           <div className="flex items-center space-x-3">
             <CryptoIcon symbol={selectedCrypto} />
             <div>
-              <CardTitle>{selectedCrypto}</CardTitle>
               <p className="font-mono text-gray-900 dark:text-white">
                 {totalBalance.toFixed(2)} {selectedCrypto}
               </p>
               <p className="text-sm text-muted-foreground">
-                ≈ ${totalBalance.toFixed(2)} USD
+                ≈ ${totalBalance.toFixed(2)}
               </p>
             </div>
           </div>
@@ -377,7 +375,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
       <CardContent className="space-y-6">
         {/* Tabs */}
         <Tabs value={manageView} onValueChange={(value) => setManageView(value as "breakdown" | "deposit" | "send")}>
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid grid-cols-3">
             <TabsTrigger value="breakdown">
               <Activity className="w-[18px] h-[18px] mr-2" />
               Chains

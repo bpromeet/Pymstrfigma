@@ -229,7 +229,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
               <CardContent className="space-y-6">
                 {/* Tabs for Payment Links and Analytics */}
                 <Tabs defaultValue="payment-links">
-                  <TabsList className="grid w-full grid-cols-2">
+                  <TabsList className="grid grid-cols-2">
                     <TabsTrigger value="payment-links">Payment Links</TabsTrigger>
                     <TabsTrigger value="analytics">Analytics</TabsTrigger>
                   </TabsList>
@@ -519,7 +519,7 @@ const APIReference: React.FC<APIReferenceProps> = ({ onBack }) => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <Tabs defaultValue="javascript">
-                  <TabsList className="grid w-full grid-cols-4">
+                  <TabsList className="grid grid-cols-4">
                     <TabsTrigger value="javascript">JavaScript</TabsTrigger>
                     <TabsTrigger value="python">Python</TabsTrigger>
                     <TabsTrigger value="php">PHP</TabsTrigger>

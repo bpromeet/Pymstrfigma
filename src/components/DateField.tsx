@@ -30,25 +30,17 @@ const DateField: React.FC<DateFieldProps> = ({
   placeholder = 'Select date',
   className = '',
 }) => {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const handleContainerClick = () => {
-    // Trigger a click on the input to open the native date picker
-    inputRef.current?.click();
-  };
-
   return (
     <div 
-      className={`relative ${className}`}
+      className={`relative flex items-center ${className}`}
     >
-      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-[18px] h-[18px] text-[#798A9B] pointer-events-none z-10" />
+      <Calendar className="absolute left-3 w-[18px] h-[18px] text-[#798A9B] pointer-events-none z-10" />
       <Input
-        ref={inputRef}
         type="date"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="rounded pl-10 pr-4 w-full h-12 bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:top-0 [&::-webkit-calendar-picker-indicator]:left-0 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+        className="rounded pl-10 pr-3 w-full h-12 bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:z-20"
       />
     </div>
   );

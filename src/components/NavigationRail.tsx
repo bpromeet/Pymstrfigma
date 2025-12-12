@@ -65,7 +65,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
         style={{transition: 'width 1500ms ease-out, padding 1500ms ease-out'}}
       >
         {/* Hamburger Menu Button */}
-        <div className="flex items-center justify-center h-16 w-full">
+        <div className="flex items-center justify-center h-14 w-full flex-shrink-0">
           <button
             onClick={() => onExpandedChange(!isExpanded)}
             className="flex items-center justify-center w-12 h-12 rounded-full hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-200"
@@ -76,8 +76,8 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
         </div>
 
         {/* Navigation Items */}
-        <div className="flex-1 py-4 overflow-y-auto overflow-x-hidden">
-          <div className="space-y-1 px-2">
+        <div className="flex-1 py-2 overflow-y-auto overflow-x-hidden">
+          <div className="space-y-0.5 px-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = normalizedActiveTab === item.id;
@@ -86,7 +86,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`group relative flex items-center w-full h-14 rounded-full transition-colors duration-200 ${ 
+                  className={`group relative flex items-center w-full h-12 rounded-full transition-colors duration-200 ${ 
                     isActive
                       ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
                       : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'

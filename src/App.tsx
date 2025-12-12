@@ -534,6 +534,9 @@ const App = () => {
       } else if (hashLower === "#/team") {
         setActiveTab("team");
         setIsStandalonePage(false);
+      } else if (hashLower === "#/profile") {
+        setActiveTab("profile");
+        setIsStandalonePage(false);
       } else if (hashLower === "#/settings") {
         setActiveTab("settings");
         setIsStandalonePage(false);

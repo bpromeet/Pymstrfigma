@@ -213,8 +213,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
           TIER 1 - PRIMARY METRICS (Line 1: 4 boxes in one row)
           T.V, S.T, Avg Tr, A.C
           ALWAYS 4 columns on desktop/laptop screens (including 13 inch)
+          Mobile: 2 columns (2 boxes per line = 2 rows)
           ======================================== */}
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle>Volume</CardTitle>
@@ -282,12 +283,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
 
           {/* ========================================
           TIER 2 - VOLUME BREAKDOWN (Line 2: 2 boxes)
-          VbC (Volume by Currency), VbC (Volume by Chain)
+          VbC (Volume by Coin), VbC (Volume by Chain)
           ======================================== */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle>Volume by Currency</CardTitle>
+                <CardTitle>Volume by Coin</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent className="-mt-4">
@@ -534,7 +535,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                         Amount
                       </TableHead>
                       <TableHead className="w-[90px]">
-                        Currency
+                        Coin
                       </TableHead>
                       <TableHead className="w-[70px]">
                         Chain
@@ -699,7 +700,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                       </div>
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">
-                          Currency:
+                          Coin:
                         </span>
                         <span>{tx.crypto}</span>
                       </div>

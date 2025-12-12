@@ -42,7 +42,7 @@ export default function WalletsPage({
 }: WalletsPageProps) {
   const mainWallet = wallets.find((w) => w.isDefault);
   const [selectedCrypto, setSelectedCrypto] = useState<string>("");
-  const [showingCurrency, setShowingCurrency] = useState(false);
+  const [showingCoin, setShowingCoin] = useState(false);
 
   if (!mainWallet) {
     return (
@@ -71,13 +71,13 @@ export default function WalletsPage({
     );
   }
 
-  const selectCurrency = (crypto: string) => {
+  const selectCoin = (crypto: string) => {
     setSelectedCrypto(crypto);
-    setShowingCurrency(true);
+    setShowingCoin(true);
   };
 
   const backToList = () => {
-    setShowingCurrency(false);
+    setShowingCoin(false);
     setSelectedCrypto("");
   };
 
@@ -92,7 +92,7 @@ export default function WalletsPage({
 
   return (
     <PageLayout>
-      {!showingCurrency && (
+      {!showingCoin && (
         <PageLayout.Header
           icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
           title="Wallet Management"
@@ -102,7 +102,7 @@ export default function WalletsPage({
       <PageLayout.Content>
         <div className="space-y-6">
           {/* Main Action Button - Wallet Address (Below Header) */}
-          {!showingCurrency && (
+          {!showingCoin && (
             <WalletMainActionButton
               address={mainWallet.address}
               showIcon={true}
@@ -110,7 +110,7 @@ export default function WalletsPage({
           )}
 
           {/* Desktop Back Button */}
-          {showingCurrency && (
+          {showingCoin && (
             <div className="hidden md:flex items-center justify-between">
               <Button
                 variant="outline"
@@ -123,7 +123,7 @@ export default function WalletsPage({
             </div>
           )}
 
-          {!showingCurrency && (
+          {!showingCoin && (
             <>
               <div className="space-y-6">
                 <Card className="bg-white dark:bg-[#303030] shadow-sm">
@@ -147,7 +147,7 @@ export default function WalletsPage({
                           <div
                             key={crypto}
                             onClick={() =>
-                              selectCurrency(crypto)
+                              selectCoin(crypto)
                             }
                             className="cursor-pointer shadow-sm hover:shadow-md rounded-2xl p-4 transition-all bg-white dark:bg-[#303030]"
                           >
@@ -176,7 +176,7 @@ export default function WalletsPage({
                               </div>
                               <div className="text-right">
                                 <p className="text-sm text-muted-foreground">
-                                  USD Value
+                                  $Value
                                 </p>
                                 <p className="text-muted-foreground">
                                   ≈ ${balance.toFixed(2)}
@@ -193,10 +193,10 @@ export default function WalletsPage({
                           <TableHeader>
                             <TableRow>
                               <TableHead className="pl-6">
-                                Currency
+                                Coin
                               </TableHead>
                               <TableHead>Balance</TableHead>
-                              <TableHead>USD Value</TableHead>
+                              <TableHead>$Value</TableHead>
                               <TableHead className="text-right pr-6">
                                 Actions
                               </TableHead>
@@ -209,7 +209,7 @@ export default function WalletsPage({
                               <TableRow
                                 key={crypto}
                                 onClick={() =>
-                                  selectCurrency(crypto)
+                                  selectCoin(crypto)
                                 }
                                 className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors duration-200"
                               >
@@ -237,8 +237,7 @@ export default function WalletsPage({
                                 </TableCell>
                                 <TableCell>
                                   <p className="text-muted-foreground">
-                                    ≈ ${balance.toFixed(2)}{" "}
-                                    USD
+                                    ≈ ${balance.toFixed(2)}
                                   </p>
                                 </TableCell>
                                 <TableCell className="text-right pr-6">
@@ -262,7 +261,7 @@ export default function WalletsPage({
           )}
 
           {/* Desktop: Inline Card - Hidden on Mobile */}
-          {showingCurrency && (
+          {showingCoin && (
             <div className="hidden md:block">
               <ManageCoin
                 selectedCrypto={selectedCrypto}
@@ -284,7 +283,7 @@ export default function WalletsPage({
       </PageLayout.Content>
 
       {/* Mobile: Full Screen View for Manage Crypto */}
-      {showingCurrency && (
+      {showingCoin && (
         <ManageCoin
           selectedCrypto={selectedCrypto}
           totalBalance={

@@ -436,7 +436,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
           {selectedKey && (
             <div className="space-y-6">
               <Tabs value={apiKeyDetailsTab} onValueChange={setApiKeyDetailsTab}>
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid grid-cols-3">
                   <TabsTrigger value="info">Info</TabsTrigger>
                   <TabsTrigger value="security">Security</TabsTrigger>
                   <TabsTrigger value="activity">Activity</TabsTrigger>

@@ -188,12 +188,20 @@ export const TransactionsPage: React.FC = () => {
         subtitle="View and monitor all your payment transactions"
       />
       <PageLayout.Content>
-        {/* Filters and Search */}
-        <Card className="rounded-2xl p-6">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
+        {/* ========================================
+        PATTERN A: STICKY FILTER BAR (Above Content Card)
+        
+        MD3 Specifications:
+        - Position: Outside and above content card
+        - Sticky positioning for scroll persistence
+        - Consistent spacing (gap-3)
+        - All filters in one cohesive bar
+        ======================================== */}
+        <div className="sticky top-0 bg-white dark:bg-[#0a0a0a] py-4 z-10">
+          <div className="flex flex-col sm:flex-row gap-3">
             {/* Chain Filter */}
             <Select value={chainFilter} onValueChange={setChainFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full sm:w-[150px]">
                 <SelectValue placeholder="All Chains">
                   <div className="flex items-center gap-2">
                     {chainFilter !== "all" && (
@@ -226,7 +234,7 @@ export const TransactionsPage: React.FC = () => {
 
             {/* Currency Filter */}
             <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-              <SelectTrigger className="w-full md:w-[180px]">
+              <SelectTrigger className="w-full sm:w-[150px]">
                 <SelectValue placeholder="All Coins">
                   <div className="flex items-center gap-2">
                     {currencyFilter !== "all" && (
@@ -270,13 +278,16 @@ export const TransactionsPage: React.FC = () => {
           </div>
 
           {/* Results Count */}
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground mt-3">
             Showing {filteredTransactions.length} of {transactions.length} transactions
           </p>
-        </Card>
+        </div>
 
+        {/* ========================================
+        CONTENT AREA (Pure Data Display - No Controls)
+        ======================================== */}
         {/* Transaction List */}
-        <div className="space-y-4 mt-6">
+        <div className="space-y-4">
           {filteredTransactions.length === 0 ? (
             <Card className="rounded-2xl p-12">
               <div className="text-center space-y-3">

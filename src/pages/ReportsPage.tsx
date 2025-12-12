@@ -60,66 +60,157 @@ export default function ReportsPage({
         subtitle="View detailed analytics and insights about your payment activity"
       />
       <PageLayout.Content>
-        {/* Search and Date Filters */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
-          {/* Search Field */}
-          <SearchField
-            value={reportsSearchQuery}
-            onChange={setReportsSearchQuery}
-            placeholder="Search transactions..."
-            className="flex-1"
-          />
-          {/* Date From Field */}
-          <DateField
-            value={reportsDateFrom}
-            onChange={setReportsDateFrom}
-            placeholder="From date"
-            className="w-full md:w-48"
-          />
-          {/* Date To Field */}
-          <DateField
-            value={reportsDateTo}
-            onChange={setReportsDateTo}
-            placeholder="To date"
-            className="w-full md:w-48"
-          />
-          {/* Filter Button - Outlined when dates not selected, Filled when both dates selected */}
-          <Button
-            onClick={() => {
-              if (reportsDateFrom && reportsDateTo) {
-                toast.success(
-                  `Filtering transactions${reportsSearchQuery ? ` matching "${reportsSearchQuery}"` : ''}${reportsDateFrom ? ` from ${new Date(reportsDateFrom).toLocaleDateString()}` : ''}${reportsDateTo ? ` to ${new Date(reportsDateTo).toLocaleDateString()}` : ''}`
-                );
-              }
-            }}
-            disabled={!reportsDateFrom || !reportsDateTo}
-            className={`min-h-12 px-8 py-3 rounded-full transition-all duration-200 w-full md:w-auto ${
-              reportsDateFrom && reportsDateTo
-                ? 'bg-[#1E88E5] text-white hover:bg-[#1565C0] cursor-pointer'
-                : 'bg-transparent border border-[#43586C] text-[#798A9B] cursor-not-allowed opacity-60'
-            }`}
-          >
-            <BarChart3 className="w-[18px] h-[18px] mr-2" />
-            Filter
-          </Button>
+        {/* ========================================
+        PATTERN A: STICKY FILTER BAR (Above Content Card)
+        
+        MD3 Specifications:
+        - Position: Outside and above content card
+        - Sticky positioning for scroll persistence
+        - Consistent spacing (gap-3)
+        - All filters in one cohesive bar
+        ======================================== */}
+        <div className="sticky top-0 bg-white dark:bg-[#0a0a0a] py-4 z-10">
+          <div className="flex flex-col sm:flex-row gap-3 mb-3">
+            {/* Chain Filter */}
+            <Select value={chainFilter} onValueChange={setChainFilter}>
+              <SelectTrigger className="w-full sm:w-[150px]">
+                <SelectValue placeholder="All Chains">
+                  <div className="flex items-center gap-2">
+                    {chainFilter !== "all" && (
+                      <ChainIcon chain={chainFilter} size={16} />
+                    )}
+                    <span>
+                      {chainFilter === "all"
+                        ? "All Chains"
+                        : chainFilter.charAt(0).toUpperCase() + chainFilter.slice(1)}
+                    </span>
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center gap-2">
+                    <span>All Chains</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="ethereum">
+                  <div className="flex items-center gap-2">
+                    <ChainIcon chain="ethereum" size={16} />
+                    <span>Ethereum</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="polygon">
+                  <div className="flex items-center gap-2">
+                    <ChainIcon chain="polygon" size={16} />
+                    <span>Polygon</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="arbitrum">
+                  <div className="flex items-center gap-2">
+                    <ChainIcon chain="arbitrum" size={16} />
+                    <span>Arbitrum</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="optimism">
+                  <div className="flex items-center gap-2">
+                    <ChainIcon chain="optimism" size={16} />
+                    <span>Optimism</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="base">
+                  <div className="flex items-center gap-2">
+                    <ChainIcon chain="base" size={16} />
+                    <span>Base</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-          {/* Clear Filters Button - Shows when any filter is active */}
-          {(reportsSearchQuery || reportsDateFrom || reportsDateTo || chainFilter !== "all" || currencyFilter !== "all") && (
-            <Button
-              onClick={() => {
-                setReportsSearchQuery('');
-                setReportsDateFrom('');
-                setReportsDateTo('');
-                setChainFilter('all');
-                setCurrencyFilter('all');
-                toast.success('Filters cleared');
-              }}
-              className="min-h-12 px-6 py-3 bg-transparent border border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white rounded-full transition-all duration-200 w-full md:w-auto"
-            >
-              <X className="w-[18px] h-[18px] mr-2" />
-              Clear Filters
-            </Button>
-          )}
+            {/* Coin Filter */}
+            <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
+              <SelectTrigger className="w-full sm:w-[150px]">
+                <SelectValue placeholder="All Coins">
+                  <div className="flex items-center gap-2">
+                    {currencyFilter !== "all" && (
+                      <CryptoIcon symbol={currencyFilter} size={16} />
+                    )}
+                    <span>
+                      {currencyFilter === "all"
+                        ? "All Coins"
+                        : currencyFilter}
+                    </span>
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center gap-2">
+                    <span>All Coins</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="USDC">
+                  <div className="flex items-center gap-2">
+                    <CryptoIcon symbol="USDC" size={16} />
+                    <span>USDC</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="USDT">
+                  <div className="flex items-center gap-2">
+                    <CryptoIcon symbol="USDT" size={16} />
+                    <span>USDT</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="EURC">
+                  <div className="flex items-center gap-2">
+                    <CryptoIcon symbol="EURC" size={16} />
+                    <span>EURC</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Search Field */}
+            <SearchField
+              value={reportsSearchQuery}
+              onChange={setReportsSearchQuery}
+              placeholder="Search transactions..."
+              className="flex-1"
+            />
+
+            {/* Date From Field */}
+            <DateField
+              value={reportsDateFrom}
+              onChange={setReportsDateFrom}
+              placeholder="From date"
+              className="w-full sm:w-40"
+            />
+
+            {/* Date To Field */}
+            <DateField
+              value={reportsDateTo}
+              onChange={setReportsDateTo}
+              placeholder="To date"
+              className="w-full sm:w-40"
+            />
+
+            {/* Clear Filters Button - Shows when any filter is active */}
+            {(reportsSearchQuery || reportsDateFrom || reportsDateTo || chainFilter !== "all" || currencyFilter !== "all") && (
+              <Button
+                onClick={() => {
+                  setReportsSearchQuery('');
+                  setReportsDateFrom('');
+                  setReportsDateTo('');
+                  setChainFilter('all');
+                  setCurrencyFilter('all');
+                  toast.success('Filters cleared');
+                }}
+                className="min-h-12 px-6 py-3 bg-transparent border border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white rounded-full transition-all duration-200 w-full sm:w-auto"
+              >
+                <X className="w-[18px] h-[18px] mr-2" />
+                Clear
+              </Button>
+            )}
+          </div>
         </div>
 
         <div className="space-y-6">
@@ -127,9 +218,7 @@ export default function ReportsPage({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>
-                  Payment Volume by Currency
-                </CardTitle>
+                <CardTitle>Volume by Coin</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -188,7 +277,10 @@ export default function ReportsPage({
                       key={network.chain}
                       className="flex items-center justify-between"
                     >
-                      <span className="text-gray-900 dark:text-[#F6F7F9]">{network.chain}</span>
+                      <div className="flex items-center space-x-3">
+                        <ChainIcon chain={network.chain.toLowerCase()} size={20} />
+                        <span className="text-gray-900 dark:text-[#F6F7F9]">{network.chain}</span>
+                      </div>
                       <div className="flex items-center gap-4">
                         <span className="text-[#798A9B]">
                           {network.txCount} txs
@@ -204,104 +296,10 @@ export default function ReportsPage({
             </Card>
           </div>
 
-          {/* Chain and Currency Filters for Transaction Table */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Select value={chainFilter} onValueChange={setChainFilter}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="All Chains">
-                  <div className="flex items-center gap-2">
-                    {chainFilter !== "all" && (
-                      <ChainIcon chain={chainFilter} size={16} />
-                    )}
-                    <span>
-                      {chainFilter === "all"
-                        ? "All Chains"
-                        : chainFilter.charAt(0).toUpperCase() + chainFilter.slice(1)}
-                    </span>
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  <div className="flex items-center gap-2">
-                    <span>All Chains</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="ethereum">
-                  <div className="flex items-center gap-2">
-                    <ChainIcon chain="ethereum" size={16} />
-                    <span>Ethereum</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="polygon">
-                  <div className="flex items-center gap-2">
-                    <ChainIcon chain="polygon" size={16} />
-                    <span>Polygon</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="arbitrum">
-                  <div className="flex items-center gap-2">
-                    <ChainIcon chain="arbitrum" size={16} />
-                    <span>Arbitrum</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="optimism">
-                  <div className="flex items-center gap-2">
-                    <ChainIcon chain="optimism" size={16} />
-                    <span>Optimism</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="base">
-                  <div className="flex items-center gap-2">
-                    <ChainIcon chain="base" size={16} />
-                    <span>Base</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-              <SelectTrigger className="w-full sm:w-48">
-                <SelectValue placeholder="All Currencies">
-                  <div className="flex items-center gap-2">
-                    {currencyFilter !== "all" && (
-                      <CryptoIcon symbol={currencyFilter} size={16} />
-                    )}
-                    <span>
-                      {currencyFilter === "all" ? "All Currencies" : currencyFilter}
-                    </span>
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  <div className="flex items-center gap-2">
-                    <span>All Currencies</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="USDC">
-                  <div className="flex items-center gap-2">
-                    <CryptoIcon symbol="USDC" size={16} />
-                    <span>USDC</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="USDT">
-                  <div className="flex items-center gap-2">
-                    <CryptoIcon symbol="USDT" size={16} />
-                    <span>USDT</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="EURC">
-                  <div className="flex items-center gap-2">
-                    <CryptoIcon symbol="EURC" size={16} />
-                    <span>EURC</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Transaction table - always show, positioned based on filters */}
+          {/* ========================================
+          TRANSACTION TABLE (Pure Data Display)
+          ======================================== */}
+          {/* Transaction table - filtered by top sticky filter bar */}
           <ReportsTransactionTable
             transactions={recentTransactions}
             searchQuery={reportsSearchQuery}
