@@ -61,7 +61,7 @@ const DialogContent = React.forwardRef<
         aria-describedby={undefined}
         aria-labelledby={undefined}
         className={cn(
-          "bg-white dark:bg-[#303030] fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-3xl p-6 shadow-xl",
+          "bg-white dark:bg-[#303030] fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-3xl p-6 shadow-xl overflow-x-hidden",
           className,
         )}
         {...props}

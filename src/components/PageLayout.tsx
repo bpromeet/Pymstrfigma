@@ -1,4 +1,5 @@
 import React from 'react';
+import { ShieldCheck } from 'lucide-react';
 
 /**
  * PageLayout - Shared layout wrapper component
@@ -9,6 +10,7 @@ import React from 'react';
  * - Consistent padding: px-6 lg:px-8
  * - Consistent spacing: py-4 md:py-6
  * - Theme transitions: 200ms (MD3 standard easing)
+ * - Desktop footer: Web3 trust indicator (hidden on mobile)
  * 
  * Usage:
  * <PageLayout>
@@ -54,6 +56,16 @@ export const PageLayout: React.FC<PageLayoutProps> & {
   return (
     <div className={`min-h-screen bg-white dark:bg-[#0A0A0A] ${className}`}>
       {children}
+      
+      {/* Desktop-only Footer - Web3 Trust Indicator */}
+      <footer className="hidden md:block bg-white dark:bg-[#0A0A0A] py-6">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-center gap-2 text-sm text-[#798A9B]">
+            <span>Web3 Non-Custodial & BulletProof by PYMSTR®</span>
+            <ShieldCheck className="w-5 h-5 text-green-600" />
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
