@@ -88,7 +88,7 @@ export default function TeamManagementPage({
       <PageLayout.Header
         icon={<UsersRound className="w-6 h-6 text-[#FF5914]" />}
         title="Team Management"
-        subtitle="Invite and manage team members with role-based permissions"
+        subtitle="Team Members & Permissions"
       />
       <PageLayout.Content>
         <div className="space-y-6">

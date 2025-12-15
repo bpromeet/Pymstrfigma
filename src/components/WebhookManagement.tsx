@@ -82,8 +82,6 @@ const WEBHOOK_EVENTS = [
   { value: "payment.failed", label: "Payment Failed" },
   { value: "payment.pending", label: "Payment Pending" },
   { value: "payment.expired", label: "Payment Expired" },
-  { value: "refund.completed", label: "Refund Completed" },
-  { value: "refund.failed", label: "Refund Failed" },
 ];
 
 // Mock API keys - in production, these would be passed as props
@@ -342,7 +340,7 @@ export default function WebhooksPage({ onWebhookCreated }: WebhooksPageProps = {
       <PageLayout.Header
         icon={<Webhook className="w-6 h-6 text-[#FF5914]" />}
         title="Webhook Management"
-        subtitle="Configure webhooks to receive real-time payment notifications"
+        subtitle="Real-Time Payment Notifications"
       />
       <PageLayout.Content>
         <div className="space-y-6">
@@ -457,13 +455,9 @@ export default function WebhooksPage({ onWebhookCreated }: WebhooksPageProps = {
           </DialogContent>
       </Dialog>
 
-      {/* Webhook Endpoints */}
+      {/* Webhook Endpoints List */}
       <Card>
-        <CardHeader>
-          <CardTitle>Webhook Endpoints</CardTitle>
-          <CardDescription>Manage your webhook endpoints and secrets</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           <div className="space-y-4">
             {webhooks.map((webhook) => (
               <div

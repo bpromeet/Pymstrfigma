@@ -15,15 +15,13 @@ interface NetworkSelectorProps {
 }
 
 /**
- * NetworkSelector - Reusable MD3 pill button grid for blockchain network selection
+ * NetworkSelector - Reusable MD3 horizontal scroll selector for blockchain network selection
  * 
  * Features:
- * - MD3-compliant pill-shaped buttons (rounded-full)
- * - Grid layout (3 columns on mobile, responsive)
- * - Active state: Blue border + light blue background
- * - Hover state: Subtle grey background
- * - 48px minimum touch targets (MD3 requirement)
- * - Consistent across all network selection instances
+ * - MD3-compliant circular icon buttons with horizontal scroll
+ * - Active state: Blue border (#1E88E5) + light blue background
+ * - Hover state: Border color change
+ * - 64px circular touch targets (exceeds 48px MD3 requirement)
  * 
  * Usage:
  * ```tsx
@@ -41,25 +39,27 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`grid grid-cols-3 gap-2 ${className}`}>
-      {networks.map((network) => (
-        <button
-          key={network.id}
-          className={`flex items-center justify-center gap-2 px-3 py-2 min-h-12 border rounded-full cursor-pointer transition-all duration-200 ${
-            selectedNetwork === network.id
-              ? "border-[#757575] bg-[#757575] text-white dark:border-[#757575] dark:bg-[#757575]"
-              : "border-[#D1D9E1] bg-transparent hover:bg-black/[0.04] dark:hover:bg-white/[0.04] dark:border-[#43586C]"
-          }`}
-          onClick={() => onNetworkChange(network.id)}
-          aria-label={`Select ${network.name} network`}
-          aria-pressed={selectedNetwork === network.id}
-        >
-          <div className="w-5 h-5 flex items-center justify-center shrink-0">
-            {network.icon}
-          </div>
-          <span className="text-sm truncate">{network.name}</span>
-        </button>
-      ))}
+    <div className={className}>
+      {/* Horizontal scrollable network icons */}
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+        {networks.map((network) => (
+          <button
+            key={network.id}
+            className={`flex-shrink-0 w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+              selectedNetwork === network.id
+                ? "border-[#1E88E5] bg-[#E3F2FD] dark:bg-[#1565C0]/20"
+                : "border-[#D1D9E1] dark:border-[#43586C] bg-white dark:bg-[#2E3C49] hover:border-[#757575]"
+            }`}
+            onClick={() => onNetworkChange(network.id)}
+            aria-label={`Select ${network.name} network`}
+            aria-pressed={selectedNetwork === network.id}
+          >
+            <div className="w-10 h-10 flex items-center justify-center">
+              {network.icon}
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

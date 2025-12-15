@@ -25,9 +25,10 @@ interface PaymentLinkFormProps {
     baseCurrency: string; // Add baseCurrency to interface
     expiryDate?: string;
   }) => void;
+  onCancel?: () => void; // Add optional cancel callback
 }
 
-const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) => {
+const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated, onCancel }) => {
   const [formData, setFormData] = useState({
     price: '',
     title: '',
@@ -174,80 +175,85 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
 
   return (
     <div className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="price">Price</Label>
-          <div className="flex rounded overflow-hidden border border-[#43586C] hover:border-[#757575] focus-within:border-2 focus-within:border-[#1E88E5] transition-all duration-200">
-            <Input 
-              id="price" 
-              placeholder="100.00" 
-              type="number" 
-              value={formData.price}
-              onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
-              className="border-0 rounded-none flex-1 h-12 px-4 bg-transparent text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              style={{ MozAppearance: 'textfield' }}
-            />
-            <Popover open={openBaseCurrency} onOpenChange={setOpenBaseCurrency}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="ghost"
-                  role="combobox"
-                  aria-expanded={openBaseCurrency}
-                  className="border-0 rounded-none w-20 border-l border-l-[#43586C] h-auto px-2 hover:bg-transparent text-[#1C1B1F] dark:text-[#F6F7F9]"
-                >
-                  {formData.baseCurrency
-                    ? baseCurrencies.find((currency) => currency.value === formData.baseCurrency)?.label
-                    : "USD"}
-                  <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0 rounded-xl bg-white dark:bg-[#262626] shadow-md">
-                <Command className="rounded-xl">
-                  <CommandInput placeholder="Search currency..." className="rounded h-12 px-4" />
-                  <CommandList>
-                    <CommandEmpty>No currency found.</CommandEmpty>
-                    <CommandGroup>
-                      {baseCurrencies.map((currency) => (
-                        <CommandItem
-                          key={currency.value}
-                          value={currency.value}
-                          onSelect={(currentValue) => {
-                            setFormData(prev => ({ ...prev, baseCurrency: currentValue.toUpperCase() }));
-                            setOpenBaseCurrency(false);
-                          }}
-                          className="h-12 px-4 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] cursor-pointer"
-                        >
-                          <Check
+        {/* Price and Title on same line */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Price field */}
+          <div className="space-y-2">
+            <Label htmlFor="price">Price</Label>
+            <div className="flex rounded overflow-hidden border border-[#43586C] hover:border-[#757575] focus-within:border-2 focus-within:border-[#1E88E5] transition-all duration-200">
+              <Input 
+                id="price" 
+                placeholder="100.00" 
+                type="number" 
+                value={formData.price}
+                onChange={(e) => setFormData(prev => ({ ...prev, price: e.target.value }))}
+                className="border-0 rounded-none flex-1 h-12 px-4 bg-transparent text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] focus-visible:ring-0 focus-visible:border-0 focus-visible:outline-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                style={{ MozAppearance: 'textfield' }}
+              />
+              <Popover open={openBaseCurrency} onOpenChange={setOpenBaseCurrency}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    role="combobox"
+                    aria-expanded={openBaseCurrency}
+                    className="border-0 rounded-none w-20 border-l border-l-[#43586C] h-auto px-2 hover:bg-transparent text-[#1C1B1F] dark:text-[#F6F7F9]"
+                  >
+                    {formData.baseCurrency
+                      ? baseCurrencies.find((currency) => currency.value === formData.baseCurrency)?.label
+                      : "USD"}
+                    <ChevronsUpDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0 rounded-xl bg-white dark:bg-[#262626] shadow-md">
+                  <Command className="rounded-xl">
+                    <CommandInput placeholder="Search currency..." className="rounded h-12 px-4" />
+                    <CommandList>
+                      <CommandEmpty>No currency found.</CommandEmpty>
+                      <CommandGroup>
+                        {baseCurrencies.map((currency) => (
+                          <CommandItem
+                            key={currency.value}
+                            value={currency.value}
+                            onSelect={(currentValue) => {
+                              setFormData(prev => ({ ...prev, baseCurrency: currentValue.toUpperCase() }));
+                              setOpenBaseCurrency(false);
+                            }}
                             className={cn(
-                              "mr-2 h-4 w-4",
-                              formData.baseCurrency === currency.value ? "opacity-100" : "opacity-0"
+                              "flex items-center gap-2 px-4 py-3 cursor-pointer rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] transition-colors duration-200",
+                              formData.baseCurrency === currency.value && "bg-black/[0.08] dark:bg-white/[0.08]"
                             )}
-                          />
-                          {currency.label}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                          >
+                            {currency.label}
+                            {formData.baseCurrency === currency.value && (
+                              <Check className="ml-auto h-4 w-4 text-[#1E88E5]" />
+                            )}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="title">Title</Label>
-          <Input 
-            id="title" 
-            placeholder="e.g., Consulting Services, Product Purchase" 
-            value={formData.title}
-            onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                generateButtonRef.current?.focus();
-              }
-            }}
-            className="w-full h-12 px-4 py-3 rounded bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
-          />
+          {/* Title field */}
+          <div className="space-y-2">
+            <Label htmlFor="title">Title</Label>
+            <Input 
+              id="title" 
+              placeholder="e.g., Consulting Services, Product Purchase" 
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  generateButtonRef.current?.focus();
+                }
+              }}
+              className="w-full h-12 px-4 py-3 rounded bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
+            />
+          </div>
         </div>
 
 
@@ -328,14 +334,25 @@ const PaymentLinkForm: React.FC<PaymentLinkFormProps> = ({ onLinkGenerated }) =>
           )}
         </div>
 
-        <Button 
-          className="w-full min-h-12 px-8 py-3 bg-[#1E88E5] text-white hover:bg-[#1565C0] hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 rounded-full" 
-          onClick={handleSubmit}
-          ref={generateButtonRef}
-        >
-          <Link className="w-[18px] h-[18px] mr-2" />
-          Generate Payment Link
-        </Button>
+        <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-4">
+          {onCancel && (
+            <Button 
+              variant="outline"
+              onClick={onCancel}
+              className="w-full sm:w-auto min-h-12 px-6 py-2.5 bg-transparent border border-[#1E88E5] text-[#1E88E5] hover:bg-[#E3F2FD] active:bg-[#E3F2FD]/80 focus:ring-2 focus:ring-[#1E88E5] transition-all duration-200 rounded-full"
+            >
+              Cancel
+            </Button>
+          )}
+          <Button 
+            className="w-full sm:w-auto min-h-12 px-8 py-3 bg-[#1E88E5] text-white hover:bg-[#1565C0] hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 rounded-full" 
+            onClick={handleSubmit}
+            ref={generateButtonRef}
+          >
+            <Link className="w-[18px] h-[18px] mr-2" />
+            Generate Payment Link
+          </Button>
+        </div>
     </div>
   );
 };

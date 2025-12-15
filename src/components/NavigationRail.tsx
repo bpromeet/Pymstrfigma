@@ -129,17 +129,14 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
           <div className="p-2">
             <button
               onClick={onThemeToggle}
-              className="flex items-center w-full h-12 rounded-full text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-colors duration-200"
+              className="flex items-center justify-center w-12 h-12 rounded-full text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04] transition-all duration-200"
               aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
             >
-              {/* Icon - Perfectly centered in collapsed width */}
-              <div className="w-16 flex items-center justify-center flex-shrink-0">
-                {theme === 'light' ? (
-                  <Moon className="w-6 h-6" />
-                ) : (
-                  <Sun className="w-6 h-6" />
-                )}
-              </div>
+              {theme === 'light' ? (
+                <Moon className="w-6 h-6" />
+              ) : (
+                <Sun className="w-6 h-6" />
+              )}
             </button>
           </div>
         )}

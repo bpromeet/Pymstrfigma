@@ -65,7 +65,7 @@ const DocumentsPage: React.FC<DocumentsPageProps> = ({ onNavigateToDoc }) => {
       <PageLayout.Header
         icon={<BookOpen className="w-6 h-6 text-[#FF5914]" />}
         title="Documentation"
-        subtitle="Complete guides and API documentation for PYMSTR integration"
+        subtitle="Integration Guides & API Docs"
       />
       
       <PageLayout.Content>

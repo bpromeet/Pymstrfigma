@@ -153,7 +153,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
       <PageLayout.Header
         icon={<Key className="w-6 h-6 text-[#FF5914]" />}
         title="API Configuration"
-        subtitle="Manage API keys and integration settings"
+        subtitle="API Keys & Integration"
       />
       <PageLayout.Content>
         <div className="space-y-6">
@@ -232,36 +232,39 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
           </DialogHeader>
 
           <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="key-name">Key Name</Label>
-              <Input
-                id="key-name"
-                placeholder="e.g., Production - Main Website"
-                value={newApiKey.name}
-                onChange={(e) => setNewApiKey(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full h-12 px-4 py-3 rounded bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
-              />
-            </div>
+            {/* Key Name and Environment - 2 Column Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="key-name">Key Name</Label>
+                <Input
+                  id="key-name"
+                  placeholder="e.g., Production - Main Website"
+                  value={newApiKey.name}
+                  onChange={(e) => setNewApiKey(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full h-12 px-4 py-3 rounded bg-transparent border border-[#43586C] text-[#1C1B1F] dark:text-[#F6F7F9] placeholder:text-[#798A9B] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] focus:outline-none transition-all duration-200"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="environment">Environment</Label>
-              <Select 
-                value={newApiKey.environment} 
-                onValueChange={(value: 'test' | 'live') => setNewApiKey(prev => ({ ...prev, environment: value }))}
-              >
-                <SelectTrigger id="environment" className="w-full h-12 rounded bg-transparent border border-[#43586C] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl bg-white dark:bg-[#262626] shadow-md">
-                  <SelectItem value="test" className="h-12 px-4 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] cursor-pointer">Test</SelectItem>
-                  <SelectItem value="live" className="h-12 px-4 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] cursor-pointer">Live (Production)</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="space-y-2">
+                <Label htmlFor="environment">Environment</Label>
+                <Select 
+                  value={newApiKey.environment} 
+                  onValueChange={(value: 'test' | 'live') => setNewApiKey(prev => ({ ...prev, environment: value }))}
+                >
+                  <SelectTrigger id="environment" className="w-full h-12 rounded bg-transparent border border-[#43586C] hover:border-[#757575] focus:border-2 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl bg-white dark:bg-[#262626] shadow-md">
+                    <SelectItem value="test" className="h-12 px-4 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] cursor-pointer">Test</SelectItem>
+                    <SelectItem value="live" className="h-12 px-4 rounded-lg hover:bg-black/[0.08] dark:hover:bg-white/[0.08] cursor-pointer">Live (Production)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label>Permissions</Label>
-              <div className="space-y-3 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-2xl p-4 border border-[#43586C]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-2xl p-4 border border-[#43586C]">
                 {[
                   { id: 'read_payments', label: 'Read payments' },
                   { id: 'create_payment_links', label: 'Create payment links' },
@@ -279,9 +282,9 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
                             : prev.permissions.filter(p => p !== perm.id)
                         }));
                       }}
-                      className="data-[state=checked]:bg-[#1E88E5] data-[state=unchecked]:bg-[#43586C]"
+                      className="data-[state=checked]:bg-[#1E88E5] data-[state=unchecked]:bg-[#43586C] flex-shrink-0"
                     />
-                    <Label htmlFor={perm.id} className="cursor-pointer">{perm.label}</Label>
+                    <Label htmlFor={perm.id} className="cursor-pointer text-sm">{perm.label}</Label>
                   </div>
                 ))}
               </div>
@@ -299,14 +302,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
               <p className="text-sm text-[#798A9B]">Comma-separated IP addresses</p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <Button 
-                onClick={handleCreateApiKey}
-                className="w-full sm:w-auto min-h-12 px-8 py-3 bg-[#1E88E5] text-white hover:bg-[#1565C0] hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 rounded-full"
-              >
-                <Key className="w-[18px] h-[18px] mr-2" />
-                Generate API Key
-              </Button>
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-4">
               <Button 
                 variant="outline" 
                 onClick={() => {
@@ -323,6 +319,13 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
               >
                 Cancel
               </Button>
+              <Button 
+                onClick={handleCreateApiKey}
+                className="w-full sm:w-auto min-h-12 px-8 py-3 bg-[#1E88E5] text-white hover:bg-[#1565C0] hover:shadow-sm active:scale-[0.98] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 rounded-full"
+              >
+                <Key className="w-[18px] h-[18px] mr-2" />
+                Generate API Key
+              </Button>
             </div>
           </div>
         </DialogContent>
@@ -330,11 +333,7 @@ const APIKeyManagement: React.FC<APIKeyManagementProps> = ({ apiKeys, onCreateKe
 
       {/* API Keys List */}
       <Card>
-        <CardHeader>
-          <CardTitle>Your API Keys</CardTitle>
-          <CardDescription>Manage and monitor your API keys</CardDescription>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="p-6">
           {apiKeys.length === 0 ? (
             <div className="text-center py-12">
               <Key className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />

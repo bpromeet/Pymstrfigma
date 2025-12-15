@@ -185,7 +185,7 @@ export const TransactionsPage: React.FC = () => {
       <PageLayout.Header
         icon={<List className="w-6 h-6 text-[#FF5914]" />}
         title="Transactions"
-        subtitle="View and monitor all your payment transactions"
+        subtitle="Payment History & Activity"
       />
       <PageLayout.Content>
         {/* ========================================

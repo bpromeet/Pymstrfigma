@@ -139,7 +139,7 @@ export default function PaymentLinksPage({
       <PageLayout.Header
         icon={<LinkIcon className="w-6 h-6 text-[#FF5914]" />}
         title="Payment Links"
-        subtitle="Create and manage single-use payment links for transactions"
+        subtitle="Single-Use Payment Links"
       />
       <PageLayout.Content>
         <div className="space-y-6">
@@ -176,7 +176,10 @@ export default function PaymentLinksPage({
                   Secure payment link for your customers
                 </DialogDescription>
               </DialogHeader>
-              <PaymentLinkForm onLinkGenerated={onLinkGenerated} />
+              <PaymentLinkForm 
+                onLinkGenerated={onLinkGenerated}
+                onCancel={() => setShowPaymentLinkDialog(false)}
+              />
             </DialogContent>
           </Dialog>
 

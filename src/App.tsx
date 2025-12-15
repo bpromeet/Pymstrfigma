@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, startTransition } from "react";
 import QRCode from "qrcode";
 import { QRCodeCanvas } from "qrcode.react";
+import { truncateAddress } from "./utils/address";
 import {
   Card,
   CardContent,
@@ -1312,7 +1313,7 @@ const App = () => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card
         className="relative overflow-hidden flex flex-col rounded-2xl"
-        style={{ width: '450px', height: '555px' }}
+        style={{ width: '450px', height: '620px' }}
       >
         <CardHeader
           className={`absolute top-0 left-0 right-0 z-10 text-center p-6 pb-0 pointer-events-none ${showQRFunding || showOnRamper ? "hidden" : ""}`}
@@ -1552,7 +1553,7 @@ const App = () => {
 
               {/* Chain Selection */}
               <div className="space-y-1.5">
-                <Label className="text-sm">Network</Label>
+                <Label className="text-sm">Select Chain</Label>
                 <NetworkSelector
                   networks={supportedChains.filter((chain) => {
                     // First check merchant config - only show chains enabled for selected token
@@ -1596,7 +1597,7 @@ const App = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm">Currency</Label>
+                <Label className="text-sm">Select Coin</Label>
                 <CryptoSelector
                   options={supportedCryptos
                     .filter((crypto) => {
@@ -1845,7 +1846,7 @@ const App = () => {
 
               {/* Chain Selection */}
               <div className="space-y-1.5">
-                <Label className="text-sm">Network</Label>
+                <Label className="text-sm">Select Chain</Label>
                 <NetworkSelector
                   networks={supportedChains.filter((chain) => {
                     // First check merchant config - only show chains enabled for selected token
@@ -1889,7 +1890,7 @@ const App = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm">Currency</Label>
+                <Label className="text-sm">Select Coin</Label>
                 <CryptoSelector
                   options={supportedCryptos
                     .filter((crypto) => {
@@ -2183,8 +2184,6 @@ const App = () => {
                 </p>
               </div>
 
-              <Separator className="bg-[#D1D9E1]" />
-
               {paymentStatus === "pending" && (
                 <div className="space-y-6">
                   <div className="bg-[#E3F2FD] dark:bg-[#1E88E5]/20 p-6 rounded-2xl border border-[#1E88E5]/30">
@@ -2285,13 +2284,15 @@ const App = () => {
 
         {/* Secure Footer - Always visible at bottom */}
         <div className="p-6 border-t border-[#D1D9E1] flex-shrink-0">
-          <div className="flex items-center justify-center gap-3">
-            <Shield className="w-5 h-5 text-[#7DD069] fill-[#7DD069]" />
-            <span className="whitespace-nowrap text-sm">
-              Non-custodial. Powered by Web3Auth
-            </span>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-3">
+              <Shield className="w-5 h-5 text-[#7DD069] fill-[#7DD069]" />
+              <span className="whitespace-nowrap text-sm">
+                Non-custodial. Powered by Web3Auth
+              </span>
+            </div>
             {/* Development: Screen Number Indicator */}
-            <span className="ml-2 px-2 py-0.5 rounded-full bg-[#1E88E5] text-white text-xs font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-[#1E88E5] text-white text-xs font-medium">
               {currentScreen}/9
             </span>
           </div>
@@ -3070,10 +3071,10 @@ const App = () => {
                       {/* User Info Header */}
                       <div className="px-4 py-3 border-b border-[#43586C]">
                         <p className="font-medium text-gray-900 dark:text-white">
-                          {userContext === 'enduser' ? 'Alex Johnson' : 'John Doe'}
+                          {walletAddress ? truncateAddress(walletAddress) : 'Connected User'}
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {userContext === 'enduser' ? 'alex@example.com' : 'john@pymstr.com'}
+                          {userContext === 'enduser' ? 'End User Account' : 'Merchant Account'}
                         </p>
                       </div>
                       

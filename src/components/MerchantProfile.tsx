@@ -151,12 +151,8 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
     <PageLayout>
       <PageLayout.Header
         icon={<User className="w-6 h-6 text-[#FF5914]" />}
-        title="Account"
-        subtitle={
-          isEditing 
-            ? "Update your business information, contact details, and preferences"
-            : "View your business information, contact details, and preferences"
-        }
+        title="Profile"
+        subtitle="Account Contact Settings"
       />
 
       <PageLayout.Content>

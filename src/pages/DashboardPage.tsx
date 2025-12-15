@@ -118,7 +118,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
       <PageLayout.Header
         icon={<Activity className="w-6 h-6 text-[#FF5914]" />}
         title="Dashboard"
-        subtitle="Overview of your payment processing and analytics"
+        subtitle="Payment Processing Overview"
       />
       <PageLayout.Content>
         <div className="space-y-6">
@@ -509,9 +509,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
           <Card>
             <CardHeader>
               <CardTitle>Recent Transactions</CardTitle>
-              <CardDescription>
-                Latest payment activity
-              </CardDescription>
             </CardHeader>
             <CardContent>
               {/* Desktop Table */}

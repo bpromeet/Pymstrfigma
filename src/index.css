@@ -1972,10 +1972,6 @@
     background-color: #757575;
   }
 
-  .bg-\[\#D1D9E1\] {
-    background-color: #d1d9e1;
-  }
-
   .bg-\[\#D4EDDA\] {
     background-color: #d4edda;
   }
@@ -2057,6 +2053,16 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-black\/60 {
       background-color: color-mix(in oklab, var(--color-black) 60%, transparent);
+    }
+  }
+
+  .bg-black\/\[0\.08\] {
+    background-color: #00000014;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .bg-black\/\[0\.08\] {
+      background-color: color-mix(in oklab, var(--color-black) 8%, transparent);
     }
   }
 
@@ -2836,10 +2842,6 @@
 
   .opacity-70 {
     opacity: .7;
-  }
-
-  .opacity-100 {
-    opacity: 1;
   }
 
   .shadow-2xl {
@@ -4566,6 +4568,16 @@
 
   .dark\:bg-transparent:is(.dark *) {
     background-color: #0000;
+  }
+
+  .dark\:bg-white\/\[0\.08\]:is(.dark *) {
+    background-color: #ffffff14;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .dark\:bg-white\/\[0\.08\]:is(.dark *) {
+      background-color: color-mix(in oklab, var(--color-white) 8%, transparent);
+    }
   }
 
   .dark\:bg-yellow-950:is(.dark *) {

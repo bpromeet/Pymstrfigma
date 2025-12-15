@@ -49,8 +49,8 @@ export default function WalletsPage({
       <PageLayout>
         <PageLayout.Header
           icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
-          title="Wallet Management"
-          subtitle="Manage your wallet balances and multi-chain crypto assets"
+          title="Wallets"
+          subtitle="Multi-Chain Crypto Assets"
         />
         <PageLayout.Content>
           <Card className="rounded-2xl shadow-sm bg-white dark:bg-[#303030]">
@@ -95,8 +95,8 @@ export default function WalletsPage({
       {!showingCoin && (
         <PageLayout.Header
           icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
-          title="Wallet Management"
-          subtitle="Manage your wallet balances and multi-chain crypto assets"
+          title="Wallets"
+          subtitle="Multi-Chain Crypto Assets"
         />
       )}
       <PageLayout.Content>
@@ -242,9 +242,6 @@ export default function WalletsPage({
                                 </TableCell>
                                 <TableCell className="text-right pr-6">
                                   <div className="flex items-center justify-end gap-2 text-[#07D7FF]">
-                                    <span className="text-sm">
-                                      Manage
-                                    </span>
                                     <ChevronRight className="w-4 h-4" />
                                   </div>
                                 </TableCell>
