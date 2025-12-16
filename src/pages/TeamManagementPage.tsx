@@ -3,8 +3,6 @@ import {
   UsersRound,
   UserPlus,
   AlertCircle,
-  UserX,
-  UserCheck,
   Trash2,
 } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -82,29 +80,78 @@ export default function TeamManagementPage({
   const [memberToDelete, setMemberToDelete] = useState<MemberToDelete | null>(
     null
   );
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    setIsEditing(false);
+    toast.success("Team changes saved successfully");
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setShowAddMember(false);
+  };
 
   return (
     <PageLayout>
       <PageLayout.Header
         icon={<UsersRound className="w-6 h-6 text-[#FF5914]" />}
-        title="Team Management"
+        title="Team"
         subtitle="Team Members & Permissions"
       />
       <PageLayout.Content>
         <div className="space-y-6">
+          {/* Edit/Save/Cancel Buttons - Same position as Profile */}
+          {isEditing ? (
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                className="rounded-full h-10 px-6"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="rounded-full h-10 px-6 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200"
+              >
+                Save
+              </Button>
+            </div>
+          ) : (
+            <Button
+              onClick={handleEdit}
+              className="rounded-full h-10 px-6 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200"
+            >
+              Edit
+            </Button>
+          )}
+
           {/* ========================================
-          DESKTOP ACTION BUTTON (Left-aligned, below subtitle)
+          DESKTOP ACTION BUTTON (Left-aligned, below Edit buttons)
           
-          Position: Top of content area, left-aligned
+          Position: Below Edit/Save buttons
           Hidden on mobile (md:hidden) - mobile uses FAB instead
+          Only visible when editing mode is active
+          
+          MD3 Visual Hierarchy:
+          - Save Changes = Primary CTA (blue)
+          - Add Team Member = Secondary action (grey tonal)
+          - Cancel = Tertiary (outlined)
           ======================================== */}
-          <Button
-            onClick={() => setShowAddMember(true)}
-            className="hidden md:inline-flex items-center justify-center px-6 h-10 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
-          >
-            <UserPlus className="w-[18px] h-[18px] mr-2" />
-            Add Team Member
-          </Button>
+          {isEditing && (
+            <Button
+              onClick={() => setShowAddMember(true)}
+              className="hidden md:inline-flex items-center justify-center px-6 h-10 bg-[#303030] text-[#F6F7F9] hover:bg-[#43586C] transition-all duration-200 rounded-full"
+            >
+              <UserPlus className="w-[18px] h-[18px] mr-2" />
+              Add Team Member
+            </Button>
+          )}
 
           {/* Delete Confirmation Modal */}
           {showDeleteConfirm && memberToDelete && (
@@ -209,14 +256,11 @@ export default function TeamManagementPage({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="view-only">
-                        View Only
-                      </SelectItem>
-                      <SelectItem value="limited">
-                        Limited
-                      </SelectItem>
                       <SelectItem value="admin">
                         Admin
+                      </SelectItem>
+                      <SelectItem value="view-only">
+                        View Only
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -292,6 +336,7 @@ export default function TeamManagementPage({
                             <TableCell className="py-4">
                               <Select
                                 value={member.role}
+                                disabled={!isEditing}
                                 onValueChange={(value) => {
                                   setTeamMembers((prev) =>
                                     prev.map((m) =>
@@ -307,7 +352,6 @@ export default function TeamManagementPage({
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-[#262626] rounded-xl">
                                   <SelectItem value="admin">Admin</SelectItem>
-                                  <SelectItem value="limited">Limited</SelectItem>
                                   <SelectItem value="view-only">View Only</SelectItem>
                                 </SelectContent>
                               </Select>
@@ -355,44 +399,7 @@ export default function TeamManagementPage({
                             {/* Actions Column */}
                             <TableCell className="py-4">
                               <div className="flex items-center gap-2">
-                                {/* Activate/Deactivate Button - Only for Active/Inactive Members */}
-                                {member.status !== "pending" && (
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className={`h-8 w-8 rounded-full transition-all duration-200 ${
-                                      member.status === "active"
-                                        ? "hover:bg-orange-100 dark:hover:bg-orange-900/20"
-                                        : "hover:bg-green-100 dark:hover:bg-green-900/20"
-                                    }`}
-                                    onClick={() => {
-                                      setTeamMembers((prev) =>
-                                        prev.map((m) =>
-                                          m.id === member.id
-                                            ? {
-                                                ...m,
-                                                status: m.status === "active" ? "inactive" : "active",
-                                              }
-                                            : m
-                                        )
-                                      );
-                                      toast.success(
-                                        member.status === "active"
-                                          ? `${member.name} deactivated`
-                                          : `${member.name} activated`
-                                      );
-                                    }}
-                                    aria-label={member.status === "active" ? "Deactivate member" : "Activate member"}
-                                  >
-                                    {member.status === "active" ? (
-                                      <UserX className="w-4 h-4 text-[#FF5914]" />
-                                    ) : (
-                                      <UserCheck className="w-4 h-4 text-[#7DD069]" />
-                                    )}
-                                  </Button>
-                                )}
-                                
-                                {/* Delete Button - Always Available */}
+                                {/* Delete Button - Only Action */}
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -462,6 +469,7 @@ export default function TeamManagementPage({
                       <Label className="text-[#798A9B] text-xs">Role</Label>
                       <Select
                         value={member.role}
+                        disabled={!isEditing}
                         onValueChange={(value) => {
                           setTeamMembers((prev) =>
                             prev.map((m) =>
@@ -477,7 +485,6 @@ export default function TeamManagementPage({
                         </SelectTrigger>
                         <SelectContent className="bg-white dark:bg-[#262626] rounded-xl">
                           <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="limited">Limited</SelectItem>
                           <SelectItem value="view-only">View Only</SelectItem>
                         </SelectContent>
                       </Select>
@@ -499,7 +506,7 @@ export default function TeamManagementPage({
                     <div className="flex items-center gap-2 pt-2 border-t border-[#43586C]/30">
                       {/* Conditional Actions based on status */}
                       {member.status === "pending" ? (
-                        /* Resend Invite for Pending Members */
+                        /* Resend Invite + Delete for Pending Members */
                         <>
                           <Button
                             variant="outline"
@@ -510,7 +517,6 @@ export default function TeamManagementPage({
                           >
                             Resend Invite
                           </Button>
-                          {/* Delete Button */}
                           <Button
                             variant="outline"
                             className="flex-1 h-10 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200"
@@ -528,62 +534,22 @@ export default function TeamManagementPage({
                           </Button>
                         </>
                       ) : (
-                        /* Activate/Deactivate for Active/Inactive Members */
-                        <>
-                          <Button
-                            variant="outline"
-                            className={`flex-1 h-10 rounded-full transition-all duration-200 ${
-                              member.status === "active"
-                                ? "border-[#FF5914] text-[#FF5914] hover:bg-orange-100 dark:hover:bg-orange-900/20"
-                                : "border-[#7DD069] text-[#7DD069] hover:bg-green-100 dark:hover:bg-green-900/20"
-                            }`}
-                            onClick={() => {
-                              setTeamMembers((prev) =>
-                                prev.map((m) =>
-                                  m.id === member.id
-                                    ? {
-                                        ...m,
-                                        status: m.status === "active" ? "inactive" : "active",
-                                      }
-                                    : m
-                                )
-                              );
-                              toast.success(
-                                member.status === "active"
-                                  ? `${member.name} deactivated`
-                                  : `${member.name} activated`
-                              );
-                            }}
-                          >
-                            {member.status === "active" ? (
-                              <>
-                                <UserX className="w-4 h-4 mr-2" />
-                                Deactivate
-                              </>
-                            ) : (
-                              <>
-                                <UserCheck className="w-4 h-4 mr-2" />
-                                Activate
-                              </>
-                            )}
-                          </Button>
-                          {/* Delete Button */}
-                          <Button
-                            variant="outline"
-                            className="flex-1 h-10 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200"
-                            onClick={() => {
-                              setMemberToDelete({
-                                id: member.id,
-                                name: member.name,
-                                email: member.email,
-                              });
-                              setShowDeleteConfirm(true);
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            Delete
-                          </Button>
-                        </>
+                        /* Delete Only for Active Members */
+                        <Button
+                          variant="outline"
+                          className="w-full h-10 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-red-100 dark:hover:bg-red-900/20 transition-all duration-200"
+                          onClick={() => {
+                            setMemberToDelete({
+                              id: member.id,
+                              name: member.name,
+                              email: member.email,
+                            });
+                            setShowDeleteConfirm(true);
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -598,8 +564,13 @@ export default function TeamManagementPage({
 
       {/* Mobile FAB - Add Team Member */}
       <button
-        onClick={() => setShowAddMember(true)}
-        className="md:hidden fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 transition-all duration-200 flex items-center justify-center"
+        onClick={() => isEditing && setShowAddMember(true)}
+        disabled={!isEditing}
+        className={`md:hidden fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full bg-[#1E88E5] text-white shadow-lg flex items-center justify-center transition-all duration-200 ${
+          isEditing
+            ? 'hover:bg-[#1565C0] hover:shadow-xl hover:scale-105 active:scale-95 focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 cursor-pointer'
+            : 'opacity-50 cursor-not-allowed'
+        }`}
         aria-label="Add team member"
       >
         <UserPlus className="w-6 h-6" />

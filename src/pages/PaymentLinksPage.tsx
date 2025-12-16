@@ -7,6 +7,7 @@ import {
   Link as LinkIcon,
   Clock,
   Check,
+  Search,
 } from "lucide-react";
 import { formatPrice } from "../utils/currency";
 import { Button } from "../components/ui/button";
@@ -33,6 +34,7 @@ import PageLayout from "../components/PageLayout";
 import { ChainIcon } from "../components/ChainIcon";
 import { CryptoIcon } from "../components/CryptoIcon";
 import SearchField from "../components/SearchField";
+import RefreshButton from "../components/RefreshButton";
 
 interface PaymentLinksPageProps {
   paymentLinks: any[];
@@ -54,6 +56,7 @@ export default function PaymentLinksPage({
   onLinkGenerated,
 }: PaymentLinksPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeSearchQuery, setActiveSearchQuery] = useState("");
   const [currencyFilter, setCurrencyFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentLinksTab, setPaymentLinksTab] = useState("all");
@@ -68,6 +71,29 @@ export default function PaymentLinksPage({
       window.history.replaceState(null, '', window.location.pathname + '#/links');
     }
   }, [setShowPaymentLinkDialog]);
+
+  // Handle search button click
+  const handleSearch = () => {
+    setActiveSearchQuery(searchQuery);
+  };
+
+  // Handle Enter key in search field
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  // Handle refresh button click
+  const handleRefresh = () => {
+    // Reset all filters and search to initial state
+    setPaymentLinksTab('all');
+    setCurrencyFilter('all');
+    setStatusFilter('all');
+    setSearchQuery('');
+    setActiveSearchQuery('');
+    console.log('Payment links refreshed - filters and search cleared');
+  };
 
   // Handle share button click
   const handleShare = (linkId: string) => {
@@ -113,9 +139,9 @@ export default function PaymentLinksPage({
       const matchesStatus =
         statusFilter === "all" || link.status === statusFilter;
       const matchesSearch =
-        link.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        link.price?.toString().includes(searchQuery) ||
-        link.linkId?.toLowerCase().includes(searchQuery.toLowerCase());
+        link.description?.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+        link.price?.toString().includes(activeSearchQuery) ||
+        link.linkId?.toLowerCase().includes(activeSearchQuery.toLowerCase());
       const matchesSource = !source || link.source === source;
 
       return matchesCurrency && matchesStatus && matchesSearch && matchesSource;
@@ -200,7 +226,7 @@ export default function PaymentLinksPage({
                 onValueChange={setCurrencyFilter}
               >
                 <SelectTrigger className="w-full sm:w-[150px]">
-                  <SelectValue placeholder="All Coins">
+                  <SelectValue placeholder="Stablecoin">
                     <div className="flex items-center gap-2">
                       {currencyFilter !== "all" && (
                         <CryptoIcon
@@ -210,7 +236,7 @@ export default function PaymentLinksPage({
                       )}
                       <span>
                         {currencyFilter === "all"
-                          ? "All Coins"
+                          ? "Stablecoin"
                           : currencyFilter}
                       </span>
                     </div>
@@ -219,7 +245,7 @@ export default function PaymentLinksPage({
                 <SelectContent>
                   <SelectItem value="all">
                     <div className="flex items-center gap-2">
-                      <span>All Coins</span>
+                      <span>Stablecoin</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="USDC">
@@ -249,7 +275,7 @@ export default function PaymentLinksPage({
                 onValueChange={setStatusFilter}
               >
                 <SelectTrigger className="w-full sm:w-[150px]">
-                  <SelectValue placeholder="All Statuses">
+                  <SelectValue placeholder="Status">
                     <div className="flex items-center gap-2">
                       {statusFilter !== "all" && (
                         <Badge
@@ -272,7 +298,7 @@ export default function PaymentLinksPage({
                         </Badge>
                       )}
                       {statusFilter === "all" && (
-                        <span>All Statuses</span>
+                        <span>Status</span>
                       )}
                     </div>
                   </SelectValue>
@@ -280,7 +306,7 @@ export default function PaymentLinksPage({
                 <SelectContent>
                   <SelectItem value="all">
                     <div className="flex items-center gap-2">
-                      <span>All Statuses</span>
+                      <span>Status</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="active">
@@ -316,13 +342,37 @@ export default function PaymentLinksPage({
                 </SelectContent>
               </Select>
 
-              {/* Search Field */}
-              <SearchField
-                placeholder="Search payment links..."
-                value={searchQuery}
-                onChange={setSearchQuery}
-                className="flex-1"
-              />
+              {/* Search + Refresh Row (Mobile: same line, Desktop: integrated) */}
+              <div className="flex items-center gap-3 flex-1">
+                {/* Search Field */}
+                <SearchField
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  onKeyPress={handleSearchKeyPress}
+                  className="flex-1"
+                />
+                
+                {/* Desktop Search Button - Pill-shaped, no icon */}
+                <Button
+                  onClick={handleSearch}
+                  variant="outline"
+                  className="hidden md:inline-flex items-center justify-center px-6 h-12 rounded-full transition-all duration-200"
+                >
+                  Search
+                </Button>
+                
+                {/* Mobile Search Button - Pill-shaped, no icon */}
+                <Button
+                  onClick={handleSearch}
+                  variant="outline"
+                  className="md:hidden flex items-center justify-center px-6 h-12 rounded-full transition-all duration-200"
+                >
+                  Search
+                </Button>
+
+                {/* Refresh Button */}
+                <RefreshButton onClick={handleRefresh} />
+              </div>
             </div>
           </div>
 
@@ -448,7 +498,7 @@ export default function PaymentLinksPage({
                           </div>
                           <div>
                             <p className="text-gray-600 dark:text-gray-400 mb-1.5">
-                              Chains
+                              Chain
                             </p>
                             <div className="flex flex-wrap items-center gap-1.5">
                               {link.availableChains && link.availableChains.length > 0 ? (
@@ -472,7 +522,7 @@ export default function PaymentLinksPage({
                           </div>
                           <div>
                             <p className="text-gray-600 dark:text-gray-400 mb-1.5">
-                              Coins
+                              Stablecoin
                             </p>
                             <div className="flex flex-wrap items-center gap-1.5">
                               {link.availableCurrencies && link.availableCurrencies.length > 0 ? (

@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, startTransition } from "react";
-import QRCode from "qrcode";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { truncateAddress } from "./utils/address";
 import {
@@ -11,7 +10,6 @@ import {
 } from "./components/ui/card";
 import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
 import { Label } from "./components/ui/label";
 import {
   Select,
@@ -28,7 +26,6 @@ import {
   SheetTrigger,
   SheetHeader,
   SheetTitle,
-  SheetDescription,
 } from "./components/ui/sheet";
 import {
   Dialog,
@@ -36,13 +33,11 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "./components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./components/ui/dropdown-menu";
@@ -63,7 +58,6 @@ import {
   AlertCircle,
   Copy,
   Check,
-  Share2,
   DollarSign,
   Users,
   Activity,
@@ -78,10 +72,7 @@ import {
   Github,
   Twitter,
   Trash2,
-  Pause,
-  Play,
   Search,
-  Menu,
   X,
   QrCode,
   CreditCard,
@@ -92,17 +83,11 @@ import {
   Send,
   Download,
   ArrowDownToLine,
-  ShoppingCart,
   Coins,
-  UserPlus,
-  UserCheck,
-  UserX,
   Settings,
   Bell,
-  Eye,
   Moon,
   Sun,
-  ChevronRight,
   ChevronDown,
   User,
   HelpCircle,
@@ -110,7 +95,6 @@ import {
   FileText,
   Key,
   RefreshCw,
-  Globe,
   Lock,
   BarChart3,
   Code,
@@ -118,9 +102,6 @@ import {
   BookOpen,
   Save,
   Webhook,
-  Sparkles,
-  Building,
-  ArrowLeftRight,
 } from "lucide-react";
 import { Alert, AlertDescription } from "./components/ui/alert";
 import {
@@ -159,14 +140,12 @@ import QuickStartGuide from "./components/QuickStartGuide";
 import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
 import MerchantProfile from "./components/MerchantProfile";
-import { OnboardingPage } from "./components/OnboardingPage";
 import EndUserBuyPage from "./components/EndUserBuyPage";
 import EndUserSendPage from "./components/EndUserSendPage";
 import EndUserReceivePage from "./components/EndUserReceivePage";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 import { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar";
 import { User } from "lucide-react";
-import { useOnboarding } from "./hooks/useOnboarding";
 
 // Avatar images - YOUR provided pictures stored in /public/
 const merchantAvatar = "/merchant-avatar.png"; // Your picture: Woman with glasses
@@ -230,17 +209,6 @@ import {
 } from "./utils/helpers";
 
 const App = () => {
-  // Onboarding state tracking
-  const { 
-    markStepComplete, 
-    status: onboardingStatus,
-    shouldAutoRedirect,
-    shouldShowBanner,
-    progress,
-    steps,
-    dismissOnboardingBanner
-  } = useOnboarding();
-  
   // Initialize activeTab based on hash (for dev mode)
   const getInitialTab = () => {
     const hash = window.location.hash.toLowerCase();
@@ -399,30 +367,7 @@ const App = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Auto-redirect new merchants to onboarding (Phase 4)
-  // CRITICAL: This should ONLY run ONCE on mount, not on every navigation
-  // Empty dependency array ensures it only checks on initial page load
-  useEffect(() => {
-    // Only redirect if:
-    // 1. They haven't completed any onboarding steps (shouldAutoRedirect = true)
-    // 2. Not already on the onboarding page
-    // 3. Not in dev mode
-    // 4. ONLY on root or dashboard hash (prevent hijacking explicit navigation)
-    const hash = window.location.hash.toLowerCase();
-    const isDevMode = hash === "#/dev";
-    const isAlreadyOnboarding = hash.includes("onboarding") || hash.includes("getting-started");
-    const isRootOrDashboard = hash === "" || hash === "#/" || hash === "#/dashboard";
-    
-    // ONLY redirect if we're on the root/dashboard page on mount
-    // This prevents hijacking explicit navigation to other pages
-    if (shouldAutoRedirect && !isAlreadyOnboarding && !isDevMode && isRootOrDashboard) {
-      // Small delay to allow state to settle
-      setTimeout(() => {
-        window.location.hash = '#/onboarding';
-      }, 100);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty array - only run once on mount, never again
+  // Auto-redirect removed - onboarding system removed
 
   // URL hash routing for documentation pages and payment links
   useEffect(() => {
@@ -482,13 +427,8 @@ const App = () => {
         return;
       }
 
-      // Handle onboarding page (part of merchant navigation)
-      if (hashLower.includes("onboarding")) {
-        setActiveTab("onboarding");
-        setIsStandalonePage(false);
-      }
       // Handle documentation pages
-      else if (hashLower.includes("quickstart")) {
+      if (hashLower.includes("quickstart")) {
         setActiveTab("quickstart");
         setIsStandalonePage(true);
       } else if (
@@ -709,7 +649,6 @@ const App = () => {
       'admin': '#/dashboard',
       'dashboard': '#/dashboard',
       'userdashboard': '#/user-dashboard',
-      'onboarding': '#/onboarding',
       'quickstart': '#/quickstart',
       'apireference': '#/api-reference',
       'codeexamples': '#/code-examples',
@@ -834,15 +773,10 @@ const App = () => {
     tooltipId?: string,
   ) => {
     copyToClipboardUtil(text, tooltipId, setShowCopyTooltip);
-    // Use startTransition to prevent jarring re-renders in Dialog
-    startTransition(() => {
-      setCopiedItem(text);
-      setTimeout(() => {
-        startTransition(() => {
-          setCopiedItem(null);
-        });
-      }, 2000);
-    });
+    setCopiedItem(text);
+    setTimeout(() => {
+      setCopiedItem(null);
+    }, 2000);
   };
 
   // Check if user has sufficient balance for payment
@@ -1038,11 +972,6 @@ const App = () => {
     setPaymentLinks((links) => [linkWithSource, ...links]);
     setShowPaymentLinkDialog(false);
     
-    // Mark onboarding Step 2 complete (Test Payment Link)
-    if (!onboardingStatus.step2Complete) {
-      markStepComplete('step2');
-    }
-    
     toast("Payment link created successfully!");
   };
 
@@ -1235,11 +1164,6 @@ const App = () => {
     };
 
     setApiKeys((prev) => [newKey, ...prev]);
-    
-    // Mark onboarding Step 1 complete (Get API Credentials)
-    if (!onboardingStatus.step1Complete) {
-      markStepComplete('step1');
-    }
     
     return { key: generatedKey };
   };
@@ -2473,9 +2397,7 @@ const App = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
-                    startTransition(() => {
-                      setShowTestMode(!showTestMode);
-                    });
+                    setShowTestMode(!showTestMode);
                   }}
                 >
                   Test Mode{" "}
@@ -2673,11 +2595,6 @@ const App = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "admin":
-        // Get the first incomplete step for the banner
-        const currentStep = steps.find(step => !step.completed);
-        const currentStepIndex = steps.findIndex(step => !step.completed);
-        const isOnboardingIncomplete = progress < 100;
-        
         return (
           <DashboardPage
             dashboardStats={dashboardStats}
@@ -2685,15 +2602,6 @@ const App = () => {
             chartData={chartData}
             onCreatePaymentLink={handleCreatePaymentLink}
             getExplorerUrl={getExplorerUrl}
-            // Onboarding banner props
-            showOnboardingBanner={shouldShowBanner}
-            onboardingProgress={progress}
-            onboardingIncomplete={isOnboardingIncomplete}
-            currentOnboardingStep={currentStep}
-            onDismissBanner={dismissOnboardingBanner}
-            onNavigateToOnboarding={() => {
-              window.location.hash = '#/onboarding';
-            }}
           />
         );
       case "links":
@@ -2764,24 +2672,8 @@ const App = () => {
         );
       case "webhooks":
         return <WebhooksPage onWebhookCreated={() => {
-          // Mark onboarding Step 3 complete (Complete Integration)
-          if (!onboardingStatus.step3Complete) {
-            markStepComplete('step3');
-          }
+          // Onboarding tracking removed
         }} />;
-      case "onboarding":
-        return (
-          <OnboardingPage 
-            onGenerateApiKey={() => {
-              // Navigate to API Keys page with create parameter
-              window.location.hash = '#/api-keys?create=true';
-            }}
-            onCreatePaymentLink={() => {
-              // Navigate to Payment Links page with create parameter
-              window.location.hash = '#/links?create=true';
-            }}
-          />
-        );
       case "quickstart":
         return (
           <QuickStartGuide
@@ -2882,11 +2774,6 @@ const App = () => {
       case "legal":
         return <LegalPage />;
       default:
-        // Get the first incomplete step for the banner
-        const defaultCurrentStep = steps.find(step => !step.completed);
-        const defaultCurrentStepIndex = steps.findIndex(step => !step.completed);
-        const defaultIsOnboardingIncomplete = progress < 100;
-        
         return (
           <DashboardPage
             dashboardStats={dashboardStats}
@@ -2894,15 +2781,6 @@ const App = () => {
             chartData={chartData}
             onCreatePaymentLink={handleCreatePaymentLink}
             getExplorerUrl={getExplorerUrl}
-            // Onboarding banner props
-            showOnboardingBanner={shouldShowBanner}
-            onboardingProgress={progress}
-            onboardingIncomplete={defaultIsOnboardingIncomplete}
-            currentOnboardingStep={defaultCurrentStep}
-            onDismissBanner={dismissOnboardingBanner}
-            onNavigateToOnboarding={() => {
-              window.location.hash = '#/onboarding';
-            }}
           />
         );
     }
@@ -3115,13 +2993,6 @@ const App = () => {
                         ) : (
                           <>
                             {/* Merchant Menu Items */}
-                            <DropdownMenuItem
-                              onClick={() => window.location.hash = '#/onboarding'}
-                              className="cursor-pointer rounded-lg h-10 px-3"
-                            >
-                              <Sparkles className="mr-2 h-[18px] w-[18px]" />
-                              Getting Started
-                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => setActiveTab("profile")}
                               className="cursor-pointer rounded-lg h-10 px-3"

@@ -390,7 +390,7 @@ export const INITIAL_TEAM_MEMBERS = [
     id: "2",
     name: "Sarah Manager",
     email: "sarah@pymstr.com",
-    role: "limited",
+    role: "admin",
     status: "active",
     avatar: "SM",
     lastActive: "2025-10-05T08:15:00Z",
@@ -403,15 +403,6 @@ export const INITIAL_TEAM_MEMBERS = [
     status: "active",
     avatar: "MV",
     lastActive: "2025-10-04T16:45:00Z",
-  },
-  {
-    id: "4",
-    name: "Lisa Analyst",
-    email: "lisa@pymstr.com",
-    role: "limited",
-    status: "inactive",
-    avatar: "LA",
-    lastActive: "2025-10-03T12:20:00Z",
   },
   {
     id: "5",
@@ -476,12 +467,12 @@ export const DASHBOARD_STATS = {
   successfulTransactions: 1847,
   successRate: 96.8,
   averageTransactionValue: 68.14,
+  totalFeesEarned: 3649.77, // Total fees earned by merchant
   
   // Tier 2 - Important Secondary
   activePayors: 342,
   failedTransactions: 61,
   settlementSpeed: 45, // seconds
-  totalFeesCollected: 3649.77,
   
   // Tier 3 - Web3 Specific
   gasFeesSaved: 892.45,
@@ -503,42 +494,58 @@ export const RECENT_TRANSACTIONS = [
   {
     id: "1",
     linkId: "#PL001",
-    price: 156.78,
+    price: "156.78",
+    baseCurrency: "USD",
     crypto: "USDC",
+    cryptoAmount: "156.78", // USDC amount paid
     status: "Success",
     date: "2025-09-30T10:30:00Z",
     chain: "ethereum",
     txHash: "0x7f3a8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
+    fee: "4.70", // 3% fee in USDC
+    received: "152.08", // USDC received after fee
   },
   {
     id: "2",
     linkId: "#PL002",
-    price: 89.5,
+    price: "89.50",
+    baseCurrency: "EUR",
     crypto: "USDT",
+    cryptoAmount: "89.50", // USDT amount paid
     status: "Pending",
     date: "2025-09-30T09:15:00Z",
     chain: "polygon",
     txHash: "0xa4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
+    fee: "2.69", // 3% fee in USDT
+    received: "86.81", // USDT received
   },
   {
     id: "3",
     linkId: "#PL003",
-    price: 234.12,
+    price: "234.12",
+    baseCurrency: "AED",
     crypto: "USDC",
+    cryptoAmount: "234.12", // USDC amount paid
     status: "Fail",
     date: "2025-09-30T08:45:00Z",
     chain: "arbitrum",
     txHash: "0x1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f",
+    fee: "7.02", // 3% fee in USDC
+    received: "227.10", // USDC received
   },
   {
     id: "4",
     linkId: "#PL004",
-    price: 67.89,
+    price: "67.89",
+    baseCurrency: "USD",
     crypto: "EURC",
+    cryptoAmount: "67.89", // EURC amount paid
     status: "Success",
     date: "2025-09-30T07:20:00Z",
     chain: "optimism",
     txHash: "0x8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b2c5d1a4f8e9b",
+    fee: "2.04", // 3% fee in EURC
+    received: "65.85", // EURC received
   },
 ];
 

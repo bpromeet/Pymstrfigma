@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageLayout } from '../components/PageLayout';
-import { List, ExternalLink, Receipt } from 'lucide-react';
+import { List, ExternalLink, Receipt, Link as LinkIcon } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import {
@@ -22,7 +22,9 @@ import RefreshButton from '../components/RefreshButton';
 const MOCK_TRANSACTIONS = [
   {
     id: 'TX32',
+    trId: 1,
     linkId: '#41',
+    linkDescription: 'Premium Subscription',
     date: 'Dec 8, 2025 11:23',
     chain: 'base-sepolia',
     currency: 'USDT',
@@ -44,7 +46,9 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: 'TX31',
+    trId: 2,
     linkId: '#40',
+    linkDescription: 'Coffee Subscription',
     date: 'Dec 8, 2025 11:16',
     chain: 'base-sepolia',
     currency: 'USDT',
@@ -66,7 +70,9 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: 'TX30',
+    trId: 3,
     linkId: '#39',
+    linkDescription: 'E-commerce Purchase',
     date: 'Dec 8, 2025 10:45',
     chain: 'polygon',
     currency: 'USDC',
@@ -88,7 +94,9 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: 'TX29',
+    trId: 4,
     linkId: '#38',
+    linkDescription: 'Digital Product',
     date: 'Dec 8, 2025 09:30',
     chain: 'ethereum',
     currency: 'EURC',
@@ -110,7 +118,9 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: 'TX28',
+    trId: 5,
     linkId: '#37',
+    linkDescription: 'Pro Membership',
     date: 'Dec 7, 2025 18:22',
     chain: 'arbitrum',
     currency: 'USDT',
@@ -128,7 +138,7 @@ const MOCK_TRANSACTIONS = [
     paidFiat: 99.99,
     customerEmail: 'alice@crypto.io',
     exchangeRate: 1.000000,
-    txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890def123',
+    txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890def123',
   },
 ];
 
@@ -150,23 +160,40 @@ export const TransactionsPage: React.FC = () => {
   const [chainFilter, setChainFilter] = useState('all');
   const [currencyFilter, setCurrencyFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeSearchQuery, setActiveSearchQuery] = useState('');
   const [transactions] = useState(MOCK_TRANSACTIONS);
+
+  // Handle search button click
+  const handleSearch = () => {
+    setActiveSearchQuery(searchQuery);
+  };
+
+  // Handle Enter key in search field
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const filteredTransactions = transactions.filter((tx) => {
     const matchesChain = chainFilter === 'all' || tx.chain === chainFilter;
     const matchesCurrency = currencyFilter === 'all' || tx.currency === currencyFilter;
     const matchesSearch =
-      searchQuery === '' ||
-      tx.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.linkId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.txHash.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.customerEmail.toLowerCase().includes(searchQuery.toLowerCase());
+      activeSearchQuery === '' ||
+      tx.id.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+      tx.linkId.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+      tx.txHash.toLowerCase().includes(activeSearchQuery.toLowerCase()) ||
+      tx.customerEmail.toLowerCase().includes(activeSearchQuery.toLowerCase());
     return matchesChain && matchesCurrency && matchesSearch;
   });
 
   const handleRefresh = () => {
-    // In production, this would fetch fresh data from the API
-    console.log('Refreshing transactions...');
+    // Reset all filters and search to initial state
+    setChainFilter('all');
+    setCurrencyFilter('all');
+    setSearchQuery('');
+    setActiveSearchQuery('');
+    console.log('Transactions refreshed - filters and search cleared');
   };
 
   const getExplorerUrl = (chain: string, txHash: string) => {
@@ -199,50 +226,17 @@ export const TransactionsPage: React.FC = () => {
         ======================================== */}
         <div className="sticky top-0 bg-white dark:bg-[#0a0a0a] py-4 z-10">
           <div className="flex flex-col sm:flex-row gap-3">
-            {/* Chain Filter */}
-            <Select value={chainFilter} onValueChange={setChainFilter}>
-              <SelectTrigger className="w-full sm:w-[150px]">
-                <SelectValue placeholder="All Chains">
-                  <div className="flex items-center gap-2">
-                    {chainFilter !== "all" && (
-                      <ChainIcon chain={chainFilter} size={16} />
-                    )}
-                    <span>
-                      {chainFilter === "all"
-                        ? "All Chains"
-                        : SUPPORTED_CHAINS.find((c) => c.id === chainFilter)?.name || chainFilter}
-                    </span>
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  <div className="flex items-center gap-2">
-                    <span>All Chains</span>
-                  </div>
-                </SelectItem>
-                {SUPPORTED_CHAINS.map((chain) => (
-                  <SelectItem key={chain.id} value={chain.id}>
-                    <div className="flex items-center gap-2">
-                      <ChainIcon chain={chain.id} size={16} />
-                      <span>{chain.name}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Currency Filter */}
+            {/* Currency Filter (Stablecoin - now first) */}
             <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
               <SelectTrigger className="w-full sm:w-[150px]">
-                <SelectValue placeholder="All Coins">
+                <SelectValue placeholder="Stablecoin">
                   <div className="flex items-center gap-2">
                     {currencyFilter !== "all" && (
                       <CryptoIcon symbol={currencyFilter} size={16} />
                     )}
                     <span>
                       {currencyFilter === "all"
-                        ? "All Coins"
+                        ? "Stablecoin"
                         : SUPPORTED_CURRENCIES.find((c) => c.id === currencyFilter)?.name || currencyFilter}
                     </span>
                   </div>
@@ -251,7 +245,7 @@ export const TransactionsPage: React.FC = () => {
               <SelectContent>
                 <SelectItem value="all">
                   <div className="flex items-center gap-2">
-                    <span>All Coins</span>
+                    <span>Stablecoin</span>
                   </div>
                 </SelectItem>
                 {SUPPORTED_CURRENCIES.map((currency) => (
@@ -265,22 +259,73 @@ export const TransactionsPage: React.FC = () => {
               </SelectContent>
             </Select>
 
-            {/* Search Input */}
-            <SearchField
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="Search transactions..."
-              className="flex-1"
-            />
+            {/* Chain Filter (now second) */}
+            <Select value={chainFilter} onValueChange={setChainFilter}>
+              <SelectTrigger className="w-full sm:w-[150px]">
+                <SelectValue placeholder="Chain">
+                  <div className="flex items-center gap-2">
+                    {chainFilter !== "all" && (
+                      <ChainIcon chain={chainFilter} size={16} />
+                    )}
+                    <span>
+                      {chainFilter === "all"
+                        ? "Chain"
+                        : SUPPORTED_CHAINS.find((c) => c.id === chainFilter)?.name || chainFilter}
+                    </span>
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center gap-2">
+                    <span>Chain</span>
+                  </div>
+                </SelectItem>
+                {SUPPORTED_CHAINS.map((chain) => (
+                  <SelectItem key={chain.id} value={chain.id}>
+                    <div className="flex items-center gap-2">
+                      <ChainIcon chain={chain.id} size={16} />
+                      <span>{chain.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-            {/* Refresh Button */}
-            <RefreshButton onClick={handleRefresh} />
+            {/* Search + Refresh Row (Mobile: same line, Desktop: integrated) */}
+            <div className="flex items-center gap-3 flex-1">
+              {/* Search Input */}
+              <SearchField
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onKeyPress={handleSearchKeyPress}
+                className="flex-1"
+              />
+
+              {/* Desktop Search Button - Pill-shaped, no icon */}
+              <Button
+                onClick={handleSearch}
+                variant="outline"
+                className="hidden md:inline-flex items-center justify-center px-6 h-12 rounded-full transition-all duration-200"
+              >
+                Search
+              </Button>
+
+              {/* Mobile Search Button - Pill-shaped, no icon */}
+              <Button
+                onClick={handleSearch}
+                variant="outline"
+                className="md:hidden flex items-center justify-center px-6 h-12 rounded-full transition-all duration-200"
+              >
+                Search
+              </Button>
+
+              {/* Refresh Button */}
+              <RefreshButton onClick={handleRefresh} />
+            </div>
           </div>
 
-          {/* Results Count */}
-          <p className="text-sm text-muted-foreground mt-3">
-            Showing {filteredTransactions.length} of {transactions.length} transactions
-          </p>
+
         </div>
 
         {/* ========================================
@@ -313,8 +358,11 @@ export const TransactionsPage: React.FC = () => {
                       <Receipt className="w-6 h-6 text-[#07D7FF]" />
                     </div>
                     <div>
-                      <h3 className="font-semibold">Transaction {tx.id}</h3>
-                      <p className="text-sm text-muted-foreground">Link {tx.linkId}</p>
+                      <div className="flex items-center gap-2">
+                        <LinkIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                        <h3>{tx.linkDescription || 'Payment'} - {tx.linkId}</h3>
+                      </div>
+                      <p className="text-sm text-muted-foreground">Tr-ID: {tx.trId}</p>
                     </div>
                   </div>
 
@@ -329,7 +377,7 @@ export const TransactionsPage: React.FC = () => {
                       {tx.chain}
                     </Badge>
                     <Badge variant="outline" className="rounded-full flex items-center gap-1.5">
-                      <CryptoIcon currency={tx.currency} className="w-3.5 h-3.5" />
+                      <CryptoIcon symbol={tx.currency} className="w-3.5 h-3.5" />
                       {tx.currency}
                     </Badge>
                     <Button

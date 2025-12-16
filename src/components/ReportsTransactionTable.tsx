@@ -3,7 +3,6 @@ import { ExternalLink } from 'lucide-react';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from './ui/card';
@@ -31,7 +30,6 @@ interface Transaction {
 
 interface ReportsTransactionTableProps {
   transactions: Transaction[];
-  searchQuery: string;
   dateFrom: string;
   dateTo: string;
   chainFilter?: string;
@@ -42,7 +40,6 @@ interface ReportsTransactionTableProps {
 
 const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
   transactions,
-  searchQuery,
   dateFrom,
   dateTo,
   chainFilter = 'all',
@@ -51,16 +48,6 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
   isFiltered = false,
 }) => {
   const filteredTransactions = transactions.filter((tx) => {
-    // Search query filter
-    const matchesSearch =
-      searchQuery === '' ||
-      tx.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.linkId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.price.toString().includes(searchQuery) ||
-      tx.crypto.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.chain.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.status.toLowerCase().includes(searchQuery.toLowerCase());
-
     // Date range filter
     const txDate = new Date(tx.date);
     const matchesDateRange =
@@ -75,16 +62,13 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
     const matchesCurrency =
       currencyFilter === 'all' || tx.crypto.toUpperCase() === currencyFilter.toUpperCase();
 
-    return matchesSearch && matchesDateRange && matchesChain && matchesCurrency;
+    return matchesDateRange && matchesChain && matchesCurrency;
   });
 
   return (
     <Card className="overflow-hidden">
       <CardHeader className="overflow-hidden">
-        <CardTitle>Detailed Transaction Report</CardTitle>
-        <CardDescription>
-          {isFiltered ? 'Filtered results' : 'All transactions for the current period'}
-        </CardDescription>
+        <CardTitle>Transactions</CardTitle>
       </CardHeader>
       <CardContent>
         {/* Desktop Table */}
@@ -97,7 +81,7 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
                 <TableHead className="w-[70px]">Time</TableHead>
                 <TableHead className="w-[130px]">Link ID</TableHead>
                 <TableHead className="w-[100px]">Amount</TableHead>
-                <TableHead className="w-[90px]">Coin</TableHead>
+                <TableHead className="w-[90px]">Stablecoin</TableHead>
                 <TableHead className="w-[70px]">Chain</TableHead>
                 <TableHead className="w-[90px]">Status</TableHead>
                 <TableHead className="w-[80px]">Fee</TableHead>
@@ -212,7 +196,7 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
                   <span className="font-semibold">${tx.price}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Coin:</span>
+                  <span className="text-muted-foreground">Stablecoin:</span>
                   <span>{tx.crypto}</span>
                 </div>
                 <div className="flex justify-between">

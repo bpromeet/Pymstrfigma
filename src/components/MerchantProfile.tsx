@@ -33,6 +33,8 @@ import {
   Copy,
   Edit,
   Trash2,
+  Upload,
+  X,
 } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 import PageLayout from "./PageLayout";
@@ -99,6 +101,8 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [originalProfile, setOriginalProfile] = useState(profile);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   const handleEdit = () => {
     setOriginalProfile(profile);
@@ -111,6 +115,9 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
       onSave?.(profile);
       setOriginalProfile(profile);
       setIsEditing(false);
+      if (logoPreview) {
+        setLogoUrl(logoPreview);
+      }
       toast.success("Account updated successfully");
       setIsSaving(false);
     }, 1000);
@@ -118,8 +125,46 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
 
   const handleCancel = () => {
     setProfile(originalProfile);
+    setLogoPreview(null);
     setIsEditing(false);
     toast.info("Changes discarded");
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast.error("Please upload an image file");
+        return;
+      }
+      
+      // Check file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error("Logo must be smaller than 2MB");
+        return;
+      }
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result as string);
+        toast.success("Logo selected - Save to apply changes");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoPreview(null);
+    setLogoUrl(null);
+    toast.info("Logo removed - Save to apply changes");
+  };
+
+  const handleDeleteAccount = () => {
+    setShowDeleteDialog(false);
+    toast.error("Account deletion functionality will be implemented");
+    // In production, this would call an API endpoint to delete the account
   };
 
   const copyToClipboard = (text: string) => {
@@ -132,19 +177,12 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
     
     try {
       document.execCommand('copy');
-      toast.success("Copied to clipboard");
+      toast.success('Copied to clipboard!');
     } catch (err) {
-      toast.error("Failed to copy to clipboard");
+      toast.error('Failed to copy to clipboard');
     } finally {
       document.body.removeChild(textarea);
     }
-  };
-
-  const handleDeleteAccount = () => {
-    // Simulate account deletion
-    toast.error("Account deleted - This action cannot be undone");
-    setShowDeleteDialog(false);
-    // In a real app, this would call the API and redirect to login
   };
 
   return (
@@ -188,56 +226,6 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
             )}
           </div>
 
-          {/* Account Status & Verification */}
-          <Card className="rounded-2xl overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" />
-                Account Status
-              </CardTitle>
-              <CardDescription>
-                Your account verification and tier status
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 border border-[#43586C] dark:border-[#43586C] rounded-xl">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">Verification Status</span>
-                    {profile.kybStatus === "verified" ? (
-                      <Badge className="bg-[#032e15] text-[#05df72] rounded-full">
-                        <CheckCircle className="w-3 h-3 mr-1" />
-                        Verified
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-400 rounded-full">
-                        <AlertCircle className="w-3 h-3 mr-1" />
-                        Pending
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {profile.kybStatus === "verified"
-                      ? "Your business has been verified"
-                      : "Verification in progress"}
-                  </p>
-                </div>
-
-                <div className="p-4 border border-[#43586C] dark:border-[#43586C] rounded-xl">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">Account Tier</span>
-                    <Badge className="bg-[#07D7FF]/12 text-[#07D7FF] rounded-full">
-                      {profile.accountTier.charAt(0).toUpperCase() + profile.accountTier.slice(1)}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Access to advanced features
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Business Information */}
           <Card className="rounded-2xl overflow-hidden">
             <CardHeader>
@@ -250,6 +238,70 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Logo Upload Section */}
+              <div className="space-y-2">
+                <Label>Business Logo</Label>
+                <div className="flex flex-col sm:flex-row gap-4 items-start">
+                  {/* Logo Preview */}
+                  <div className="w-32 h-32 rounded-xl border-2 border-dashed border-[#43586C] flex items-center justify-center bg-[#FAFAFA] dark:bg-[#262626] overflow-hidden flex-shrink-0">
+                    {(logoPreview || logoUrl) ? (
+                      <img 
+                        src={logoPreview || logoUrl || ''} 
+                        alt="Business logo" 
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="text-center p-4">
+                        <Building2 className="w-12 h-12 mx-auto text-muted-foreground mb-2" />
+                        <p className="text-xs text-muted-foreground">No logo</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Upload Controls */}
+                  <div className="flex-1 space-y-3">
+                    <p className="text-sm text-muted-foreground">
+                      Upload your business logo. Recommended size: 512x512px. Max size: 2MB.
+                    </p>
+                    
+                    {isEditing && (
+                      <div className="flex flex-wrap gap-2">
+                        <label htmlFor="logo-upload">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="min-h-10 px-6 py-2.5 rounded-full transition-all duration-200 cursor-pointer"
+                            onClick={() => document.getElementById('logo-upload')?.click()}
+                          >
+                            <Upload className="w-[18px] h-[18px] mr-2" />
+                            Upload Logo
+                          </Button>
+                          <input
+                            id="logo-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleLogoUpload}
+                            className="hidden"
+                          />
+                        </label>
+                        
+                        {(logoPreview || logoUrl) && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleRemoveLogo}
+                            className="min-h-10 px-6 py-2.5 rounded-full border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white transition-all duration-200"
+                          >
+                            <X className="w-[18px] h-[18px] mr-2" />
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="businessName">Business Name</Label>
@@ -378,156 +430,6 @@ const MerchantProfile: React.FC<MerchantProfileProps> = ({
                   disabled={!isEditing}
                   className="rounded bg-[#EEEEEE] dark:bg-[#262626] border-[#43586C] dark:border-[#43586C]"
                 />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notification Preferences */}
-          <Card className="rounded-2xl overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                Notification Preferences
-              </CardTitle>
-              <CardDescription>
-                Manage when and how you receive notifications
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-4 border border-[#43586C] dark:border-[#43586C] rounded-xl">
-                <div className="space-y-0.5">
-                  <Label htmlFor="paymentCompleted" className="cursor-pointer">Payment Completed</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notify when a payment is successfully completed
-                  </p>
-                </div>
-                <Switch
-                  id="paymentCompleted"
-                  checked={profile.notifications.paymentCompleted}
-                  onCheckedChange={(checked) =>
-                    setProfile({
-                      ...profile,
-                      notifications: { ...profile.notifications, paymentCompleted: checked },
-                    })
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-4 border border-[#43586C] dark:border-[#43586C] rounded-xl">
-                <div className="space-y-0.5">
-                  <Label htmlFor="paymentFailed" className="cursor-pointer">Payment Failed</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notify when a payment fails or is declined
-                  </p>
-                </div>
-                <Switch
-                  id="paymentFailed"
-                  checked={profile.notifications.paymentFailed}
-                  onCheckedChange={(checked) =>
-                    setProfile({
-                      ...profile,
-                      notifications: { ...profile.notifications, paymentFailed: checked },
-                    })
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-4 border border-[#43586C] dark:border-[#43586C] rounded-xl">
-                <div className="space-y-0.5">
-                  <Label htmlFor="dailySummary" className="cursor-pointer">Daily Summary</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive a daily summary of transactions
-                  </p>
-                </div>
-                <Switch
-                  id="dailySummary"
-                  checked={profile.notifications.dailySummary}
-                  onCheckedChange={(checked) =>
-                    setProfile({
-                      ...profile,
-                      notifications: { ...profile.notifications, dailySummary: checked },
-                    })
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-4 border border-[#43586C] dark:border-[#43586C] rounded-xl">
-                <div className="space-y-0.5">
-                  <Label htmlFor="weeklySummary" className="cursor-pointer">Weekly Summary</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive a weekly summary of performance
-                  </p>
-                </div>
-                <Switch
-                  id="weeklySummary"
-                  checked={profile.notifications.weeklySummary}
-                  onCheckedChange={(checked) =>
-                    setProfile({
-                      ...profile,
-                      notifications: { ...profile.notifications, weeklySummary: checked },
-                    })
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-4 border border-[#43586C] dark:border-[#43586C] rounded-xl">
-                <div className="space-y-0.5">
-                  <Label htmlFor="securityAlerts" className="cursor-pointer">Security Alerts</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Notify about security-related events
-                  </p>
-                </div>
-                <Switch
-                  id="securityAlerts"
-                  checked={profile.notifications.securityAlerts}
-                  onCheckedChange={(checked) =>
-                    setProfile({
-                      ...profile,
-                      notifications: { ...profile.notifications, securityAlerts: checked },
-                    })
-                  }
-                  disabled={!isEditing}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Timezone Settings */}
-          <Card className="rounded-2xl overflow-hidden">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                Timezone Settings
-              </CardTitle>
-              <CardDescription>
-                Set your preferred timezone for dates and times
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
-                <Select
-                  value={profile.timezone}
-                  onValueChange={(value) => setProfile({ ...profile, timezone: value })}
-                  disabled={!isEditing}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                    <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                    <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
-                    <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
-                    <SelectItem value="Europe/London">London (GMT)</SelectItem>
-                    <SelectItem value="Europe/Paris">Paris (CET)</SelectItem>
-                    <SelectItem value="Asia/Tokyo">Tokyo (JST)</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
             </CardContent>
           </Card>

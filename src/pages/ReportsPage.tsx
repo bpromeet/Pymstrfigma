@@ -1,21 +1,20 @@
-import { useState } from "react";
-import { BarChart3, X } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import React, { useState } from 'react';
+import { BarChart3, X } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Button } from '../components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from '../components/ui/select';
+import { ChainIcon } from '../components/ChainIcon';
+import { CryptoIcon } from '../components/CryptoIcon';
 import { toast } from "sonner@2.0.3";
 import PageLayout from "../components/PageLayout";
-import SearchField from "../components/SearchField";
 import DateField from "../components/DateField";
 import ReportsTransactionTable from "../components/ReportsTransactionTable";
-import { CryptoIcon } from "../components/CryptoIcon";
-import { ChainIcon } from "../components/ChainIcon";
 
 // Import transaction types
 interface Transaction {
@@ -46,7 +45,6 @@ export default function ReportsPage({
   recentTransactions,
   getExplorerUrl,
 }: ReportsPageProps) {
-  const [reportsSearchQuery, setReportsSearchQuery] = useState("");
   const [reportsDateFrom, setReportsDateFrom] = useState("");
   const [reportsDateTo, setReportsDateTo] = useState("");
   const [chainFilter, setChainFilter] = useState("all");
@@ -56,7 +54,7 @@ export default function ReportsPage({
     <PageLayout>
       <PageLayout.Header
         icon={<BarChart3 className="w-6 h-6 text-[#FF5914]" />}
-        title="Reports & Analytics"
+        title="Reports"
         subtitle="Payment Analytics & Insights"
       />
       <PageLayout.Content>
@@ -71,17 +69,60 @@ export default function ReportsPage({
         ======================================== */}
         <div className="sticky top-0 bg-white dark:bg-[#0a0a0a] py-4 z-10">
           <div className="flex flex-col sm:flex-row gap-3 mb-3">
-            {/* Chain Filter */}
+            {/* Stablecoin Filter (now first) */}
+            <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
+              <SelectTrigger className="w-full sm:w-[150px]">
+                <SelectValue placeholder="Stablecoin">
+                  <div className="flex items-center gap-2">
+                    {currencyFilter !== "all" && (
+                      <CryptoIcon symbol={currencyFilter} size={16} />
+                    )}
+                    <span>
+                      {currencyFilter === "all"
+                        ? "Stablecoin"
+                        : currencyFilter}
+                    </span>
+                  </div>
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">
+                  <div className="flex items-center gap-2">
+                    <span>Stablecoin</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="USDC">
+                  <div className="flex items-center gap-2">
+                    <CryptoIcon symbol="USDC" size={16} />
+                    <span>USDC</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="USDT">
+                  <div className="flex items-center gap-2">
+                    <CryptoIcon symbol="USDT" size={16} />
+                    <span>USDT</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="EURC">
+                  <div className="flex items-center gap-2">
+                    <CryptoIcon symbol="EURC" size={16} />
+                    <span>EURC</span>
+                  </div>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Chain Filter (now second) */}
             <Select value={chainFilter} onValueChange={setChainFilter}>
               <SelectTrigger className="w-full sm:w-[150px]">
-                <SelectValue placeholder="All Chains">
+                <SelectValue placeholder="Chain">
                   <div className="flex items-center gap-2">
                     {chainFilter !== "all" && (
                       <ChainIcon chain={chainFilter} size={16} />
                     )}
                     <span>
                       {chainFilter === "all"
-                        ? "All Chains"
+                        ? "Chain"
                         : chainFilter.charAt(0).toUpperCase() + chainFilter.slice(1)}
                     </span>
                   </div>
@@ -90,7 +131,7 @@ export default function ReportsPage({
               <SelectContent>
                 <SelectItem value="all">
                   <div className="flex items-center gap-2">
-                    <span>All Chains</span>
+                    <span>Chain</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="ethereum">
@@ -126,57 +167,6 @@ export default function ReportsPage({
               </SelectContent>
             </Select>
 
-            {/* Coin Filter */}
-            <Select value={currencyFilter} onValueChange={setCurrencyFilter}>
-              <SelectTrigger className="w-full sm:w-[150px]">
-                <SelectValue placeholder="All Coins">
-                  <div className="flex items-center gap-2">
-                    {currencyFilter !== "all" && (
-                      <CryptoIcon symbol={currencyFilter} size={16} />
-                    )}
-                    <span>
-                      {currencyFilter === "all"
-                        ? "All Coins"
-                        : currencyFilter}
-                    </span>
-                  </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  <div className="flex items-center gap-2">
-                    <span>All Coins</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="USDC">
-                  <div className="flex items-center gap-2">
-                    <CryptoIcon symbol="USDC" size={16} />
-                    <span>USDC</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="USDT">
-                  <div className="flex items-center gap-2">
-                    <CryptoIcon symbol="USDT" size={16} />
-                    <span>USDT</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="EURC">
-                  <div className="flex items-center gap-2">
-                    <CryptoIcon symbol="EURC" size={16} />
-                    <span>EURC</span>
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Search Field */}
-            <SearchField
-              value={reportsSearchQuery}
-              onChange={setReportsSearchQuery}
-              placeholder="Search transactions..."
-              className="flex-1"
-            />
-
             {/* Date From Field */}
             <DateField
               value={reportsDateFrom}
@@ -194,10 +184,9 @@ export default function ReportsPage({
             />
 
             {/* Clear Filters Button - Shows when any filter is active */}
-            {(reportsSearchQuery || reportsDateFrom || reportsDateTo || chainFilter !== "all" || currencyFilter !== "all") && (
+            {(reportsDateFrom || reportsDateTo || chainFilter !== "all" || currencyFilter !== "all") && (
               <Button
                 onClick={() => {
-                  setReportsSearchQuery('');
                   setReportsDateFrom('');
                   setReportsDateTo('');
                   setChainFilter('all');
@@ -218,7 +207,7 @@ export default function ReportsPage({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Volume by Coin</CardTitle>
+                <CardTitle>Stablecoin Volume</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -242,7 +231,7 @@ export default function ReportsPage({
 
             <Card>
               <CardHeader>
-                <CardTitle>Network Activity</CardTitle>
+                <CardTitle>Chain Volume</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -302,13 +291,12 @@ export default function ReportsPage({
           {/* Transaction table - filtered by top sticky filter bar */}
           <ReportsTransactionTable
             transactions={recentTransactions}
-            searchQuery={reportsSearchQuery}
             dateFrom={reportsDateFrom}
             dateTo={reportsDateTo}
             chainFilter={chainFilter}
             currencyFilter={currencyFilter}
             getExplorerUrl={getExplorerUrl}
-            isFiltered={!!(reportsSearchQuery || reportsDateFrom || reportsDateTo || chainFilter !== "all" || currencyFilter !== "all")}
+            isFiltered={!!(reportsDateFrom || reportsDateTo || chainFilter !== "all" || currencyFilter !== "all")}
           />
         </div>
       </PageLayout.Content>

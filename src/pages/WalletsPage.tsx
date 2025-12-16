@@ -50,7 +50,7 @@ export default function WalletsPage({
         <PageLayout.Header
           icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
           title="Wallets"
-          subtitle="Multi-Chain Crypto Assets"
+          subtitle="Multi-Chain Stablecoin"
         />
         <PageLayout.Content>
           <Card className="rounded-2xl shadow-sm bg-white dark:bg-[#303030]">
@@ -96,7 +96,7 @@ export default function WalletsPage({
         <PageLayout.Header
           icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
           title="Wallets"
-          subtitle="Multi-Chain Crypto Assets"
+          subtitle="Multi-Chain Stablecoin"
         />
       )}
       <PageLayout.Content>
@@ -193,7 +193,7 @@ export default function WalletsPage({
                           <TableHeader>
                             <TableRow>
                               <TableHead className="pl-6">
-                                Coin
+                                Stablecoin
                               </TableHead>
                               <TableHead>Balance</TableHead>
                               <TableHead>$Value</TableHead>
