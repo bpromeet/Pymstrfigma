@@ -60,7 +60,7 @@ export const CryptoSelector: React.FC<CryptoSelectorProps> = ({
             className={`flex-shrink-0 w-16 h-16 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
               selectedCrypto === option.crypto.symbol
                 ? "border-[#1E88E5] bg-[#E3F2FD] dark:bg-[#1565C0]/20"
-                : "border-[#D1D9E1] dark:border-[#43586C] bg-white dark:bg-[#2E3C49] hover:border-[#757575]"
+                : "border-[#43586C] bg-white dark:bg-[#2E3C49] hover:border-[#757575]"
             }`}
             onClick={() => onCryptoChange(option.crypto.symbol)}
             aria-label={`Select ${option.crypto.name}`}

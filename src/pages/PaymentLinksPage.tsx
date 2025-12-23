@@ -57,7 +57,6 @@ export default function PaymentLinksPage({
 }: PaymentLinksPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSearchQuery, setActiveSearchQuery] = useState("");
-  const [currencyFilter, setCurrencyFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [paymentLinksTab, setPaymentLinksTab] = useState("all");
   const [sharedLinkId, setSharedLinkId] = useState<string | null>(null);
@@ -84,15 +83,11 @@ export default function PaymentLinksPage({
     }
   };
 
-  // Handle refresh button click
+  // Handle refresh with clear all filters
   const handleRefresh = () => {
-    // Reset all filters and search to initial state
-    setPaymentLinksTab('all');
-    setCurrencyFilter('all');
     setStatusFilter('all');
     setSearchQuery('');
     setActiveSearchQuery('');
-    console.log('Payment links refreshed - filters and search cleared');
   };
 
   // Handle share button click
@@ -134,8 +129,6 @@ export default function PaymentLinksPage({
   // Filter function
   const getFilteredLinks = (source?: "manual" | "api") => {
     return paymentLinks.filter((link) => {
-      const matchesCurrency =
-        currencyFilter === "all" || link.currency === currencyFilter;
       const matchesStatus =
         statusFilter === "all" || link.status === statusFilter;
       const matchesSearch =
@@ -144,7 +137,7 @@ export default function PaymentLinksPage({
         link.linkId?.toLowerCase().includes(activeSearchQuery.toLowerCase());
       const matchesSource = !source || link.source === source;
 
-      return matchesCurrency && matchesStatus && matchesSearch && matchesSource;
+      return matchesStatus && matchesSearch && matchesSource;
     });
   };
 
@@ -220,55 +213,6 @@ export default function PaymentLinksPage({
           ======================================== */}
           <div className="sticky top-0 bg-white dark:bg-[#0a0a0a] py-4 z-10">
             <div className="flex flex-col sm:flex-row gap-3">
-              {/* Coin Filter */}
-              <Select
-                value={currencyFilter}
-                onValueChange={setCurrencyFilter}
-              >
-                <SelectTrigger className="w-full sm:w-[150px]">
-                  <SelectValue placeholder="Stablecoin">
-                    <div className="flex items-center gap-2">
-                      {currencyFilter !== "all" && (
-                        <CryptoIcon
-                          symbol={currencyFilter}
-                          size={16}
-                        />
-                      )}
-                      <span>
-                        {currencyFilter === "all"
-                          ? "Stablecoin"
-                          : currencyFilter}
-                      </span>
-                    </div>
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    <div className="flex items-center gap-2">
-                      <span>Stablecoin</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="USDC">
-                    <div className="flex items-center gap-2">
-                      <CryptoIcon symbol="USDC" size={16} />
-                      <span>USDC</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="USDT">
-                    <div className="flex items-center gap-2">
-                      <CryptoIcon symbol="USDT" size={16} />
-                      <span>USDT</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="EURC">
-                    <div className="flex items-center gap-2">
-                      <CryptoIcon symbol="EURC" size={16} />
-                      <span>EURC</span>
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-
               {/* Status Filter */}
               <Select
                 value={statusFilter}

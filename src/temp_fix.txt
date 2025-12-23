@@ -1,0 +1,31 @@
+Line 1759-1769 needs to change from:
+```
+                  <div className="space-y-0">
+                    <p className="text-muted-foreground">
+                      {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)} •{" "}
+                      {currentPayment?.description || "Payment to CryptoStore"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Funding Options */}
+                <div className="space-y-3">
+                  <Label>Choose funding method</Label>
+```
+
+To:
+```
+                  <div className="space-y-2">
+                    <p className="text-muted-foreground">
+                      {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)} •{" "}
+                      {currentPayment?.description || "Payment to CryptoStore"}
+                    </p>
+                    <h3 className="text-center text-muted-foreground not-italic">Choose Funding Method</h3>
+                  </div>
+                </div>
+
+                {/* Funding Options */}
+                <div className="space-y-3">
+```
+
+This same change needs to be applied to BOTH instances at line 1759 and line 2055.

@@ -1,0 +1,135 @@
+          {/* Header with Back Button, Logo, and Avatar */}
+          <div className="relative p-6 pb-0">
+            {/* Back button in top left */}
+            <div className="absolute top-6 left-6">
+              <Button
+                variant="ghost"
+                className="min-h-12 px-4 rounded-full transition-all duration-200"
+                onClick={() => {
+                  setShowQRFunding(false);
+                  setFundingMethod("");
+                }}
+              >
+                <ArrowLeft className="w-[18px] h-[18px] mr-2" />
+                <span>Back</span>
+              </Button>
+            </div>
+
+            {/* User Avatar in top right */}
+            <div className="absolute top-6 right-6">
+              <Button
+                variant="ghost"
+                className="w-12 h-12 rounded-full p-0 transition-all duration-200 hover:bg-[#E3F2FD]"
+                onClick={() => {
+                  if (!isUserLoggedIn) {
+                    setIsUserLoggedIn(true);
+                    setUserLoginMethod('Google');
+                  }
+                  handleNavigate('user-dashboard');
+                }}
+                aria-label="Open your account"
+              >
+                <div className="relative">
+                  {/* Green connected ring */}
+                  <div className="absolute inset-0 rounded-full ring-2 ring-[#7DD069] ring-offset-2 ring-offset-white dark:ring-offset-[#0a0a0a]"></div>
+                  
+                  {/* Avatar */}
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage 
+                      src={endUserAvatar}
+                      alt="Your Account"
+                    />
+                    <AvatarFallback>
+                      <User className="w-5 h-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  {/* Wallet provider badge (bottom-right corner) */}
+                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-white dark:bg-[#0a0a0a] rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#0a0a0a]">
+                    {connectedWallet === "MetaMask" && <MetaMaskLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "WalletConnect" && <WalletConnectLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Coinbase Wallet" && <CoinbaseLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Google" && <GoogleLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Twitter" && <TwitterLogo className="w-3.5 h-3.5" />}
+                    {connectedWallet === "Github" && <GithubLogo className="w-3.5 h-3.5" />}
+                  </div>
+                </div>
+              </Button>
+            </div>
+
+            {/* PYMSTR Logo in center */}
+            <div className="flex justify-center pt-4">
+              <PymstrLogo variant="icon" size="sm" />
+            </div>
+          </div>
+
+          {/* Content - Compact Layout */}
+          <div className="px-6 pb-6 pt-6 space-y-6">
+            {/* Merchant Logo + Price + Description */}
+            <div className="text-center space-y-4">
+              {/* Merchant Logo */}
+              <div className="flex justify-center">
+                <div className="w-[54px] h-[54px] rounded-xl border-2 border-dashed border-[#43586C] flex items-center justify-center bg-[#FAFAFA] dark:bg-[#262626] overflow-hidden">
+                  <div className="text-center">
+                    <Building2 className="w-10 h-10 mx-auto text-muted-foreground" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Price + Description */}
+              <div className="space-y-0">
+                <p className="text-muted-foreground">
+                  {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)} •{" "}
+                  {currentPayment?.description || "Payment to CryptoStore"}
+                </p>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 className="text-center">Scan/Copy to Pay</h3>
+
+            {/* QR Code and Wallet Address - Side by Side */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* QR Code Section */}
+              <div className="bg-white dark:bg-[#2E3C49] p-3 rounded-2xl border border-[#43586C] flex items-center justify-center">
+                <QRCodeCanvas
+                  value={walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb"}
+                  size={140}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
+
+              {/* Wallet Address with Copy - Vertical Layout */}
+              <div className="space-y-3 flex flex-col justify-center">
+                <div className="bg-[#1E88E5]/10 dark:bg-[#1E88E5]/20 px-2 py-2 rounded-xl border-2 border-[#1E88E5]">
+                  <div className="flex flex-col items-center space-y-2">
+                    <span className="font-mono text-xs text-[#1E88E5] text-center break-all">
+                      {formatAddress(walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb")}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-full rounded-lg hover:bg-[#1E88E5]/10 transition-all duration-200"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        copyToClipboard(walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb");
+                      }}
+                    >
+                      {copiedItem === (walletAddress || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb") ? (
+                        <>
+                          <Check className="w-3 h-3 text-green-600 mr-1" />
+                          <span className="text-xs">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3 text-[#1E88E5] mr-1" />
+                          <span className="text-xs">Copy</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>

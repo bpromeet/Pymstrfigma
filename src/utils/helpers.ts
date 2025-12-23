@@ -96,7 +96,7 @@ export const calculateCryptoAmount = (
   crypto: string
 ): string => {
   const rate = getExchangeRate(crypto);
-  return (usdAmount / rate).toFixed(6);
+  return (usdAmount / rate).toFixed(2);
 };
 
 // Mock wallet balances (in real app, this would come from connected wallet)
@@ -111,7 +111,7 @@ export const getWalletBalance = (crypto: string, chain: string): number => {
     },
     USDT: {
       ethereum: 0.0,
-      polygon: 0.0,
+      polygon: 175.50,   // SUFFICIENT BALANCE for $150 payment (MetaMask example)
       arbitrum: 320.15,
       optimism: 0.0,
       base: 180.50,

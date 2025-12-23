@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardHeader } from "./ui/card";
 import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 import { Input } from "./ui/input";
 import { 
@@ -42,16 +42,7 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
   const [sendAmt, setSendAmt] = useState("");
   const [sendAddr, setSendAddr] = useState("");
 
-  // Helper functions
-  const getCryptoName = (symbol: string) => {
-    const names: Record<string, string> = {
-      USDC: "USD Coin",
-      USDT: "Tether",
-      EURC: "Euro Coin"
-    };
-    return names[symbol] || symbol;
-  };
-
+  // Helper function
   const getNetworkName = (network: string) => {
     const names: Record<string, string> = {
       ethereum: "Ethereum",
@@ -207,28 +198,20 @@ export const ManageCoin: React.FC<ManageCoinProps> = ({
             </div>
           </div>
 
-          {/* Wallet Address Label */}
-          <div>
-            <Label className="text-gray-600 dark:text-gray-400">Wallet Address ({selectedCrypto})</Label>
-          </div>
+          {/* Two Column Layout: Address Copy Button + QR Code */}
+          <div className="flex items-center gap-6">
+            {/* Left Column: Address Copy Button */}
+            <div className="flex-1 max-w-md">
+              <WalletAddressCopyButton address={walletAddress} />
+            </div>
 
-          {/* Address Copy Button */}
-          <div>
-            <WalletAddressCopyButton address={walletAddress} />
-          </div>
-
-          {/* QR Code Section */}
-          <div className="bg-[#1D2E3F] dark:bg-[#1D2E3F] p-6 rounded-2xl">
-            <div className="text-center space-y-3">
-              <p className="text-white">Scan QR Code to Deposit</p>
+            {/* Right Column: QR Code */}
+            <div className="flex-shrink-0 flex items-center justify-center">
               {qrCode && (
-                <div className="flex justify-center">
-                  <div className="bg-white p-4 rounded-2xl inline-block">
-                    <img src={qrCode} alt="Wallet QR Code" className="w-48 h-48" />
-                  </div>
+                <div className="bg-white p-3 rounded-xl">
+                  <img src={qrCode} alt="Wallet QR Code" className="w-[120px] h-[120px]" />
                 </div>
               )}
-              <p className="text-sm text-gray-400">Use your wallet app to scan</p>
             </div>
           </div>
         </div>

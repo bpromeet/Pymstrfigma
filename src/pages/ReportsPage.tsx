@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarChart3, X } from 'lucide-react';
+import { BarChart3, X, Download } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import {
@@ -49,6 +49,71 @@ export default function ReportsPage({
   const [reportsDateTo, setReportsDateTo] = useState("");
   const [chainFilter, setChainFilter] = useState("all");
   const [currencyFilter, setCurrencyFilter] = useState("all");
+
+  // CSV Download Function
+  const handleDownloadCSV = () => {
+    // Filter transactions based on current filters
+    let filteredTransactions = recentTransactions;
+
+    if (chainFilter !== "all") {
+      filteredTransactions = filteredTransactions.filter(
+        (tx) => tx.chain.toLowerCase() === chainFilter.toLowerCase()
+      );
+    }
+
+    if (currencyFilter !== "all") {
+      filteredTransactions = filteredTransactions.filter(
+        (tx) => tx.currency === currencyFilter
+      );
+    }
+
+    if (reportsDateFrom) {
+      filteredTransactions = filteredTransactions.filter(
+        (tx) => new Date(tx.date) >= new Date(reportsDateFrom)
+      );
+    }
+
+    if (reportsDateTo) {
+      filteredTransactions = filteredTransactions.filter(
+        (tx) => new Date(tx.date) <= new Date(reportsDateTo)
+      );
+    }
+
+    // Create CSV content
+    const headers = ["Date", "Type", "Status", "Amount", "Currency", "Chain", "Transaction Hash", "Customer Email"];
+    const csvRows = [headers.join(",")];
+
+    filteredTransactions.forEach((tx) => {
+      const row = [
+        tx.date,
+        tx.type,
+        tx.status,
+        tx.price,
+        tx.currency,
+        tx.chain,
+        tx.txHash,
+        tx.customerEmail || "N/A",
+      ];
+      csvRows.push(row.join(","));
+    });
+
+    const csvContent = csvRows.join("\n");
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `pymstr-reports-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success(`Downloaded ${filteredTransactions.length} transactions`);
+  };
 
   return (
     <PageLayout>
@@ -199,6 +264,15 @@ export default function ReportsPage({
                 Clear
               </Button>
             )}
+
+            {/* Download CSV Button */}
+            <Button
+              onClick={handleDownloadCSV}
+              className="min-h-12 px-6 py-3 bg-transparent border border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white rounded-full transition-all duration-200 w-full sm:w-auto"
+            >
+              <Download className="w-[18px] h-[18px] mr-2" />
+              Download CSV
+            </Button>
           </div>
         </div>
 

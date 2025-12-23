@@ -20,6 +20,7 @@ import {
   Trash2,
   Check,
 } from "lucide-react";
+import { copyToClipboard } from "../utils/clipboard";
 
 interface WebhookEndpoint {
   id: string;
@@ -71,17 +72,21 @@ export const WebhookEndpoints: React.FC<WebhookEndpointsProps> = ({
   };
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(endpoint.url);
-    setCopiedUrl(true);
-    setTimeout(() => setCopiedUrl(false), 2000);
-    onCopyUrl?.();
+    const success = copyToClipboard(endpoint.url);
+    if (success) {
+      setCopiedUrl(true);
+      setTimeout(() => setCopiedUrl(false), 2000);
+      onCopyUrl?.();
+    }
   };
 
   const handleCopySecret = () => {
-    navigator.clipboard.writeText(endpoint.signingSecret);
-    setCopiedSecret(true);
-    setTimeout(() => setCopiedSecret(false), 2000);
-    onCopySecret?.();
+    const success = copyToClipboard(endpoint.signingSecret);
+    if (success) {
+      setCopiedSecret(true);
+      setTimeout(() => setCopiedSecret(false), 2000);
+      onCopySecret?.();
+    }
   };
 
   const truncateSecret = (secret: string) => {

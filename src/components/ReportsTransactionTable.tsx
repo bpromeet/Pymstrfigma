@@ -79,7 +79,7 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
                 <TableHead className="w-[100px]">Tr-ID</TableHead>
                 <TableHead className="w-[90px]">Date</TableHead>
                 <TableHead className="w-[70px]">Time</TableHead>
-                <TableHead className="w-[130px]">Link ID</TableHead>
+                <TableHead className="w-[130px]">Payment ID</TableHead>
                 <TableHead className="w-[100px]">Amount</TableHead>
                 <TableHead className="w-[90px]">Stablecoin</TableHead>
                 <TableHead className="w-[70px]">Chain</TableHead>
@@ -188,7 +188,7 @@ const ReportsTransactionTable: React.FC<ReportsTransactionTableProps> = ({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Link ID:</span>
+                  <span className="text-muted-foreground">Payment ID:</span>
                   <span>{tx.linkId}</span>
                 </div>
                 <div className="flex justify-between">

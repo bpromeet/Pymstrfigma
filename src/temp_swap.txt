@@ -1,0 +1,16 @@
+# Instructions for swapping Coin and Chain selectors in Screen 3/9
+
+There are TWO identical instances that need to be swapped:
+
+## Instance 1: Lines 1489-1610
+## Instance 2: Lines 1782-1903
+
+Current order (both instances):
+1. Chain Selection
+2. Coin Selection  
+
+Required new order (both instances):
+1. Coin Selection (FIRST)
+2. Chain Selection (SECOND)
+
+This requires manually swapping large blocks of code in two locations.
