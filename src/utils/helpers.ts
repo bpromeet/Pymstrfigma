@@ -100,11 +100,39 @@ export const calculateCryptoAmount = (
 };
 
 // Mock wallet balances (in real app, this would come from connected wallet)
+// 
+// 🦊 METAMASK PAYMENT SCENARIOS (Test with #PL003 - $150.00 USD):
+// 
+// To test each scenario, modify the balances below and use MetaMask login:
+// 
+// ✅ SCENARIO 1: Wallet = 0 & MetaMask = 0
+//    - USDC polygon: 0.0
+//    - Button: "Add USDC + Polygon"
+//    - Goes to Screen 3.5/7 → Shows FULL amount (150.00 USDC)
+// 
+// ✅ SCENARIO 2: Wallet Partial (75 USDC)
+//    - USDC polygon: 75.0
+//    - Button: "Add USDC to Pay"
+//    - Goes to Screen 3.5/7 → Shows MISSING amount (75.00 USDC)
+// 
+// ✅ SCENARIO 3: Wallet = 0 & MetaMask Partial (75 USDC - INSUFFICIENT)
+//    - USDC polygon: 75.0
+//    - ❌ NO MetaMask logo/balance displayed (ignored)
+//    - Shows: "Balance: 75.00 USDC" (wallet icon, red text)
+//    - Button: "Add USDC to Pay"
+//    - Goes to Screen 3.5/7 → Shows MISSING amount (75.00 USDC)
+// 
+// ✅ SCENARIO 4: MetaMask SUFFICIENT (150+ USDC)
+//    - USDC polygon: 175.0
+//    - Shows: "MetaMask: 175.00 USDC" (MetaMask logo, green text)
+//    - Button: "Pay USDC on Polygon"
+//    - Can pay directly with MetaMask
+// 
 export const getWalletBalance = (crypto: string, chain: string): number => {
   const balances: { [key: string]: { [key: string]: number } } = {
     USDC: {
       ethereum: 0.0,    // Zero balance on Ethereum
-      polygon: 245.67,   // Has balance on Polygon
+      polygon: 0.0,     // 🧪 TEST SCENARIO 1: Both = 0 (Change to 75.0 for Scenario 2/3, 175.0 for Scenario 4)
       arbitrum: 75.00,   // PARTIAL BALANCE for PL003 testing ($150 needed, only $75 available)
       optimism: 89.45,
       base: 425.90,      // Has balance on Base

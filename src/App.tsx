@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { truncateAddress } from "./utils/address";
 import { copyToClipboard } from "./utils/clipboard";
+import { PaymentSuccessScreen } from "./components/checkout/PaymentSuccessScreen";
 import {
   Card,
   CardContent,
@@ -145,9 +146,7 @@ import MerchantProfile from "./components/MerchantProfile";
 import EndUserBuyPage from "./components/EndUserBuyPage";
 import EndUserSendPage from "./components/EndUserSendPage";
 import EndUserReceivePage from "./components/EndUserReceivePage";
-import { ImageWithFallback } from "./components/figma/ImageWithFallback";
-import { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar";
-import { User } from "lucide-react";
+import { CheckoutFlow } from "./components/checkout/CheckoutFlow";
 
 // Avatar images - YOUR provided pictures stored in /public/
 const merchantAvatar = "/merchant-avatar.png"; // Your picture: Woman with glasses
@@ -255,7 +254,6 @@ const App = () => {
     useState(0);
   const [autoCheckTriggered, setAutoCheckTriggered] = useState(false);
   const [fundsReceived, setFundsReceived] = useState(false);
-  const [showTestMode, setShowTestMode] = useState(false);
   const [showOnRamper, setShowOnRamper] = useState(false);
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
   
@@ -376,9 +374,9 @@ const App = () => {
     let autoCheckTimer: NodeJS.Timeout | null = null;
 
     if (showQRFunding && !autoCheckTriggered && !fundsReceived) {
-      // Start 20-second timer
+      // Start 10-second auto-advance timer
       autoCheckTimer = setTimeout(() => {
-        // Perform automatic balance check
+        // Automatically advance to payment screen after 10 seconds
         const requiredAmount = parseFloat(
           calculateCryptoAmount(
             currentPayment?.price || 156.78,
@@ -388,9 +386,15 @@ const App = () => {
 
         // Simulate blockchain check (always finds funds for demo)
         setQrFundingBalance(requiredAmount);
-        setFundsReceived(true);
+        
+        // ✅ AUTO-ADVANCE: Skip "Funds received" state, go directly to payment form
+        setShowQRFunding(false);
+        setShowCryptoSelection(false);
+        setShowFundingOptions(false);
+        setShowPaymentForm(true);
         setAutoCheckTriggered(true);
-      }, 20000); // 20 seconds
+        toast("Wallet funded successfully!");
+      }, 10000); // 10 seconds auto-advance
     }
 
     // Cleanup timer on unmount or when dependencies change
@@ -425,13 +429,13 @@ const App = () => {
 
         if (payment && payment.status === "active") {
           // ✅ CRITICAL FIX: Reset ALL screen flags FIRST before loading payment
-          // This ensures checkout always starts at Screen #1 with clean state
+          // This ensures checkout always starts at Screen #1 (Login) with clean state
           
           // Clear all checkout screen flags FIRST
-          setShowWeb3Auth(false);
+          setShowWeb3Auth(true);  // ← Start at Login screen (new Screen #1)
           setShowCryptoSelection(false);
           setShowPaymentForm(false);
-          setShowFundingOptions(false);  // ← Must be false for Screen #1
+          setShowFundingOptions(false);
           setShowFundingSuccess(false);
           setShowQRFunding(false);
           setPaymentStatus("pending");
@@ -440,7 +444,6 @@ const App = () => {
           setAutoCheckTriggered(false);
           setFundsReceived(false);
           setShowOnRamper(false);
-          setShowTestMode(false);
           
           // Clear all user/wallet state
           setIsUserLoggedIn(false);
@@ -635,9 +638,6 @@ const App = () => {
   const [apiKeyDetailsTab, setApiKeyDetailsTab] =
     useState("info");
 
-  // Copy tooltip state
-  const [showCopyTooltip, setShowCopyTooltip] = useState("");
-
   // Merchant configuration state
   const [merchantConfig, setMerchantConfig] = useState(
     INITIAL_MERCHANT_CONFIG,
@@ -789,17 +789,17 @@ const App = () => {
     {
       symbol: "USDC",
       name: "USD Coin",
-      logo: <CryptoIcon symbol="USDC" />,
+      logo: <CryptoIcon symbol="USDC" size={20} />,
     },
     {
       symbol: "USDT",
       name: "Tether",
-      logo: <CryptoIcon symbol="USDT" />,
+      logo: <CryptoIcon symbol="USDT" size={20} />,
     },
     {
       symbol: "EURC",
       name: "Euro Coin",
-      logo: <CryptoIcon symbol="EURC" />,
+      logo: <CryptoIcon symbol="EURC" size={20} />,
     },
   ];
 
@@ -831,16 +831,18 @@ const App = () => {
     },
   ];
 
-  // Local wrapper for copyToClipboard to pass setShowCopyTooltip
+  // Local wrapper for copyToClipboard with visual feedback
   const copyToClipboard = (
     text: string,
     tooltipId?: string,
   ) => {
-    copyToClipboardUtil(text, tooltipId, setShowCopyTooltip);
-    setCopiedItem(text);
-    setTimeout(() => {
-      setCopiedItem(null);
-    }, 2000);
+    const success = copyToClipboardUtil(text);
+    if (success) {
+      setCopiedItem(text);
+      setTimeout(() => {
+        setCopiedItem(null);
+      }, 2000);
+    }
   };
 
   // Check if user has sufficient balance for payment
@@ -865,9 +867,17 @@ const App = () => {
       setShowCryptoSelection(false);
       setShowPaymentForm(true);
     } else {
-      // Insufficient balance - show funding options (Screen #4)
-      setShowCryptoSelection(false);
-      setShowFundingOptions(true);
+      // Insufficient balance
+      // For social login users (Google/Twitter/GitHub/Email): Skip funding options, go directly to QR funding
+      // Only Wallet users see the funding options (with card)
+      if (userLoginMethod !== 'Wallet') {
+        setShowCryptoSelection(false);
+        setShowQRFunding(true);
+      } else {
+        // For Wallet users: Show funding options (Screen #4)
+        setShowCryptoSelection(false);
+        setShowFundingOptions(true);
+      }
     }
   };
 
@@ -1269,6 +1279,89 @@ const App = () => {
     setShowPaymentLinkDialog(true);
   }, []);
 
+  // Checkout flow handlers
+  const handleCheckoutBack = () => {
+    if (paymentStatus === "completed") return; // No back button on success screen
+    
+    if (showFundingOptions && showQRFunding) {
+      setShowQRFunding(false);
+      return;
+    }
+    
+    if (showFundingOptions && !showQRFunding) {
+      setShowFundingOptions(false);
+      setShowPaymentForm(true);
+      return;
+    }
+    
+    if (showPaymentForm) {
+      setShowPaymentForm(false);
+      setShowCryptoSelection(true);
+      return;
+    }
+    
+    if (showCryptoSelection) {
+      setShowCryptoSelection(false);
+      setShowWeb3Auth(true);
+      return;
+    }
+    
+    if (showWeb3Auth) {
+      setShowWeb3Auth(false);
+      return;
+    }
+    
+    // Screen #1: Go back to admin/close checkout
+    setActiveTab("admin");
+    setCurrentPayment(null);
+    setShowCryptoSelection(false);
+    setShowWeb3Auth(false);
+    setShowPaymentForm(false);
+    setShowFundingOptions(false);
+    setShowFundingSuccess(false);
+    setShowQRFunding(false);
+    setPaymentStatus("pending");
+    setFundingMethod("");
+    setWalletAddress("");
+  };
+
+  const handleSelectFundingMethod = (method: string) => {
+    setFundingMethod(method);
+    
+    if (method === 'transfer') {
+      setShowQRFunding(true);
+      toast('Scan QR code to add funds');
+    } else if (method === 'card' || method === 'exchange') {
+      setTimeout(() => {
+        setShowFundingSuccess(true);
+        toast(`${method === 'card' ? 'Card' : 'Exchange'} funding ready`);
+      }, 1500);
+    }
+  };
+
+  const handleContinueFromFunding = () => {
+    setShowFundingOptions(false);
+    setShowPaymentForm(true);
+    setShowFundingSuccess(false);
+    setFundingMethod("");
+    toast('Ready to proceed with payment');
+  };
+
+  const handleReturnToDashboard = () => {
+    setActiveTab("admin");
+    setCurrentPayment(null);
+    setShowCryptoSelection(false);
+    setShowWeb3Auth(false);
+    setShowPaymentForm(false);
+    setShowFundingOptions(false);
+    setShowFundingSuccess(false);
+    setShowQRFunding(false);
+    setPaymentStatus("pending");
+    setFundingMethod("");
+    setWalletAddress("");
+    window.location.hash = "";
+  };
+
   const Wallets = () => {
     const mainWallet = wallets.find((w) => w.isDefault);
     if (!mainWallet) return null;
@@ -1301,16 +1394,22 @@ const App = () => {
 
   const CustomerCheckout = () => {
     // Helper function to determine current checkout screen number
+    // Note: Processing is a transition state (not a screen), so we skip it
     const getCurrentScreenNumber = (): number => {
-      if (paymentStatus === "completed") return 8; // Screen #8: Success
-      if (paymentStatus === "processing") return 7; // Screen #7: Processing
-      if (showPaymentForm) return 6; // Screen #6: Payment Confirmation Form
-      if (showFundingOptions && showFundingSuccess) return 5; // Screen #5: Funding Success
-      if (showQRFunding) return 4.5; // Screen #4.5: QR Funding (Scan to Add Funds)
-      if (showFundingOptions && !showFundingSuccess) return 4; // Screen #4: Insufficient Balance (Funding Options)
-      if (showCryptoSelection) return 3; // Screen #3: Crypto Selection
-      if (showWeb3Auth) return 2; // Screen #2: Login/Register
-      return 1; // Screen #1: Payment Details
+      // Check if user went through funding flow to determine final screen number
+      const wentThroughFunding = showFundingOptions || showQRFunding || showFundingSuccess;
+      
+      if (paymentStatus === "completed") {
+        return wentThroughFunding ? 6 : 4; // Success: Screen 6 (funding path) or 4 (direct path)
+      }
+      // Processing state removed - it's just a transition, not a screen
+      if (showPaymentForm) {
+        return wentThroughFunding ? 5 : 3; // Confirmation: Screen 5 (funding path) or 3 (direct path)
+      }
+      if (showFundingOptions && showFundingSuccess) return 4; // Screen #4: Funding Success
+      if (showQRFunding || (showFundingOptions && !showFundingSuccess)) return 3; // Screen #3: Add Funds (QR OR Options)
+      if (showCryptoSelection) return 2; // Screen #2: Crypto Selection
+      return 1; // Screen #1: Login/Register (Web3Auth)
     };
 
     const currentScreen = getCurrentScreenNumber();
@@ -1328,81 +1427,81 @@ const App = () => {
           className={`absolute top-0 left-0 right-0 z-10 text-center p-6 pb-0 pointer-events-none ${showOnRamper ? "hidden" : ""}`}
         >
           {/* Back button in top left - conditional based on screen */}
-          <div className="absolute top-6 left-6 pointer-events-auto">
-            <Button
-              variant="ghost"
-              className="min-h-12 px-4 rounded-full transition-all duration-200"
-              onClick={() => {
-                // Screen #9: Success - no back button shown, handled by "Return to Dashboard" button
-                if (paymentStatus === "completed") return;
+          {/* Hide back button on Screen #7 (Success) and Screen #6 (Processing) */}
+          {paymentStatus !== "completed" && paymentStatus !== "processing" && (
+            <div className="absolute top-6 left-6 pointer-events-auto">
+              <Button
+                variant="ghost"
+                className="min-h-12 px-4 rounded-full transition-all duration-200"
+                onClick={() => {
+                  // Screen #5: Payment Confirmation Form - go back to crypto selection
+                  if (showPaymentForm) {
+                    setShowPaymentForm(false);
+                    setShowCryptoSelection(true);
+                    return;
+                  }
 
-                // Screen #8: Processing - no back button during processing
-                if (paymentStatus === "processing") return;
+                  // Screen #4: Funding Confirmation - go back to funding options
+                  if (showFundingOptions && showFundingSuccess) {
+                    setShowFundingSuccess(false);
+                    return;
+                  }
 
-                // Screen #7: Payment Confirmation Form - go back to crypto selection
-                if (showPaymentForm) {
-                  setShowPaymentForm(false);
-                  setShowCryptoSelection(true);
-                  return;
-                }
+                  // Screen #3: Add Funds (QR Funding) - go back to previous screen
+                  if (showQRFunding) {
+                    setShowQRFunding(false);
+                    // Social login users skip funding options, go back to crypto selection
+                    if (userLoginMethod !== 'Wallet') {
+                      setShowCryptoSelection(true);
+                    } else {
+                      // Wallet users go back to funding options
+                      setShowFundingOptions(true);
+                    }
+                    setFundingMethod("");
+                    return;
+                  }
 
-                // Screen #6: Funding Success - go back to funding options
-                if (showFundingOptions && showFundingSuccess) {
-                  setShowFundingSuccess(false);
-                  return;
-                }
+                  // Screen #3: Add Funds (Funding Options) - go back to crypto selection
+                  if (showFundingOptions && !showFundingSuccess) {
+                    setShowFundingOptions(false);
+                    setShowCryptoSelection(true);
+                    setFundingMethod("");
+                    return;
+                  }
 
-                // Screen #5: QR Funding - go back to funding options
-                if (showQRFunding) {
-                  setShowQRFunding(false);
-                  setShowFundingOptions(true);
-                  setFundingMethod("");
-                  return;
-                }
+                  // Screen #2: Crypto Selection - go back to login
+                  if (showCryptoSelection) {
+                    setShowCryptoSelection(false);
+                    setShowWeb3Auth(true);
+                    return;
+                  }
 
-                // Screen #5: Insufficient Balance (Funding Options) - go back to crypto selection
-                if (showFundingOptions && !showFundingSuccess) {
-                  setShowFundingOptions(false);
-                  setShowCryptoSelection(true);
-                  setFundingMethod("");
-                  return;
-                }
+                  // Screen #1: Login/Register - go back to admin/close checkout
+                  if (showWeb3Auth) {
+                    setActiveTab("admin");
+                    setCurrentPayment(null);
+                    setShowCryptoSelection(false);
+                    setShowWeb3Auth(false);
+                    setShowPaymentForm(false);
+                    setShowFundingOptions(false);
+                    setFundingMethod("");
+                    setShowFundingSuccess(false);
+                    setConnectedWallet("");
+                    setWalletAddress("");
+                    setPaymentStatus("pending");
+                    window.location.hash = "";
+                    return;
+                  }
+                }}
+              >
+                <ArrowLeft className="w-[18px] h-[18px] mr-2" />
+                <span>Back</span>
+              </Button>
+            </div>
+          )}
 
-                // Screen #4: Crypto Selection - go back to login
-                if (showCryptoSelection) {
-                  setShowCryptoSelection(false);
-                  setShowWeb3Auth(true);
-                  return;
-                }
-
-                // Screen #2: Login/Register - go back to payment details
-                if (showWeb3Auth) {
-                  setShowWeb3Auth(false);
-                  return;
-                }
-
-                // Screen #1: Payment Details - go back to admin/close checkout
-                setActiveTab("admin");
-                setCurrentPayment(null);
-                setShowCryptoSelection(false);
-                setShowWeb3Auth(false);
-                setShowPaymentForm(false);
-                setShowFundingOptions(false);
-                setFundingMethod("");
-                setShowFundingSuccess(false);
-                setConnectedWallet("");
-                setWalletAddress("");
-                setPaymentStatus("pending");
-                window.location.hash = "";
-              }}
-            >
-              <ArrowLeft className="w-[18px] h-[18px] mr-2" />
-              <span>Back</span>
-            </Button>
-          </div>
-
-          {/* User Avatar in top right - shows from Screen #3 onwards */}
-          {(showCryptoSelection || showPaymentForm || showFundingOptions || showFundingSuccess || paymentStatus === "processing" || paymentStatus === "completed") && (
+          {/* User Avatar in top right - shows from Screen #2 onwards (after login) */}
+          {(showCryptoSelection || showPaymentForm || showFundingOptions || showFundingSuccess || showQRFunding || paymentStatus === "processing" || paymentStatus === "completed") && (
             <div className="absolute top-6 right-6 pointer-events-auto">
               <Button
                 variant="ghost"
@@ -1454,8 +1553,7 @@ const App = () => {
           className={`px-6 pb-0 pt-20 flex-1 flex flex-col ${showOnRamper ? "hidden" : ""}`}
         >
           {showCryptoSelection ? (
-            // 🔥 SCREEN #3: Crypto Selection (Network + Token)
-            // Priority #1: Check this FIRST regardless of login state
+            // 🔥 SCREEN #2: Crypto Selection (Network + Token)
             <div className="flex flex-col pt-0 pb-0 px-0 space-y-4">
               <div className="text-center space-y-4">
                 {/* Merchant Logo */}
@@ -1495,7 +1593,7 @@ const App = () => {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-12 rounded bg-transparent border-2 border-[#1E88E5] hover:border-[#1565C0] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 focus:bg-[#E3F2FD] dark:focus:bg-[#1E88E5]/20 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] transition-all duration-200">
+                    <SelectTrigger className="h-12 rounded-xl bg-transparent border-2 border-[#1E88E5] hover:border-[#1565C0] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 focus:bg-[#E3F2FD] dark:focus:bg-[#1E88E5]/20 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] transition-all duration-200">
                       <SelectValue>
                         <div className="flex items-center gap-2">
                           {supportedCryptos.find(c => c.symbol === selectedCrypto)?.logo}
@@ -1546,7 +1644,7 @@ const App = () => {
                       }
                     }}
                   >
-                    <SelectTrigger className="h-12 rounded bg-transparent border-2 border-[#1E88E5] hover:border-[#1565C0] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 focus:bg-[#E3F2FD] dark:focus:bg-[#1E88E5]/20 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] transition-all duration-200">
+                    <SelectTrigger className="h-12 rounded-xl bg-transparent border-2 border-[#1E88E5] hover:border-[#1565C0] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 focus:bg-[#E3F2FD] dark:focus:bg-[#1E88E5]/20 focus:border-[#1E88E5] focus:ring-2 focus:ring-[#1E88E5] transition-all duration-200">
                       <SelectValue>
                         <div className="flex items-center gap-2">
                           {supportedChains.find(c => c.id === selectedChain)?.icon}
@@ -1600,25 +1698,43 @@ const App = () => {
                       {calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)} {selectedCrypto}
                     </div>
                     
-                    {/* Balance - Only show if balance > 0 */}
-                    {getWalletBalance(selectedCrypto, selectedChain) > 0 && (() => {
-                      const balance = getWalletBalance(selectedCrypto, selectedChain);
+                    {/* Balance Display Logic:
+                        - Show MetaMask ONLY if MetaMask has SUFFICIENT balance (≥ full payment)
+                        - Otherwise, show Wallet balance (or nothing if wallet = 0)
+                        - Ignore MetaMask if insufficient
+                    */}
+                    {(() => {
+                      const walletBalance = getWalletBalance(selectedCrypto, selectedChain);
+                      const requiredAmount = parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto));
                       const isMetaMask = connectedWallet === "MetaMask";
-                      const hasSufficient = hasSufficientBalance(selectedCrypto);
+                      
+                      // Check if MetaMask has SUFFICIENT balance for FULL payment
+                      const metaMaskSufficient = isMetaMask && walletBalance >= requiredAmount;
+                      
+                      // Show balance if:
+                      // 1. MetaMask is sufficient (show MetaMask balance)
+                      // 2. Wallet has balance > 0 (show wallet balance, ignore MetaMask if insufficient)
+                      const shouldShowBalance = metaMaskSufficient || walletBalance > 0;
+                      
+                      if (!shouldShowBalance) return null;
+                      
+                      // Determine which balance to show
+                      const displayAsMetaMask = metaMaskSufficient;
+                      const hasSufficient = walletBalance >= requiredAmount;
                       
                       return (
                         <div className="flex items-center gap-1.5 text-sm">
-                          {/* Show MetaMask logo if connected via MetaMask, otherwise show Wallet icon */}
-                          {isMetaMask ? (
+                          {/* Show MetaMask logo ONLY if MetaMask is sufficient, otherwise Wallet icon */}
+                          {displayAsMetaMask ? (
                             <MetaMaskLogo className="w-4 h-4 flex-shrink-0" />
                           ) : (
                             <Wallet className="w-4 h-4 text-muted-foreground" />
                           )}
                           <span className="text-muted-foreground">
-                            {isMetaMask ? "MetaMask:" : "Balance:"}
+                            {displayAsMetaMask ? "MetaMask:" : "Balance:"}
                           </span>
                           <span className={hasSufficient ? "text-[#7DD069]" : "text-[#FF5914]"}>
-                            {balance.toFixed(2)} {selectedCrypto}
+                            {walletBalance.toFixed(2)} {selectedCrypto}
                           </span>
                         </div>
                       );
@@ -1640,14 +1756,30 @@ const App = () => {
                   onClick={handleContinue}
                   className="w-full h-12 px-8 py-3 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white transition-all duration-200 flex items-center justify-center font-medium"
                 >
-                  {hasSufficientBalance(selectedCrypto) 
-                    ? `Pay ${selectedCrypto} on ${supportedChains.find(c => c.id === selectedChain)?.name}` 
-                    : `Add ${selectedCrypto} to Pay`}
+                  {(() => {
+                    const walletBalance = getWalletBalance(selectedCrypto, selectedChain);
+                    const requiredAmount = parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto));
+                    const hasSufficient = walletBalance >= requiredAmount;
+                    const chainName = supportedChains.find(c => c.id === selectedChain)?.name;
+                    
+                    // Scenario 1: Wallet = 0 (both wallet and MetaMask = 0, or MetaMask insufficient)
+                    if (walletBalance === 0) {
+                      return `Add ${selectedCrypto} + ${chainName}`;
+                    }
+                    
+                    // Scenario 2 & 4: Has sufficient balance (wallet partial or MetaMask sufficient)
+                    if (hasSufficient) {
+                      return `Pay ${selectedCrypto} on ${chainName}`;
+                    }
+                    
+                    // Scenario 3: Partial balance (need to add more)
+                    return `Add ${selectedCrypto} to Pay`;
+                  })()}
                 </button>
               </div>
             </div>
           ) : showWeb3Auth ? (
-            // 🔥 SCREEN #2: Login/Register
+            // 🔥 SCREEN #1: Login/Register (Web3Auth) - First Screen
             <div className="flex flex-col justify-center h-full space-y-6">
               <div className="text-center space-y-4">
                 {/* Merchant Logo */}
@@ -1670,7 +1802,7 @@ const App = () => {
 
               {isConnecting ? (
                 <div className="text-center space-y-4 py-8">
-                  <div className="w-12 h-12 border-4 border-[#1E88E5] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <div className="w-16 h-16 border-4 border-[#1E88E5] border-t-transparent rounded-full animate-spin mx-auto"></div>
                   <p className="text-muted-foreground">
                     Connecting...
                   </p>
@@ -1760,8 +1892,156 @@ const App = () => {
                 </div>
               )}
             </div>
+          ) : showQRFunding ? (
+            // 🔥 SCREEN #3: Add Funds (QR Funding - Scan to Pay)
+            <div className="flex flex-col justify-center flex-1 space-y-6">
+              {/* Merchant Logo + Price + Description */}
+              <div className="text-center space-y-4">
+                {/* Merchant Logo */}
+                <div className="flex justify-center">
+                  <div className="w-[54px] h-[54px] rounded-xl border-2 border-dashed border-[#43586C] flex items-center justify-center bg-[#FAFAFA] dark:bg-[#262626] overflow-hidden">
+                    <div className="text-center">
+                      <Building2 className="w-10 h-10 mx-auto text-muted-foreground" />
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Price + Description (one line) */}
+                <p className="text-muted-foreground">
+                  {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)} • {currentPayment?.description || "Monthly Subscription"}
+                </p>
+                
+                {/* Title */}
+                <h3 className="text-muted-foreground">Scan/Copy to Pay</h3>
+              </div>
+
+              {/* QR Code + Wallet Address (Horizontal Layout) */}
+              <div className="flex gap-3 items-center justify-center">
+                {/* QR Code - Left Side */}
+                <a 
+                  href={`https://opensea.io/assets/matic/${walletAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block flex-shrink-0"
+                  aria-label="Open wallet in OpenSea"
+                >
+                  <div className="bg-white dark:bg-[#303030] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 p-3 rounded-2xl border-2 border-[#43586C] hover:border-[#1E88E5] transition-all duration-200 cursor-pointer h-[88px] flex items-center justify-center">
+                    <QRCodeCanvas
+                      value={`https://opensea.io/assets/matic/${walletAddress}`}
+                      size={64}
+                      level="H"
+                      includeMargin={false}
+                    />
+                  </div>
+                </a>
+
+                {/* Wallet Address Card - Right Side */}
+                <div className="flex-1 min-w-0">
+                  <div className="bg-white dark:bg-[#303030] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 border-2 border-[#43586C] hover:border-[#1E88E5] rounded-2xl p-3 transition-all duration-200 cursor-pointer h-[88px] flex flex-col justify-center">
+                    <div className="space-y-2">
+                      <code className="text-xs text-[#1C1B1F] dark:text-[#F6F7F9] block text-center break-all">
+                        {truncateAddress(walletAddress)}
+                      </code>
+                      <Button
+                        onClick={() => {
+                          copyToClipboard(walletAddress);
+                          setCopiedItem(walletAddress);
+                          toast("Address copied to clipboard!");
+                          setTimeout(() => setCopiedItem(null), 2000);
+                        }}
+                        className="w-full min-h-9 bg-transparent border-none text-[#1E88E5] hover:bg-[#1E88E5]/10 transition-all duration-200 rounded-lg flex items-center justify-center gap-2"
+                      >
+                        {copiedItem === walletAddress ? (
+                          <>
+                            <Check className="w-4 h-4 text-green-600" />
+                            <span className="text-xs text-green-600">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5" />
+                            <span className="text-xs">Copy</span>
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Required Amount Box */}
+              <div className={`rounded-xl p-4 border transition-all duration-200 ${
+                fundsReceived 
+                  ? 'bg-[#7DD069]/10 border-[#7DD069]' 
+                  : 'bg-[#FAFAFA] dark:bg-[#2E3C49] border-[#43586C]'
+              }`}>
+                <div className="flex items-start gap-3">
+                  {/* Coin Icon */}
+                  <div className="flex-shrink-0">
+                    {supportedCryptos.find(c => c.symbol === selectedCrypto)?.logo}
+                  </div>
+                  
+                  {/* Coin Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">
+                        {supportedCryptos.find(c => c.symbol === selectedCrypto)?.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        on {supportedChains.find(c => c.id === selectedChain)?.name}
+                      </span>
+                    </div>
+                    
+                    {/* Amount to Fund (Missing Amount Only) */}
+                    <div className="text-2xl font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">
+                      {(() => {
+                        const requiredAmount = parseFloat(calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto));
+                        const currentBalance = getWalletBalance(selectedCrypto, selectedChain);
+                        const missingAmount = Math.max(0, requiredAmount - currentBalance);
+                        return `${missingAmount.toFixed(2)} ${selectedCrypto}`;
+                      })()}
+                    </div>
+                    
+                    {/* "Required" label - small font like Balance */}
+                    {!fundsReceived && (
+                      <div className="text-sm text-muted-foreground mt-1">
+                        Required
+                      </div>
+                    )}
+                    
+                    {/* Funds Received Subtitle - Only show when funded */}
+                    {fundsReceived && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Check className="w-3.5 h-3.5 text-[#7DD069]" />
+                        <span className="text-xs text-[#7DD069] font-medium">
+                          Funds received
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Info Icon - Only show when not funded */}
+                  {!fundsReceived && (
+                    <div className="flex-shrink-0">
+                      <div className="w-5 h-5 rounded-full border border-[#43586C] flex items-center justify-center">
+                        <HelpCircle className="w-3 h-3 text-muted-foreground" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Waiting for Payment Button - Always disabled with loader */}
+              <Button
+                className="w-full min-h-12 px-8 py-3 bg-[#1E88E5] text-white transition-all duration-200 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={true}
+              >
+                <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
+                Waiting for Payment
+              </Button>
+            </div>
           ) : showFundingOptions ? (
             showFundingSuccess ? (
+              // 🔥 SCREEN #4: Funding Confirmation (Method Ready)
               <div className="space-y-6">
                 <div className="text-center space-y-4">
                   {/* Merchant Logo */}
@@ -1800,7 +2080,7 @@ const App = () => {
                     </p>
                   </div>
                   <Button
-                    className="w-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
+                    className="w-full min-h-12 px-8 py-3 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full"
                     onClick={() => {
                       setShowFundingOptions(false);
                       setShowPaymentForm(true);
@@ -1815,162 +2095,8 @@ const App = () => {
                   </Button>
                 </div>
               </div>
-            ) : showQRFunding ? (
-              // 🔥 SCREEN #4.5: QR Funding Screen (Scan to Add Funds)
-              <div className="flex flex-col justify-center flex-1 space-y-6">
-                {/* Merchant Logo + Price + Description */}
-                <div className="text-center space-y-4">
-                  {/* Merchant Logo */}
-                  <div className="flex justify-center">
-                    <div className="w-[54px] h-[54px] rounded-xl border-2 border-dashed border-[#43586C] flex items-center justify-center bg-[#FAFAFA] dark:bg-[#262626] overflow-hidden">
-                      <div className="text-center">
-                        <Building2 className="w-10 h-10 mx-auto text-muted-foreground" />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Price + Description (one line) */}
-                  <p className="text-[#1C1B1F] dark:text-[#F6F7F9]">
-                    {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)} • {currentPayment?.description || "Monthly Subscription"}
-                  </p>
-                  
-                  {/* Title */}
-                  <h3 className="text-[#1C1B1F] dark:text-[#F6F7F9]">Scan/Copy to Pay</h3>
-                </div>
-
-                {/* QR Code + Wallet Address (Horizontal Layout) */}
-                <div className="flex gap-3 items-center justify-center">
-                  {/* QR Code - Left Side */}
-                  <a 
-                    href={`https://opensea.io/assets/matic/${walletAddress}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block flex-shrink-0"
-                    aria-label="Open wallet in OpenSea"
-                  >
-                    <div className="bg-white dark:bg-[#303030] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 p-3 rounded-2xl border-2 border-[#43586C] hover:border-[#1E88E5] transition-all duration-200 cursor-pointer h-[88px] flex items-center justify-center">
-                      <QRCodeCanvas
-                        value={`https://opensea.io/assets/matic/${walletAddress}`}
-                        size={64}
-                        level="H"
-                        includeMargin={false}
-                      />
-                    </div>
-                  </a>
-
-                  {/* Wallet Address Card - Right Side */}
-                  <div className="flex-1 min-w-0">
-                    <div className="bg-white dark:bg-[#303030] hover:bg-[#E3F2FD] dark:hover:bg-[#1E88E5]/20 border-2 border-[#43586C] hover:border-[#1E88E5] rounded-2xl p-3 transition-all duration-200 cursor-pointer h-[88px] flex flex-col justify-center">
-                      <div className="space-y-2">
-                        <code className="text-xs text-[#1C1B1F] dark:text-[#F6F7F9] block text-center break-all">
-                          {truncateAddress(walletAddress)}
-                        </code>
-                        <Button
-                          onClick={() => {
-                            copyToClipboard(walletAddress);
-                            setCopiedItem(walletAddress);
-                            toast("Address copied to clipboard!");
-                            setTimeout(() => setCopiedItem(null), 2000);
-                          }}
-                          className="w-full min-h-9 bg-transparent border-none text-[#1E88E5] hover:bg-[#1E88E5]/10 transition-all duration-200 rounded-lg flex items-center justify-center gap-2"
-                        >
-                          {copiedItem === walletAddress ? (
-                            <>
-                              <Check className="w-4 h-4 text-green-600" />
-                              <span className="text-xs text-green-600">Copied</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span className="text-xs">Copy</span>
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Required Amount Box */}
-                <div className={`rounded-xl p-4 border transition-all duration-200 ${
-                  fundsReceived 
-                    ? 'bg-[#7DD069]/10 border-[#7DD069]' 
-                    : 'bg-[#FAFAFA] dark:bg-[#2E3C49] border-[#43586C]'
-                }`}>
-                  <div className="flex items-start gap-3">
-                    {/* Coin Icon */}
-                    <div className="flex-shrink-0">
-                      {supportedCryptos.find(c => c.symbol === selectedCrypto)?.logo}
-                    </div>
-                    
-                    {/* Coin Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">
-                          {supportedCryptos.find(c => c.symbol === selectedCrypto)?.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          on {supportedChains.find(c => c.id === selectedChain)?.name}
-                        </span>
-                      </div>
-                      
-                      {/* Amount to Pay */}
-                      <div className="text-2xl font-medium text-[#1C1B1F] dark:text-[#F6F7F9]">
-                        {calculateCryptoAmount(currentPayment?.price || 156.78, selectedCrypto)} {selectedCrypto}
-                      </div>
-                      
-                      {/* Funds Received Subtitle - Only show when funded */}
-                      {fundsReceived && (
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <Check className="w-3.5 h-3.5 text-[#7DD069]" />
-                          <span className="text-xs text-[#7DD069] font-medium">
-                            Funds received
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Info Icon - Only show when not funded */}
-                    {!fundsReceived && (
-                      <div className="flex-shrink-0">
-                        <div className="w-5 h-5 rounded-full border border-[#43586C] flex items-center justify-center">
-                          <HelpCircle className="w-3 h-3 text-muted-foreground" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Check for Funds / Pay Button */}
-                <Button
-                  className="w-full min-h-12 bg-[#1E88E5] text-white hover:bg-[#1565C0] transition-all duration-200 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => {
-                    if (fundsReceived) {
-                      // Proceed to payment screen
-                      setShowQRFunding(false);
-                      setShowCryptoSelection(false);
-                      setShowFundingOptions(false);
-                      setShowPaymentForm(true);
-                      toast("Wallet funded successfully!");
-                    } else {
-                      handleCheckFunds();
-                    }
-                  }}
-                  disabled={isCheckingFunds}
-                >
-                  {isCheckingFunds ? (
-                    <>
-                      <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                      Checking...
-                    </>
-                  ) : fundsReceived ? (
-                    `Pay in ${selectedCrypto} on ${supportedChains.find(c => c.id === selectedChain)?.name}`
-                  ) : (
-                    "Check for Funds"
-                  )}
-                </Button>
-              </div>
             ) : (
+              // 🔥 SCREEN #3: Add Funds (Choose Funding Method)
               <div className="flex flex-col justify-center flex-1 space-y-6">
                 {/* Merchant Logo + Price + Description */}
                 <div className="text-center space-y-4">
@@ -2077,7 +2203,7 @@ const App = () => {
               </div>
             )
           ) : showPaymentForm ? (
-            // 🔥 SCREEN #6: Payment Confirmation Form
+            // 🔥 SCREEN #5: Payment Confirmation Form
             <div className="space-y-6">
               <div className="text-center space-y-4">
                 {/* Merchant Logo */}
@@ -2136,7 +2262,7 @@ const App = () => {
                   </div>
 
                   <Button
-                    className="w-full rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white min-h-12 transition-all duration-200"
+                    className="w-full min-h-12 px-8 py-3 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white transition-all duration-200"
                     onClick={handlePayment}
                   >
                     <Wallet className="w-5 h-5 mr-2" />
@@ -2145,6 +2271,7 @@ const App = () => {
                 </div>
               )}
 
+              {/* SCREEN #6: Processing Payment */}
               {paymentStatus === "processing" && (
                 <div className="text-center space-y-6">
                   <div className="w-16 h-16 border-4 border-[#1E88E5] border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -2158,72 +2285,27 @@ const App = () => {
                 </div>
               )}
 
+              {/* SCREEN #7: Payment Successful */}
               {paymentStatus === "completed" && (
-                <div className="text-center space-y-6">
-                  <div className="w-16 h-16 bg-[#7DD069]/20 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle className="w-8 h-8 text-[#7DD069]" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-muted-foreground">Payment Successful!</h3>
-                    <p className="text-muted-foreground">
-                      Your payment has been processed
-                      successfully
-                    </p>
-                  </div>
-                  <Button
-                    className="w-full min-h-12 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white transition-all duration-200"
-                    onClick={() => {
-                      setActiveTab("admin");
-                      setCurrentPayment(null);
-                      setShowCryptoSelection(false);
-                      setShowWeb3Auth(false);
-                      setShowPaymentForm(false);
-                      setShowFundingOptions(false);
-                      setFundingMethod("");
-                      setShowFundingSuccess(false);
-                      setConnectedWallet("");
-                      setWalletAddress("");
-                      setPaymentStatus("pending");
-                      window.location.hash = "";
-                    }}
-                  >
-                    Return to Dashboard
-                  </Button>
-                </div>
+                <PaymentSuccessScreen
+                  onReturnToMerchant={() => {
+                    setActiveTab("admin");
+                    setCurrentPayment(null);
+                    setShowCryptoSelection(false);
+                    setShowWeb3Auth(false);
+                    setShowPaymentForm(false);
+                    setShowFundingOptions(false);
+                    setFundingMethod("");
+                    setShowFundingSuccess(false);
+                    setConnectedWallet("");
+                    setWalletAddress("");
+                    setPaymentStatus("pending");
+                    window.location.hash = "";
+                  }}
+                />
               )}
             </div>
-          ) : (
-            // 🔥 SCREEN #1: Payment Details + Login CTA (Final Fallback)
-            <div className="flex flex-col justify-center h-full space-y-8">
-              <div className="text-center space-y-4">
-                {/* Merchant Logo */}
-                <div className="flex justify-center">
-                  <div className="w-[54px] h-[54px] rounded-xl border-2 border-dashed border-[#43586C] flex items-center justify-center bg-[#FAFAFA] dark:bg-[#262626] overflow-hidden">
-                    <div className="text-center">
-                      <Building2 className="w-10 h-10 mx-auto text-muted-foreground" />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <p className="text-muted-foreground">
-                    {formatPrice(currentPayment?.price || 156.78, currentPayment?.baseCurrency)} •{" "}
-                    {currentPayment?.description || "Payment to CryptoStore"}
-                  </p>
-                  <h3 className="text-muted-foreground">Login or register to Pay</h3>
-                </div>
-              </div>
-
-              <div className="text-center">
-                <button
-                  className="w-full h-12 px-8 py-3 rounded-full bg-[#1E88E5] hover:bg-[#1565C0] text-white transition-all duration-200 flex items-center justify-center font-medium"
-                  onClick={() => setShowWeb3Auth(true)}
-                >
-                  Login / Register
-                </button>
-              </div>
-            </div>
-          )}
+          ) : null}
         </CardContent>
 
         {/* Secure Footer - Always visible at bottom */}
@@ -2237,7 +2319,7 @@ const App = () => {
             </div>
             {/* Development: Screen Number Indicator */}
             <span className="px-2 py-0.5 rounded-full bg-[#1E88E5] text-white text-xs font-medium">
-              {currentScreen}/9
+              {currentScreen}
             </span>
           </div>
         </div>
