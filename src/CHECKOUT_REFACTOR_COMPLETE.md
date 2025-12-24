@@ -1,6 +1,17 @@
-# ✅ Checkout Flow Refactor Complete
+# ⚠️ OUTDATED DOCUMENTATION
 
-## What Was Done
+**This file is outdated and kept for historical reference only.**
+
+**For current checkout flow documentation, see:**
+- `/guidelines/Guidelines.md` - Section: "Checkout Flow (End User Payment Experience)"
+
+---
+
+# ✅ Checkout Flow Refactor Complete (HISTORICAL)
+
+**NOTE:** This documentation describes the original 8-screen flow with on-ramp features. The flow has since been optimized to 4-5 screens with removal of on-ramp/card funding.
+
+## What Was Done (HISTORICAL)
 
 ### 1. Created CheckoutFlow Component (`/components/checkout/CheckoutFlow.tsx`)
 

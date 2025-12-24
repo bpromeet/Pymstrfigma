@@ -1,6 +1,17 @@
-# App.tsx Integration Guide for CheckoutFlow Component
+# ⚠️ OUTDATED DOCUMENTATION
 
-## Changes Required
+**This file is outdated and kept for historical reference only.**
+
+**For current checkout flow documentation, see:**
+- `/guidelines/Guidelines.md` - Section: "Checkout Flow (End User Payment Experience)"
+
+---
+
+# App.tsx Integration Guide for CheckoutFlow Component (HISTORICAL)
+
+**NOTE:** This guide is outdated. The checkout flow has been optimized and no longer uses separate CheckoutFlow component structure described here.
+
+## Changes Required (HISTORICAL)
 
 ### 1. Add Import at Top of File
 

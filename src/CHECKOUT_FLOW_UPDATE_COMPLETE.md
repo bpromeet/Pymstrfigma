@@ -1,10 +1,21 @@
-# ✅ Checkout Flow Update Complete - Screen #1 Removed
+# ⚠️ OUTDATED DOCUMENTATION
 
-## Summary of Changes
+**This file is outdated and kept for historical reference only.**
+
+**For current checkout flow documentation, see:**
+- `/guidelines/Guidelines.md` - Section: "Checkout Flow (End User Payment Experience)"
+
+---
+
+# ✅ Checkout Flow Update Complete - Screen #1 Removed (HISTORICAL)
+
+## Summary of Changes (OUTDATED - See Guidelines.md)
 
 **Objective:** Remove Screen #1 (Payment Details + Login CTA) and make Login/Register the first screen users see when clicking a payment link.
 
 **Result:** Checkout now has **7 screens** instead of 8, starting directly at Login/Register.
+
+**NOTE:** This documentation is outdated. The flow has since been further optimized to 4-5 screens with removal of on-ramp features.
 
 ---
 

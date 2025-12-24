@@ -27,18 +27,6 @@ export const getChainName = (chainId: string): string => {
   return chainNames[chainId.toLowerCase()] || chainId.charAt(0).toUpperCase() + chainId.slice(1);
 };
 
-// OnRamper network mapping
-export const getOnRamperNetwork = (chainId: string): string => {
-  const networkMap: { [key: string]: string } = {
-    ethereum: "ethereum",
-    polygon: "polygon",
-    arbitrum: "arbitrum",
-    optimism: "optimism",
-    base: "base",
-  };
-  return networkMap[chainId.toLowerCase()] || "ethereum";
-};
-
 // Crypto full name helper
 export const getCryptoName = (symbol: string): string => {
   const cryptoNames: { [key: string]: string } = {

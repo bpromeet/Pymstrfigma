@@ -2444,6 +2444,211 @@ Only these five chains are supported:
 
 ---
 
+## Checkout Flow (End User Payment Experience)
+
+PYMSTR's checkout flow has been optimized to start directly at login, with two distinct paths based on wallet balance.
+
+### Flow Overview
+
+**Total Screens:**
+- **Sufficient Balance Path:** 4 screens (1 → 2 → 3 → 4)
+- **Insufficient Balance Path:** 5 screens (1 → 2 → 3 → 4 → 5)
+
+**Key Characteristics:**
+- No on-ramp/card funding (feature removed)
+- Manual wallet funding only (QR code + address copy)
+- Processing state is a transition (not counted as dedicated screen)
+- Dynamic screen numbering based on path taken
+- Badge shows current screen number only (no "/total")
+
+### Screen-by-Screen Breakdown
+
+#### Screen 1: Login/Register (Web3Auth)
+- **Entry Point:** User clicks payment link
+- **Content:** Web3Auth login options
+  - Social logins: Google, GitHub, Twitter, Discord
+  - Web3 wallets: MetaMask, Coinbase Wallet, WalletConnect
+  - Email/passwordless login
+- **Next:** Automatically proceeds to Screen 2 (Select Crypto & Chain)
+- **Badge:** Shows "1"
+
+#### Screen 2: Select Crypto & Chain
+- **Content:** 
+  - Select stablecoin: USDC, USDT, or EURC
+  - Select blockchain network: Ethereum, Polygon, Arbitrum, Optimism, Base
+  - Current balance display (if any)
+  - Balance check against payment amount
+- **Logic:**
+  - If **sufficient balance** → Skip to Screen 3 (Confirm Payment)
+  - If **insufficient balance** → Go to Screen 3 (Fund Account)
+- **Badge:** Shows "2"
+
+#### Screen 3a: Fund Account (Insufficient Balance Path Only)
+- **Trigger:** User has insufficient balance to complete payment
+- **Content:**
+  - QR code for wallet address
+  - Wallet address with copy button
+  - Required amount display
+  - "Waiting for Payment" button (with refresh icon)
+  - Automatically detects incoming funds
+- **Funding Method:** Manual only (send crypto from another wallet/exchange)
+- **Footer:** "No Custody & Bulletproof by PYMSTR®" with shield icon
+- **Next:** Once funds detected → Screen 4 (Confirm Payment)
+- **Badge:** Shows "3"
+- **Note:** This screen is **SKIPPED** in sufficient balance path
+
+#### Screen 3b: Confirm Payment (Sufficient Balance Path)
+- **Trigger:** User already has sufficient balance
+- **Content:**
+  - Payment breakdown (amount, base fee, total)
+  - Merchant logo and payment details
+  - "Confirm Payment" button
+- **Badge:** Shows "3" (since funding was skipped)
+- **Next:** Processing transition → Screen 4 (Success)
+
+#### Screen 4: Confirm Payment (Insufficient Balance Path)
+- **Content:** Same as Screen 3b (Confirm Payment)
+- **Badge:** Shows "4" (after going through Fund Account screen)
+- **Next:** Processing transition → Screen 5 (Success)
+
+#### Screen 4/5: Payment Success
+- **Content:**
+  - Green checkmark ✓
+  - "Payment Successful!" message
+  - Merchant logo
+  - Payment amount and description
+  - "Return to Merchant" button
+  - "Click User to view Wallet" hint
+- **Badge:** 
+  - Shows "4" if from sufficient balance path
+  - Shows "5" if from insufficient balance path
+- **Transaction:** txHash stored in payment link record
+
+### Processing Transition (Not Counted as Screen)
+
+Between Confirm Payment and Success, there's a brief processing state:
+- Animated loader
+- "Processing payment..." message
+- Blockchain transaction submission
+- **Duration:** 1-3 seconds typically
+- **Not counted** as dedicated screen in numbering system
+
+### Technical Implementation
+
+**Dynamic Screen Numbering:**
+```tsx
+// Screen number calculation logic
+const getCurrentScreen = () => {
+  if (paymentStatus === "completed") {
+    // Success screen - depends on path taken
+    return wentThroughFunding ? 5 : 4;
+  }
+  if (showPaymentForm) {
+    // Confirm Payment - depends on path taken
+    return wentThroughFunding ? 4 : 3;
+  }
+  if (showQRFunding) {
+    // Fund Account (only in insufficient path)
+    return 3;
+  }
+  if (showCryptoSelection) {
+    // Select Crypto & Chain
+    return 2;
+  }
+  if (showWeb3Auth) {
+    // Login/Register
+    return 1;
+  }
+  return 1;
+};
+```
+
+**Balance Check Logic:**
+```tsx
+const hasSufficientBalance = (crypto: string) => {
+  const required = parseFloat(
+    calculateCryptoAmount(currentPayment?.price || 0, crypto)
+  );
+  const available = getWalletBalance(walletAddress, crypto, selectedChain);
+  return available >= required;
+};
+
+// After crypto selection
+if (hasSufficientBalance(selectedCrypto)) {
+  // Skip funding → Go to Confirm Payment (Screen 3)
+  setShowPaymentForm(true);
+} else {
+  // Go to Fund Account (Screen 3)
+  setShowQRFunding(true);
+}
+```
+
+### Badge Display
+
+**Format:** Shows only current screen number (no total)
+- Example: **3** (not "3/5" or "3/4")
+- Dynamic based on path
+- Clean, minimal design
+
+**Styling:**
+```tsx
+<span className="px-2 py-0.5 rounded-full bg-[#1E88E5] text-white text-xs font-medium">
+  {currentScreen}
+</span>
+```
+
+### User Experience Flow Examples
+
+**Example 1: New User (No Balance)**
+1. Click payment link → Screen 1 (Login)
+2. Login with Google → Screen 2 (Select USDC + Polygon)
+3. Has 0 balance → Screen 3 (Fund Account via QR)
+4. Sends USDC from Coinbase → Funds detected
+5. Screen 4 (Confirm Payment) → Shows breakdown
+6. Click "Confirm Payment" → Processing transition
+7. Screen 5 (Success) → Payment complete ✓
+
+**Example 2: Returning User (Has Balance)**
+1. Click payment link → Screen 1 (Login)
+2. Login with email → Screen 2 (Select USDT + Arbitrum)
+3. Has 200 USDT (sufficient) → **Skip funding**
+4. Screen 3 (Confirm Payment) → Shows breakdown
+5. Click "Confirm Payment" → Processing transition
+6. Screen 4 (Success) → Payment complete ✓
+
+### Removed Features (Historical Context)
+
+**On-Ramp/Card Funding (REMOVED):**
+- Previously integrated Transak/MoonPay/OnRamper for credit card purchases
+- Removed due to complexity and KYC requirements
+- **Current approach:** Manual funding only (simpler, no custody, no KYC)
+
+**Funding Options Screen (REMOVED):**
+- Previously showed choice between card, transfer, or exchange
+- Now directly shows QR funding (transfer is only option)
+
+**Intermediate "Funding Success" Screen (REMOVED):**
+- Previously showed confirmation after funding method selected
+- Now automatically proceeds once funds detected
+
+### Guidelines for Updates
+
+**DO:**
+- ✅ Use `showQRFunding` state for Fund Account screen
+- ✅ Calculate screen number dynamically based on path
+- ✅ Show badge with current number only (no "/total")
+- ✅ Skip Fund Account screen if balance is sufficient
+- ✅ Treat processing as transition, not screen
+
+**DON'T:**
+- ❌ Don't add on-ramp/card funding code
+- ❌ Don't create separate "funding options" screen
+- ❌ Don't count processing as dedicated screen
+- ❌ Don't show static "/5" or "/4" in badge
+- ❌ Don't force users through funding if they have balance
+
+---
+
 ## Component Guidelines
 
 ### Icons
