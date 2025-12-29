@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
-import { MetaMaskLogo } from '../MetaMaskLogo';
+import { MetaMaskLogo } from '../WalletLogos';
 
 interface CryptoOption {
   symbol: string;
