@@ -21,6 +21,11 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
 
   // Map admin tab to dashboard for display
   const normalizedActiveTab = activeTab === 'admin' ? 'dashboard' : activeTab;
+  
+  // Pages that don't appear in nav menu (team, profile, settings)
+  // For these pages, we don't highlight any nav item so clicking Dashboard shows visual feedback
+  const hiddenPages = ['team', 'profile', 'settings'];
+  const isOnHiddenPage = hiddenPages.includes(activeTab);
 
   // Default merchant menu items
   const defaultNavItems: NavigationItem[] = [
@@ -38,8 +43,10 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
   const navItems = menuItems || defaultNavItems;
 
   const handleNavClick = (itemId: string) => {
+    console.log('[NavigationRail] handleNavClick called with:', itemId);
     // Map dashboard back to admin for the app
     const targetTab = itemId === 'dashboard' ? 'admin' : itemId;
+    console.log('[NavigationRail] Calling onNavigate with:', targetTab);
     onNavigate(targetTab);
   };
 
@@ -80,11 +87,14 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
           <div className="space-y-0.5 px-2">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = normalizedActiveTab === item.id;
+              // Don't highlight any item when on hidden pages (team, profile, settings)
+              // This gives visual feedback when clicking Dashboard from those pages
+              const isActive = !isOnHiddenPage && normalizedActiveTab === item.id;
               
               return (
                 <button
                   key={item.id}
+                  type="button"
                   onClick={() => handleNavClick(item.id)}
                   className={`group relative flex items-center w-full h-12 rounded-full transition-colors duration-200 ${ 
                     isActive

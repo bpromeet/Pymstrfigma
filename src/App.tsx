@@ -691,6 +691,7 @@ const App = () => {
 
   // Custom navigation handler that tracks user context
   const handleNavigate = (tab: string) => {
+    console.log('[App] handleNavigate called with tab:', tab);
     // Determine if this is an end-user navigation
     const isEndUserNav = tab.startsWith('user-') || tab === 'userdashboard';
     
@@ -720,6 +721,7 @@ const App = () => {
     
     // Use hash if mapped, otherwise use tab name directly
     const hash = hashMap[tab] || `#/${tab}`;
+    console.log('[App] Setting window.location.hash to:', hash);
     window.location.hash = hash;
   };
 
@@ -1778,17 +1780,11 @@ const App = () => {
 
         {/* Secure Footer - Always visible at bottom */}
         <div className="p-6 border-t border-[#43586C] flex-shrink-0">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
-            <div className="flex items-center gap-2">
-              <span className="whitespace-nowrap text-sm">
-                No Custody & Bulletproof by PYMSTR®
-              </span>
-              <ShieldCheck className="w-5 h-5 text-green-600" />
-            </div>
-            {/* Development: Screen Number Indicator */}
-            <span className="px-2 py-0.5 rounded-full bg-[#1E88E5] text-white text-xs font-medium">
-              {currentScreen}
+          <div className="flex items-center justify-center gap-2">
+            <span className="whitespace-nowrap text-sm">
+              No Custody & Bulletproof by PYMSTR®
             </span>
+            <ShieldCheck className="w-5 h-5 text-green-600" />
           </div>
         </div>
       </Card>

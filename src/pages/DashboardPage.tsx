@@ -23,6 +23,8 @@ import {
   X,
   Coins,
   Wallet,
+  TrendingUp,
+  Calendar,
 } from "lucide-react";
 import {
   ChartContainer,
@@ -38,6 +40,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "../components/ui/sheet";
 import PageLayout from "../components/PageLayout";
 import { ChainIcon } from "../components/ChainIcon";
 import { CryptoIcon } from "../components/CryptoIcon";
@@ -85,13 +94,31 @@ interface DashboardPageProps {
   getExplorerUrl: (chain: string, txHash: string) => string;
 }
 
-const DashboardPage: React.FC<DashboardPageProps> = ({
+const DashboardPage: React.FC<DashboardPageProps> = (({
   dashboardStats,
   recentTransactions,
   chartData,
   onCreatePaymentLink,
   getExplorerUrl,
 }) => {
+  // State for selected bar data (for bottom sheet)
+  const [selectedBarData, setSelectedBarData] = React.useState<ChartDataPoint | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+
+  // Calculate summary stats for Transaction Volume
+  const totalTransactions = chartData.reduce((sum, item) => sum + item.transactions, 0);
+  const peakTransactions = Math.max(...chartData.map(item => item.transactions));
+  const avgTransactions = totalTransactions / chartData.length;
+
+  // Handler for bar click
+  const handleBarClick = (data: any) => {
+    if (data && data.activePayload && data.activePayload[0]) {
+      const barData = data.activePayload[0].payload as ChartDataPoint;
+      setSelectedBarData(barData);
+      setIsSheetOpen(true);
+    }
+  };
+
   // Helper function to format fiat currency
   const formatFiatCurrency = (amount: string, currency: string) => {
     const symbol = currency === "EUR" ? "€" : currency === "AED" ? "AED " : "$";
@@ -238,6 +265,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                         left: 5,
                         bottom: 5,
                       }}
+                      onClick={handleBarClick}
                     >
                       <XAxis dataKey="month" />
                       <YAxis />
@@ -246,7 +274,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
                       />
                       <Bar
                         dataKey="transactions"
-                        fill="#3b82f6"
+                        fill="#FF5914"
                       />
                     </BarChart>
                   </ResponsiveContainer>
@@ -547,9 +575,103 @@ const DashboardPage: React.FC<DashboardPageProps> = ({
             <Plus className="w-6 h-6" />
           </button>
         </div>
+
+        {/* ========================================
+        TRANSACTION VOLUME DETAIL BOTTOM SHEET
+        
+        Shows detailed information when a bar is tapped on mobile
+        Displays:
+        - Month/Period
+        - Total Transactions
+        - Total Revenue
+        - Average Transaction Value
+        ======================================== */}
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+          <SheetContent 
+            side="bottom" 
+            className="h-auto rounded-t-3xl"
+          >
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-[#1E88E5]" />
+                Transaction Details
+              </SheetTitle>
+              <SheetDescription>
+                Detailed breakdown for selected period
+              </SheetDescription>
+            </SheetHeader>
+            
+            {selectedBarData && (
+              <div className="mt-6 space-y-4">
+                {/* Period */}
+                <div className="flex items-center justify-between p-4 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Period</span>
+                  </div>
+                  <span className="font-medium">{selectedBarData.month}</span>
+                </div>
+
+                {/* Total Transactions */}
+                <div className="flex items-center justify-between p-4 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Total Transactions</span>
+                  </div>
+                  <span className="font-semibold text-[#1E88E5]">
+                    {selectedBarData.transactions.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Total Revenue */}
+                <div className="flex items-center justify-between p-4 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Total Revenue</span>
+                  </div>
+                  <span className="font-semibold text-[#10b981]">
+                    ${selectedBarData.revenue.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Average Transaction Value */}
+                <div className="flex items-center justify-between p-4 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Avg Transaction</span>
+                  </div>
+                  <span className="font-medium">
+                    ${(selectedBarData.revenue / selectedBarData.transactions).toFixed(2)}
+                  </span>
+                </div>
+
+                {/* Summary Stats */}
+                <div className="mt-6 pt-4 border-t border-[#43586C]">
+                  <p className="text-xs text-muted-foreground text-center mb-3">
+                    Overall Performance
+                  </p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-3 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Total</p>
+                      <p className="font-semibold text-sm">{totalTransactions.toLocaleString()}</p>
+                    </div>
+                    <div className="text-center p-3 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Peak</p>
+                      <p className="font-semibold text-sm">{peakTransactions.toLocaleString()}</p>
+                    </div>
+                    <div className="text-center p-3 bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-lg">
+                      <p className="text-xs text-muted-foreground mb-1">Average</p>
+                      <p className="font-semibold text-sm">{Math.round(avgTransactions).toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </SheetContent>
+        </Sheet>
       </PageLayout.Content>
     </PageLayout>
   );
-};
+});
 
 export default DashboardPage;

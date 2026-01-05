@@ -98,12 +98,11 @@ export const ConfirmPaymentScreen: React.FC<ConfirmPaymentScreenProps> = ({
             </span>
           </div>
           <div className="flex items-center justify-between mb-3">
-            <span>
-              {supportedChains.find(
-                (chain) => chain.id === selectedChain,
-              )?.name || "Network"}{" "}
-              Fee:
-            </span>
+            <span>Fees</span>
+            <span>~0.001 {selectedCrypto}</span>
+          </div>
+          <div className="flex items-center justify-between mb-3">
+            <span>Gas fees</span>
             <span>~0.001 {selectedCrypto}</span>
           </div>
           <div className="flex items-center justify-between">
