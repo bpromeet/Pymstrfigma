@@ -50,8 +50,17 @@ DialogOverlay.displayName = "DialogOverlay";
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentProps<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => {
+  React.ComponentProps<typeof DialogPrimitive.Content> & {
+    userType?: 'merchant' | 'enduser';
+  }
+>(({ className, children, userType, ...props }, ref) => {
+  // Conditional close button positioning
+  // Merchant: Higher and more right (closer to corner)
+  // End User: More down and more left (more breathing room)
+  const closeButtonClass = userType === 'enduser'
+    ? 'absolute top-6 right-6 sm:top-8 sm:right-8'
+    : 'absolute top-3 right-3 sm:top-4 sm:right-4';
+  
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -67,8 +76,11 @@ const DialogContent = React.forwardRef<
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-[#49454F] dark:text-[#798A9B] hover:bg-black/[0.08] dark:hover:bg-white/[0.08] active:bg-black/[0.12] dark:active:bg-white/[0.12] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 focus:outline-none transition-all duration-200 disabled:pointer-events-none disabled:opacity-38">
-          <XIcon className="w-5 h-5" />
+        <DialogPrimitive.Close className={cn(
+          closeButtonClass,
+          "w-12 h-12 rounded-full flex items-center justify-center text-[#49454F] dark:text-[#798A9B] hover:bg-black/[0.08] dark:hover:bg-white/[0.08] active:bg-black/[0.12] dark:active:bg-white/[0.12] focus:ring-2 focus:ring-[#1E88E5] focus:ring-offset-2 focus:outline-none transition-all duration-200 disabled:pointer-events-none disabled:opacity-38"
+        )}>
+          <XIcon className="w-6 h-6" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>

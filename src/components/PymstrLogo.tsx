@@ -4,9 +4,10 @@ interface PymstrLogoProps {
   variant?: "full" | "icon" | "wordmark";
   className?: string;
   size?: "sm" | "md" | "lg" | "xl";
-  transparent?: boolean; // New prop for transparent icon background
-  theme?: "default" | "terminal"; // Terminal theme for marketing site
-  onClick?: () => void; // Click handler
+  transparent?: boolean;
+  theme?: "default" | "terminal";
+  onClick?: () => void;
+  userType?: "merchant" | "enduser"; // User type for color variation
 }
 
 /**
@@ -17,19 +18,9 @@ interface PymstrLogoProps {
  * - icon: Just the "P" icon
  * - wordmark: Just "PYMSTR" text
  * 
- * Sizes:
- * - sm: Small (mobile nav, etc)
- * - md: Medium (default)
- * - lg: Large (hero sections)
- * - xl: Extra large (marketing pages)
- * 
- * Transparent:
- * - true: No background box on icon (just the P)
- * - false: Gradient background box (default)
- * 
- * Theme:
- * - default: Orange PYMSTR branding (#FF5914)
- * - terminal: Green monogram with black P (for marketing site)
+ * UserType:
+ * - merchant: Orange color (#FF5914) - default
+ * - enduser: Cyan color (#06D7FF)
  */
 export const PymstrLogo: React.FC<PymstrLogoProps> = ({ 
   variant = "full", 
@@ -37,21 +28,12 @@ export const PymstrLogo: React.FC<PymstrLogoProps> = ({
   size = "md",
   transparent = false,
   theme = "default",
-  onClick
+  onClick,
+  userType = "merchant"
 }) => {
-  // Color scheme based on theme
-  const colors = theme === "terminal" 
-    ? {
-        iconBg: "from-[#FF5914] to-[#FF5914]", // Orange background
-        iconText: "text-white", // White P on orange background
-        wordmark: "text-[#FF5914]" // PYMSTR orange text
-      }
-    : {
-        iconBg: "from-white to-white", // White background for default too
-        iconText: "text-[#FF5914]", // PYMSTR orange P on white background
-        wordmark: "text-[#FF5914]" // PYMSTR orange text for default theme
-      };
-
+  // Determine color based on user type
+  const brandColor = userType === "enduser" ? "#06D7FF" : "#ff5722";
+  
   const sizeClasses = {
     sm: "h-6",
     md: "h-8",
@@ -84,24 +66,24 @@ export const PymstrLogo: React.FC<PymstrLogoProps> = ({
           {/* Light mode icon */}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={`${sizeClasses[size]} w-auto dark:hidden`}>
             <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
-            <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-            <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+            <rect x="6" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="9" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="12" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="15" y="7" width="2" height="18" fill={brandColor}/>
+            <rect x="18" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="21" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="24" y="10" width="2" height="12" fill={brandColor}/>
           </svg>
           {/* Dark mode icon */}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={`${sizeClasses[size]} w-auto hidden dark:block`}>
             <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
-            <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-            <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+            <rect x="6" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="9" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="12" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="15" y="7" width="2" height="18" fill={brandColor}/>
+            <rect x="18" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="21" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="24" y="10" width="2" height="12" fill={brandColor}/>
           </svg>
         </>
       </div>
@@ -114,8 +96,9 @@ export const PymstrLogo: React.FC<PymstrLogoProps> = ({
       <div 
         className={`inline-flex items-center ${className}`}
         onClick={onClick}
+        style={{ color: brandColor }}
       >
-        <span className={`font-bold ${colors.wordmark} ${textSizeClasses[size]}`}>
+        <span className={`font-bold ${textSizeClasses[size]}`}>
           PYMSTR
         </span>
       </div>
@@ -130,7 +113,7 @@ export const PymstrLogo: React.FC<PymstrLogoProps> = ({
     >
       {transparent ? (
         // Transparent variant - just the P with no background
-        <span className={`font-bold ${colors.wordmark} ${iconTextSizeClasses[size]}`}>
+        <span className={`font-bold ${iconTextSizeClasses[size]}`} style={{ color: brandColor }}>
           P
         </span>
       ) : (
@@ -138,28 +121,28 @@ export const PymstrLogo: React.FC<PymstrLogoProps> = ({
           {/* Light mode logo */}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={`${sizeClasses[size]} w-auto dark:hidden`}>
             <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
-            <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-            <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+            <rect x="6" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="9" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="12" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="15" y="7" width="2" height="18" fill={brandColor}/>
+            <rect x="18" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="21" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="24" y="10" width="2" height="12" fill={brandColor}/>
           </svg>
           {/* Dark mode logo */}
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={`${sizeClasses[size]} w-auto hidden dark:block`}>
             <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
-            <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-            <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-            <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-            <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
+            <rect x="6" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="9" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="12" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="15" y="7" width="2" height="18" fill={brandColor}/>
+            <rect x="18" y="10" width="2" height="12" fill={brandColor}/>
+            <rect x="21" y="8" width="2" height="16" fill={brandColor}/>
+            <rect x="24" y="10" width="2" height="12" fill={brandColor}/>
           </svg>
         </>
       )}
-      <span className={`font-bold ${colors.wordmark} ${textSizeClasses[size]}`}>
+      <span className={`font-bold ${textSizeClasses[size]}`} style={{ color: brandColor }}>
         PYMSTR
       </span>
     </div>

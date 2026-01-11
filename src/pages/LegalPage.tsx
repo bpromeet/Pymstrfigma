@@ -11,11 +11,18 @@ import { PrimaryTabs, PrimaryTabsList, PrimaryTabsTrigger, PrimaryTabsContent } 
 import { Separator } from "../components/ui/separator";
 import { Scale } from "lucide-react";
 
-const LegalPage: React.FC = () => {
+interface LegalPageProps {
+  userContext?: 'merchant' | 'enduser';
+}
+
+const LegalPage: React.FC<LegalPageProps> = ({ userContext = 'merchant' }) => {
+  // Color scheme based on user type
+  const iconColor = userContext === 'enduser' ? 'text-[#07D7FF]' : 'text-[#FF5914]';
+  
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Scale className="w-6 h-6 text-[#FF5914]" />}
+        icon={<Scale className={`w-6 h-6 ${iconColor}`} />}
         title="Legal"
         subtitle="Terms, privacy, and policies"
       />

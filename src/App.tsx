@@ -147,8 +147,6 @@ import QuickStartGuide from "./components/QuickStartGuide";
 import APIReference from "./components/APIReference";
 import CodeExamples from "./components/CodeExamples";
 import MerchantProfile from "./components/MerchantProfile";
-import EndUserSendPage from "./components/EndUserSendPage";
-import EndUserReceivePage from "./components/EndUserReceivePage";
 import { CheckoutFlow } from "./components/checkout/CheckoutFlow";
 
 // Avatar images - YOUR provided pictures stored in /public/
@@ -182,11 +180,9 @@ import {
 import { ManageCoin } from "./components/ManageCoin";
 import { BottomNavigation, type BottomNavItem } from "./components/BottomNavigation";
 import { Scale, Receipt, MoreHorizontal, Building2 } from "lucide-react";
-import UserDashboardPage from "./pages/UserDashboardPage";
 import EndUserDashboardPage from "./pages/EndUserDashboardPage";
 import EndUserWalletsPage from "./pages/EndUserWalletsPage";
 import EndUserTransactionsPage from "./pages/EndUserTransactionsPage";
-import EndUserSettingsPage from "./pages/EndUserSettingsPage";
 import HelpPage from "./pages/HelpPage";
 import LegalPage from "./pages/LegalPage";
 import {
@@ -556,20 +552,14 @@ const App = () => {
         setIsStandalonePage(false);
       }
       // Handle end user pages
-      else if (hashLower === "#/user-wallets") {
+      else if (hashLower === "#/user-dashboard") {
+        setActiveTab("user-dashboard");
+        setIsStandalonePage(false);
+      } else if (hashLower === "#/user-wallets") {
         setActiveTab("user-wallets");
-        setIsStandalonePage(false);
-      } else if (hashLower === "#/user-send") {
-        setActiveTab("user-send");
-        setIsStandalonePage(false);
-      } else if (hashLower === "#/user-receive") {
-        setActiveTab("user-receive");
         setIsStandalonePage(false);
       } else if (hashLower === "#/user-transactions") {
         setActiveTab("user-transactions");
-        setIsStandalonePage(false);
-      } else if (hashLower === "#/user-settings") {
-        setActiveTab("user-settings");
         setIsStandalonePage(false);
       } else if (hash === "#/" || hash === "") {
         // Default to dashboard for app.pymstr.com
@@ -650,25 +640,19 @@ const App = () => {
   // End-user navigation menu items (per Guidelines.md)
   // Use unique IDs to differentiate from merchant pages
   const endUserNavItems: NavigationItem[] = [
-    { id: 'user-dashboard', label: 'Dashboard', icon: Activity },
-    { id: 'user-wallets', label: 'Wallets', icon: Wallet },
-    { id: 'user-send', label: 'Send', icon: Send },
-    { id: 'user-receive', label: 'Receive', icon: ArrowDownToLine },
+    { id: 'user-dashboard', label: 'Wallet', icon: Wallet },
     { id: 'user-transactions', label: 'Transactions', icon: Receipt },
-    { id: 'user-settings', label: 'Settings', icon: Settings },
     { id: 'help', label: 'Help', icon: HelpCircle },
     { id: 'legal', label: 'Legal', icon: Scale },
   ];
 
   const endUserBottomNavItems: BottomNavItem[] = [
-    { id: 'user-dashboard', label: 'Dashboard', icon: Activity },
-    { id: 'user-wallets', label: 'Wallets', icon: Wallet },
+    { id: 'user-dashboard', label: 'Wallet', icon: Wallet },
     { id: 'user-transactions', label: 'Transactions', icon: Receipt },
     { id: 'more', label: 'More', icon: MoreHorizontal },
   ];
 
   const endUserMoreItems: BottomNavItem[] = [
-    { id: 'user-settings', label: 'Settings', icon: Settings },
     { id: 'help', label: 'Help', icon: HelpCircle },
     { id: 'legal', label: 'Legal', icon: Scale },
     { id: 'logout', label: 'Logout', icon: LogOut },
@@ -693,7 +677,7 @@ const App = () => {
   const handleNavigate = (tab: string) => {
     console.log('[App] handleNavigate called with tab:', tab);
     // Determine if this is an end-user navigation
-    const isEndUserNav = tab.startsWith('user-') || tab === 'userdashboard';
+    const isEndUserNav = tab.startsWith('user-');
     
     // Update user context based on the navigation
     if (isEndUserNav) {
@@ -709,7 +693,6 @@ const App = () => {
     const hashMap: { [key: string]: string } = {
       'admin': '#/dashboard',
       'dashboard': '#/dashboard',
-      'userdashboard': '#/user-dashboard',
       'quickstart': '#/quickstart',
       'apireference': '#/api-reference',
       'codeexamples': '#/code-examples',
@@ -1831,7 +1814,7 @@ const App = () => {
             </div>
 
             <div className="flex justify-center mb-2">
-              <span className="text-2xl font-bold text-[#FF5914]">PYMSTR</span>
+              <span className="text-2xl font-bold text-[#06D7FF]">PYMSTR</span>
             </div>
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 rounded-full flex items-center justify-center bg-[#757575]">
@@ -1847,7 +1830,7 @@ const App = () => {
           <CardContent className="space-y-4">
             {isLoggingIn ? (
               <div className="text-center space-y-4 py-8">
-                <div className="w-12 h-12 border-4 border-[#FF5914] border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <div className="w-12 h-12 border-4 border-[#06D7FF] border-t-transparent rounded-full animate-spin mx-auto"></div>
                 <p className="text-muted-foreground">
                   Connecting with {userLoginMethod}...
                 </p>
@@ -2053,23 +2036,20 @@ const App = () => {
         );
       case "checkout":
         return <CustomerCheckout />;
-      case "userdashboard":
+      case "user-dashboard":
         return isUserLoggedIn ? (
-          <UserDashboardPage
-            isUserLoggedIn={isUserLoggedIn}
-            userLoginMethod={userLoginMethod}
-            onLogout={handleLogout}
-            onBackToMerchant={() => setActiveTab("admin")}
-            onNavigateToHelp={() => setActiveTab("help")}
-            onNavigateToLegal={() => setActiveTab("legal")}
-            copiedItem={copiedItem}
-            onCopy={copyToClipboard}
+          <EndUserDashboardPage 
+            onNavigateToWallets={(view) => {
+              setActiveTab("user-wallets");
+              // Store the desired view in localStorage for the wallets page to pick up
+              if (view) {
+                localStorage.setItem('pymstr-wallet-view', view);
+              }
+            }}
           />
         ) : (
           <UserLogin />
         );
-      case "user-dashboard":
-        return isUserLoggedIn ? <EndUserDashboardPage /> : <UserLogin />;
       case "user-wallets":
         return isUserLoggedIn ? (
           <EndUserWalletsPage wallets={wallets} setWallets={setWallets} theme={theme} />
@@ -2078,32 +2058,10 @@ const App = () => {
         );
       case "user-transactions":
         return isUserLoggedIn ? <EndUserTransactionsPage /> : <UserLogin />;
-      case "user-send":
-        return isUserLoggedIn ? (
-          <EndUserSendPage wallets={wallets} />
-        ) : (
-          <UserLogin />
-        );
-      case "user-receive":
-        return isUserLoggedIn ? (
-          <EndUserReceivePage wallets={wallets} />
-        ) : (
-          <UserLogin />
-        );
-      case "user-settings":
-        return isUserLoggedIn ? (
-          <EndUserSettingsPage
-            userLoginMethod={userLoginMethod}
-            onLogout={handleLogout}
-            onBackToMerchant={() => setActiveTab("admin")}
-          />
-        ) : (
-          <UserLogin />
-        );
       case "help":
-        return <HelpPage />;
+        return <HelpPage userContext={userContext} />;
       case "legal":
-        return <LegalPage />;
+        return <LegalPage userContext={userContext} />;
       default:
         return (
           <DashboardPage
@@ -2134,7 +2092,7 @@ const App = () => {
     if (activeTab === "checkout") return false;
     
     // Hide for end-user pages when not logged in (login screen is standalone)
-    const isEndUserPage = activeTab.startsWith("user-") || activeTab === "userdashboard";
+    const isEndUserPage = activeTab.startsWith("user-");
     if (isEndUserPage && !isUserLoggedIn) return false;
     
     // Show for all other cases
@@ -2153,6 +2111,7 @@ const App = () => {
           isExpanded={isNavRailExpanded}
           onExpandedChange={setIsNavRailExpanded}
           menuItems={userContext === 'enduser' ? endUserNavItems : undefined}
+          userType={userContext === 'enduser' ? 'enduser' : 'merchant'}
           theme={theme}
           onThemeToggle={toggleTheme}
         />
@@ -2186,56 +2145,27 @@ const App = () => {
             >
               <div className="flex items-center justify-between px-4 md:px-6 h-16">
                 {/* Mobile: Logo */}
-                <button onClick={() => setActiveTab("admin")} className="md:hidden">
-                  {/* Light mode logo */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 dark:hidden">
-                    <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
-                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
-                  </svg>
-                  {/* Dark mode logo */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 hidden dark:block">
-                    <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
-                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
-                  </svg>
+                <button 
+                  onClick={() => setActiveTab(userContext === 'enduser' ? 'user-dashboard' : 'admin')} 
+                  className="md:hidden"
+                >
+                  <PymstrLogo 
+                    variant="icon" 
+                    size="md" 
+                    userType={userContext}
+                  />
                 </button>
 
                 {/* Desktop: Logo with PYMSTR text (moves with rail) */}
-                <button onClick={() => setActiveTab("admin")} className="hidden md:flex items-center gap-3">
-                  {/* Light mode logo */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 dark:hidden flex-shrink-0">
-                    <rect width="32" height="32" fill="#e8e4dc" fillOpacity="0.5" rx="8" ry="8"/>
-                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
-                  </svg>
-                  {/* Dark mode logo */}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="h-8 w-8 hidden dark:block flex-shrink-0">
-                    <rect width="32" height="32" fill="#1a1a1a" rx="8" ry="8"/>
-                    <rect x="6" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="9" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="12" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="15" y="7" width="2" height="18" fill="#ff5722"/>
-                    <rect x="18" y="10" width="2" height="12" fill="#ff5722"/>
-                    <rect x="21" y="8" width="2" height="16" fill="#ff5722"/>
-                    <rect x="24" y="10" width="2" height="12" fill="#ff5722"/>
-                  </svg>
-                  <span className="text-xl font-bold text-[#FF5914]">PYMSTR</span>
+                <button 
+                  onClick={() => setActiveTab(userContext === 'enduser' ? 'user-dashboard' : 'admin')} 
+                  className="hidden md:flex items-center gap-3"
+                >
+                  <PymstrLogo 
+                    variant="full" 
+                    size="md" 
+                    userType={userContext}
+                  />
                 </button>
 
                 {/* Desktop: Spacer */}
@@ -2296,15 +2226,8 @@ const App = () => {
                               onClick={() => setActiveTab("user-dashboard")}
                               className="cursor-pointer rounded-lg h-10 px-3"
                             >
-                              <Activity className="mr-2 h-[18px] w-[18px]" />
-                              Dashboard
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setActiveTab("user-wallets")}
-                              className="cursor-pointer rounded-lg h-10 px-3"
-                            >
                               <Wallet className="mr-2 h-[18px] w-[18px]" />
-                              Wallets
+                              Wallet
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => setActiveTab("user-transactions")}
@@ -2312,13 +2235,6 @@ const App = () => {
                             >
                               <Receipt className="mr-2 h-[18px] w-[18px]" />
                               Transactions
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setActiveTab("user-settings")}
-                              className="cursor-pointer rounded-lg h-10 px-3"
-                            >
-                              <Settings className="mr-2 h-[18px] w-[18px]" />
-                              Settings
                             </DropdownMenuItem>
                           </>
                         ) : (
@@ -2402,7 +2318,11 @@ const App = () => {
                       <div className="p-2">
                         <DropdownMenuItem 
                           onClick={handleLogout}
-                          className="cursor-pointer rounded-lg h-10 px-3 text-[#FF5914] focus:text-[#FF5914] focus:bg-[#FF5914]/10"
+                          className={`cursor-pointer rounded-lg h-10 px-3 ${
+                            userContext === 'enduser'
+                              ? 'text-[#07D7FF] focus:text-[#07D7FF] focus:bg-[#07D7FF]/10'
+                              : 'text-[#FF5914] focus:text-[#FF5914] focus:bg-[#FF5914]/10'
+                          }`}
                         >
                           <LogOut className="mr-2 h-[18px] w-[18px]" />
                           Logout
@@ -2431,6 +2351,7 @@ const App = () => {
               onNavigate={handleNavigate}
               navItems={userContext === 'enduser' ? endUserBottomNavItems : undefined}
               moreItems={userContext === 'enduser' ? endUserMoreItems : undefined}
+              userType={userContext === 'enduser' ? 'enduser' : 'merchant'}
             />
           )}
       </div>

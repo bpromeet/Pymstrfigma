@@ -3,12 +3,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
-import { ArrowLeft, LogOut } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 interface UserSettingsSectionProps {
   userLoginMethod: string;
   onLogout: () => void;
-  onBackToMerchant: () => void;
 }
 
 /**
@@ -18,13 +28,11 @@ interface UserSettingsSectionProps {
  * - Account info (login method)
  * - Notification preferences
  * - App preferences
- * - Logout action
- * - Back to Merchant view
+ * - Delete account action
  */
 const UserSettingsSection: React.FC<UserSettingsSectionProps> = ({
   userLoginMethod,
   onLogout,
-  onBackToMerchant,
 }) => {
   const [emailNotifications, setEmailNotifications] = React.useState(true);
   const [pushNotifications, setPushNotifications] = React.useState(false);
@@ -80,29 +88,58 @@ const UserSettingsSection: React.FC<UserSettingsSectionProps> = ({
         </CardContent>
       </Card>
 
-      {/* Actions */}
-      <Card className="rounded-2xl">
+      {/* Danger Zone - Delete Account */}
+      <Card className="rounded-2xl border-[#FF5914]">
         <CardHeader>
-          <CardTitle>Account Actions</CardTitle>
+          <CardTitle className="text-[#FF5914]">Danger Zone</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Button
-            variant="outline"
-            className="w-full min-h-12 rounded-full justify-start"
-            onClick={onBackToMerchant}
-          >
-            <ArrowLeft className="w-[18px] h-[18px] mr-2" />
-            Back to Merchant View
-          </Button>
-
-          <Button
-            variant="outline"
-            className="w-full min-h-12 rounded-full justify-start border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white"
-            onClick={onLogout}
-          >
-            <LogOut className="w-[18px] h-[18px] mr-2" />
-            Logout
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full min-h-12 rounded-full justify-start border-[#FF5914] text-[#FF5914] hover:bg-[#FF5914] hover:text-white transition-all duration-200"
+              >
+                <Trash2 className="w-[18px] h-[18px] mr-2" />
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="rounded-3xl max-w-md">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-[#FF5914]">
+                  Delete Account Permanently?
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-4 pt-2">
+                  <p>
+                    This action cannot be undone. This will permanently delete your account and remove all associated data.
+                  </p>
+                  <div className="bg-[#FF5914]/10 border border-[#FF5914] rounded-xl p-4 space-y-2">
+                    <p className="font-semibold text-[#FF5914]">⚠️ Warning:</p>
+                    <ul className="text-sm space-y-1 text-muted-foreground">
+                      <li>• All wallet data will be deleted</li>
+                      <li>• Transaction history will be removed</li>
+                      <li>• You will lose access to your funds if not withdrawn</li>
+                      <li>• This action is irreversible</li>
+                    </ul>
+                  </div>
+                  <p className="text-sm font-medium">
+                    Make sure to withdraw all funds before deleting your account.
+                  </p>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="rounded-full min-h-12">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={onLogout}
+                  className="rounded-full min-h-12 bg-[#FF5914] text-white hover:bg-[#E04D0F] transition-all duration-200"
+                >
+                  Delete Account
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </CardContent>
       </Card>
     </div>

@@ -15,9 +15,19 @@ interface NavigationRailProps {
   menuItems?: NavigationItem[];
   theme?: 'light' | 'dark';
   onThemeToggle?: () => void;
+  userType?: 'merchant' | 'enduser'; // Add userType prop
 }
 
-export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNavigate, isExpanded, onExpandedChange, menuItems, theme, onThemeToggle }) => {
+export const NavigationRail: React.FC<NavigationRailProps> = ({ 
+  activeTab, 
+  onNavigate, 
+  isExpanded, 
+  onExpandedChange, 
+  menuItems, 
+  theme, 
+  onThemeToggle,
+  userType = 'merchant' // Default to merchant
+}) => {
 
   // Map admin tab to dashboard for display
   const normalizedActiveTab = activeTab === 'admin' ? 'dashboard' : activeTab;
@@ -26,6 +36,18 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
   // For these pages, we don't highlight any nav item so clicking Dashboard shows visual feedback
   const hiddenPages = ['team', 'profile', 'settings'];
   const isOnHiddenPage = hiddenPages.includes(activeTab);
+  
+  // Detect if this is end user navigation based on menu items
+  const isEndUser = userType === 'enduser' || (menuItems && menuItems.some(item => item.id === 'user-dashboard'));
+  
+  // Color scheme based on user type
+  const activeColors = isEndUser 
+    ? 'bg-[#07D7FF]/10 dark:bg-[#07D7FF]/12 text-[#07D7FF]' 
+    : 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]';
+  
+  const tooltipColors = isEndUser
+    ? 'bg-[#E0F7FA] dark:bg-[#07D7FF]/20 text-[#07D7FF]'
+    : 'bg-[#FFE5D9] dark:bg-[#FF5914]/20 text-[#FF5914]';
 
   // Default merchant menu items
   const defaultNavItems: NavigationItem[] = [
@@ -98,7 +120,7 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
                   onClick={() => handleNavClick(item.id)}
                   className={`group relative flex items-center w-full h-12 rounded-full transition-colors duration-200 ${ 
                     isActive
-                      ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
+                      ? activeColors
                       : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                   }`}
                   aria-label={item.label}
@@ -123,9 +145,12 @@ export const NavigationRail: React.FC<NavigationRailProps> = ({ activeTab, onNav
                   
                   {/* Custom Tooltip - Only show when collapsed */}
                   {!isExpanded && (
-                    <div className="absolute left-full ml-4 px-5 py-3 bg-[#FFE5D9] dark:bg-[#FF5914]/20 backdrop-blur-sm rounded-full shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-events-none whitespace-nowrap z-50 flex items-center gap-3" style={{transition: 'opacity 1500ms ease-out, visibility 1500ms ease-out'}}>
-                      <Icon className="w-5 h-5 text-[#FF5914]" />
-                      <span className="font-medium text-[#FF5914]">{item.label}</span>
+                    <div 
+                      className={`absolute left-full ml-4 px-5 py-3 backdrop-blur-sm rounded-full shadow-md opacity-0 invisible group-hover:opacity-100 group-hover:visible pointer-events-none whitespace-nowrap z-50 flex items-center gap-3 ${tooltipColors}`}
+                      style={{transition: 'opacity 1500ms ease-out, visibility 1500ms ease-out'}}
+                    >
+                      <Icon className={`w-5 h-5 ${isEndUser ? 'text-[#07D7FF]' : 'text-[#FF5914]'}`} />
+                      <span className={`font-medium ${isEndUser ? 'text-[#07D7FF]' : 'text-[#FF5914]'}`}>{item.label}</span>
                     </div>
                   )}
                 </button>

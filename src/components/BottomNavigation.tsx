@@ -37,15 +37,37 @@ interface BottomNavigationProps {
   onNavigate: (tab: string) => void;
   navItems?: BottomNavItem[];
   moreItems?: BottomNavItem[];
+  userType?: 'merchant' | 'enduser'; // Add userType prop for color variation
 }
 
-export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onNavigate, navItems: customNavItems, moreItems: customMoreItems }) => {
+export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onNavigate, navItems: customNavItems, moreItems: customMoreItems, userType = 'merchant' }) => {
   const [showMoreSheet, setShowMoreSheet] = React.useState(false);
   const [touchStart, setTouchStart] = React.useState<number | null>(null);
   const [touchEnd, setTouchEnd] = React.useState<number | null>(null);
 
   // Map admin tab to dashboard for display
   const normalizedActiveTab = activeTab === 'admin' ? 'dashboard' : activeTab;
+  
+  // Detect if this is end user based on userType prop or menu items
+  const isEndUser = userType === 'enduser' || (customNavItems && customNavItems.some(item => item.id === 'user-dashboard'));
+  
+  // Color scheme based on user type
+  const activeColors = isEndUser 
+    ? 'bg-[#07D7FF]/10 dark:bg-[#07D7FF]/12 text-[#07D7FF]' 
+    : 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]';
+  
+  const activeSheetColors = isEndUser
+    ? 'bg-[#07D7FF]/10 dark:bg-[#07D7FF]/12 text-[#07D7FF]'
+    : 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]';
+  
+  const hoverSheetColors = isEndUser
+    ? 'hover:bg-[#07D7FF]/12'
+    : 'hover:bg-[#FF5914]/12';
+  
+  // Logout colors - cyan for end users, orange for merchants
+  const logoutColors = isEndUser
+    ? 'text-[#07D7FF] hover:bg-[#07D7FF]/12'
+    : 'text-[#FF5914] hover:bg-[#FF5914]/12';
 
   // Minimum swipe distance (in px) to trigger close
   const minSwipeDistance = 50;
@@ -153,7 +175,7 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
                 onClick={() => handleNavClick(item.id)}
                 className={`flex flex-col items-center justify-center min-w-[64px] h-16 px-3 rounded-full transition-all duration-200 ${
                   isActive
-                    ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
+                    ? activeColors
                     : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                 }`}
                 aria-label={item.label}
@@ -216,9 +238,9 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, o
                     onClick={() => handleMoreItemClick(item.id)}
                     className={`flex items-center gap-4 h-14 px-4 rounded-2xl transition-all duration-200 ${
                       isLogout
-                        ? 'text-[#FF5914] hover:bg-[#FF5914]/12'
+                        ? logoutColors
                         : isActive
-                        ? 'bg-[#e8e4dc]/20 dark:bg-[#FF5914]/12 text-[#FF5914]'
+                        ? activeSheetColors
                         : 'text-black dark:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.04]'
                     }`}
                   >

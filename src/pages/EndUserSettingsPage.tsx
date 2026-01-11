@@ -6,24 +6,22 @@ import UserSettingsSection from "../components/user-sections/UserSettingsSection
 interface EndUserSettingsPageProps {
   userLoginMethod: string;
   onLogout: () => void;
-  onBackToMerchant: () => void;
 }
 
 /**
  * EndUserSettingsPage - End User Settings
  * 
  * This is the SETTINGS page for end users (separate from merchant settings)
- * Shows account info, preferences, logout
+ * Shows account info, preferences, delete account
  */
 const EndUserSettingsPage: React.FC<EndUserSettingsPageProps> = ({ 
   userLoginMethod, 
-  onLogout, 
-  onBackToMerchant 
+  onLogout
 }) => {
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<Settings className="w-6 h-6 text-[#FF5914]" />}
+        icon={<Settings className="w-6 h-6 text-[#07D7FF]" />}
         title="Settings"
         subtitle="Manage your account preferences"
       />
@@ -31,7 +29,6 @@ const EndUserSettingsPage: React.FC<EndUserSettingsPageProps> = ({
         <UserSettingsSection 
           userLoginMethod={userLoginMethod}
           onLogout={onLogout}
-          onBackToMerchant={onBackToMerchant}
         />
       </PageLayout.Content>
     </PageLayout>

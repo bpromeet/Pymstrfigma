@@ -32,10 +32,17 @@ import {
 } from "lucide-react";
 import { toast } from "sonner@2.0.3";
 
-const HelpPage: React.FC = () => {
+interface HelpPageProps {
+  userContext?: 'merchant' | 'enduser';
+}
+
+const HelpPage: React.FC<HelpPageProps> = ({ userContext = 'merchant' }) => {
   const [contactName, setContactName] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactMessage, setContactMessage] = useState("");
+  
+  // Color scheme based on user type
+  const iconColor = userContext === 'enduser' ? 'text-[#07D7FF]' : 'text-[#FF5914]';
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +59,7 @@ const HelpPage: React.FC = () => {
   return (
     <PageLayout>
       <PageLayout.Header
-        icon={<HelpCircle className="w-6 h-6 text-[#FF5914]" />}
+        icon={<HelpCircle className={`w-6 h-6 ${iconColor}`} />}
         title="Help Center"
         subtitle="Find answers and get support"
       />

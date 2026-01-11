@@ -323,7 +323,6 @@ All users (merchants and end users) experience the **same layout structure**:
 
 **End User Navigation Items:**
 * Dashboard
-* Wallets
 * Transactions
 * Settings
 * Help

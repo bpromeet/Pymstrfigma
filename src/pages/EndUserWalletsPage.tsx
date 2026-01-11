@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { PageLayout } from "../components/PageLayout";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
-import { Wallet, ChevronRight, ArrowLeft } from "lucide-react";
+import { Wallet, Send, Download } from "lucide-react";
 import { CryptoIcon } from "../components/CryptoIcon";
-import WalletMainActionButton from "../components/WalletMainActionButton";
-import { ManageCoin } from "../components/ManageCoin";
+import { ChainBadge } from "../components/ChainBadge";
+import { SendMoneyFlow } from "../components/user-sections/SendMoneyFlow";
+import { ReceiveMoneyFlow } from "../components/user-sections/ReceiveMoneyFlow";
 
 interface WalletBalance {
   [crypto: string]: number;
@@ -38,11 +37,10 @@ interface EndUserWalletsPageProps {
 /**
  * EndUserWalletsPage - End User Wallet Management
  * 
- * Uses the MERCHANT WALLET STRUCTURE:
- * - Main view: Currency list (USDC, USDT, EURC)
- * - Manage view: ManageCoin component with tabs (Breakdown/Deposit/Send)
- * 
- * This provides a consistent wallet experience across merchant and end user interfaces.
+ * User-oriented wallet page with:
+ * - Quick access to Send/Receive
+ * - Clear balance overview
+ * - Simple, friendly interface
  */
 export default function EndUserWalletsPage({
   wallets,
@@ -50,16 +48,23 @@ export default function EndUserWalletsPage({
   theme,
 }: EndUserWalletsPageProps) {
   const mainWallet = wallets.find((w) => w.isDefault);
-  const [selectedCrypto, setSelectedCrypto] = useState<string>("");
-  const [showingCurrency, setShowingCurrency] = useState(false);
+  
+  // Check localStorage for desired view (set by Dashboard navigation)
+  const initialView = (() => {
+    const savedView = localStorage.getItem('pymstr-wallet-view');
+    localStorage.removeItem('pymstr-wallet-view'); // Clear after reading
+    return savedView === 'send' || savedView === 'receive' ? savedView : 'wallets';
+  })();
+  
+  const [activeView, setActiveView] = useState<"wallets" | "send" | "receive">(initialView as "wallets" | "send" | "receive");
 
   if (!mainWallet) {
     return (
       <PageLayout>
         <PageLayout.Header
-          icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
+          icon={<Wallet className="w-6 h-6 text-[#07D7FF]" />}
           title="Wallets"
-          subtitle="Manage your crypto wallets"
+          subtitle="Your crypto balances"
         />
         <PageLayout.Content>
           <Card className="rounded-2xl shadow-sm bg-white dark:bg-[#303030]">
@@ -67,7 +72,7 @@ export default function EndUserWalletsPage({
               <div className="text-center py-12">
                 <Wallet className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                 <h3 className="text-gray-900 dark:text-white mb-2">
-                  No main wallet found
+                  No wallet found
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
                   Please contact support
@@ -80,15 +85,7 @@ export default function EndUserWalletsPage({
     );
   }
 
-  const selectCurrency = (crypto: string) => {
-    setSelectedCrypto(crypto);
-    setShowingCurrency(true);
-  };
-
-  const backToList = () => {
-    setShowingCurrency(false);
-    setSelectedCrypto("");
-  };
+  const totalBalance = Object.values(mainWallet.balance).reduce((sum, val) => sum + val, 0);
 
   const getCryptoName = (symbol: string) => {
     const names: { [key: string]: string } = {
@@ -99,214 +96,150 @@ export default function EndUserWalletsPage({
     return names[symbol] || symbol;
   };
 
+  // Show Send Money Flow
+  if (activeView === "send") {
+    return (
+      <PageLayout>
+        <PageLayout.Header
+          icon={<Send className="w-6 h-6 text-[#1E88E5]" />}
+          title="Send Money"
+          subtitle="Transfer crypto to another wallet"
+        />
+        <PageLayout.Content>
+          <SendMoneyFlow
+            onBack={() => setActiveView("wallets")}
+            walletAddress={mainWallet.address}
+            availableBalances={mainWallet.balance}
+          />
+        </PageLayout.Content>
+      </PageLayout>
+    );
+  }
+
+  // Show Receive Money Flow
+  if (activeView === "receive") {
+    return (
+      <PageLayout>
+        <PageLayout.Header
+          icon={<Download className="w-6 h-6 text-[#07D7FF]" />}
+          title="Receive Money"
+          subtitle="Get your wallet address and QR code"
+        />
+        <PageLayout.Content>
+          <ReceiveMoneyFlow
+            onBack={() => setActiveView("wallets")}
+            walletAddress={mainWallet.address}
+          />
+        </PageLayout.Content>
+      </PageLayout>
+    );
+  }
+
+  // Main Wallets View
   return (
     <PageLayout>
-      {!showingCurrency && (
-        <PageLayout.Header
-          icon={<Wallet className="w-6 h-6 text-[#FF5914]" />}
-          title="Wallets"
-          subtitle="Manage your crypto wallets"
-        />
-      )}
+      <PageLayout.Header
+        icon={<Wallet className="w-6 h-6 text-[#07D7FF]" />}
+        title="Wallets"
+        subtitle="Your crypto balances"
+      />
       <PageLayout.Content>
         <div className="space-y-6">
-          {/* Main Action Button - Wallet Address (Below Header) */}
-          {!showingCurrency && (
-            <WalletMainActionButton
-              address={mainWallet.address}
-              showIcon={true}
-            />
-          )}
+          {/* Total Balance Card */}
+          <Card className="rounded-2xl bg-gradient-to-br from-[#07D7FF] to-[#06c4e6] text-white border-0 shadow-lg">
+            <CardContent className="pt-6 pb-6">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-white/80">
+                  <Wallet className="w-4 h-4" />
+                  <p className="text-sm">Total Balance</p>
+                </div>
+                <div className="text-4xl font-semibold">
+                  ${totalBalance.toLocaleString('en-US', { minimumFractionDecimals: 2, maximumFractionDecimals: 2 })}
+                </div>
+                <p className="text-sm text-white/70">Across all currencies</p>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Desktop Back Button */}
-          {showingCurrency && (
-            <div className="hidden md:flex items-center justify-between">
-              <Button
-                variant="outline"
-                onClick={backToList}
-                className="rounded-full"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            </div>
-          )}
+          {/* Quick Actions */}
+          <div className="grid grid-cols-2 gap-4">
+            <Button 
+              onClick={() => setActiveView("send")}
+              className="px-8 py-3 min-h-12 rounded-full bg-[#1E88E5] text-white hover:bg-[#1565C0] hover:shadow-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
+            >
+              <Send className="w-5 h-5" />
+              <span className="font-medium">Send</span>
+            </Button>
+            
+            <Button 
+              onClick={() => setActiveView("receive")}
+              className="px-8 py-3 min-h-12 rounded-full bg-[#07D7FF] text-white hover:bg-[#06c4e6] hover:shadow-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-sm"
+            >
+              <Download className="w-5 h-5" />
+              <span className="font-medium">Receive</span>
+            </Button>
+          </div>
 
-          {!showingCurrency && (
-            <>
-              <div className="space-y-6">
-                <Card className="bg-white dark:bg-[#303030] shadow-sm">
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      {/* Wallet Header - MD3 Nested Section (Medium radius 12px) with subtle styling */}
-                      <div className="bg-[#FAFAFA] dark:bg-[#2E3C49] rounded-xl p-4 shadow-sm">
-                        <div className="flex items-center justify-between">
-                          <h3>{mainWallet.name}</h3>
-                          <Badge className="bg-[#D4EDDA] text-[#155724] dark:bg-[#032e15] dark:text-[#05df72] rounded-full border-0">
-                            Active
-                          </Badge>
+          {/* Currency Balances */}
+          <div className="space-y-3">
+            <h3 className="text-gray-900 dark:text-white font-medium">Your Balances</h3>
+            
+            {Object.entries(mainWallet.balance).map(([crypto, balance]) => {
+              // Get chain balances for this crypto
+              const chainBalances = mainWallet.chainBalances?.[crypto] || {};
+              const chainsWithBalance = Object.entries(chainBalances).filter(([_, bal]) => bal > 0);
+              
+              return (
+                <Card key={crypto} className="rounded-2xl shadow-sm hover:shadow-md transition-all duration-200">
+                  <CardContent className="pt-6 pb-6">
+                    {/* Card Header - Crypto and Total Balance */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-4">
+                        <CryptoIcon symbol={crypto} size={40} />
+                        <div>
+                          <p className="font-semibold text-gray-900 dark:text-white">
+                            {crypto}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {getCryptoName(crypto)}
+                          </p>
                         </div>
                       </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                          {balance.toLocaleString('en-US', { minimumFractionDecimals: 2, maximumFractionDecimals: 2 })}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Balance
+                        </p>
+                      </div>
+                    </div>
 
-                      {/* Mobile View - Cards */}
-                      <div className="md:hidden space-y-3">
-                        {Object.entries(
-                          mainWallet.balance,
-                        ).map(([crypto, balance]) => (
-                          <div
-                            key={crypto}
-                            onClick={() =>
-                              selectCurrency(crypto)
-                            }
-                            className="cursor-pointer shadow-sm hover:shadow-md rounded-2xl p-4 transition-all bg-white dark:bg-[#303030]"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <CryptoIcon symbol={crypto} />
-                                <div>
-                                  <p className="text-gray-900 dark:text-white font-medium">
-                                    {crypto}
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {getCryptoName(crypto)}
-                                  </p>
-                                </div>
-                              </div>
-                              <ChevronRight className="w-5 h-5 text-gray-400" />
-                            </div>
-                            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
-                              <div>
-                                <p className="text-sm text-muted-foreground">
-                                  Balance
-                                </p>
-                                <p className="font-mono text-gray-900 dark:text-white">
-                                  {balance.toFixed(2)}
-                                </p>
-                              </div>
-                              <div className="text-right">
-                                <p className="text-sm text-muted-foreground">
-                                  USD Value
-                                </p>
-                                <p className="text-muted-foreground">
-                                  ≈ ${balance.toFixed(2)}
-                                </p>
-                              </div>
-                            </div>
+                    {/* Divider */}
+                    {chainsWithBalance.length > 0 && (
+                      <div className="border-t border-gray-200 dark:border-gray-700 mb-4" />
+                    )}
+
+                    {/* Chain Breakdown */}
+                    {chainsWithBalance.length > 0 && (
+                      <div className="space-y-3">
+                        {chainsWithBalance.map(([chain, chainBalance]) => (
+                          <div key={chain} className="flex items-center justify-between">
+                            <ChainBadge chain={chain} />
+                            <p className="font-medium text-gray-900 dark:text-white">
+                              {chainBalance.toLocaleString('en-US', { minimumFractionDecimals: 2, maximumFractionDecimals: 2 })}
+                            </p>
                           </div>
                         ))}
                       </div>
-
-                      {/* Desktop View - Table */}
-                      <div className="hidden md:block shadow-sm rounded-2xl overflow-hidden">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="pl-6">
-                                Currency
-                              </TableHead>
-                              <TableHead>Balance</TableHead>
-                              <TableHead>USD Value</TableHead>
-                              <TableHead className="text-right pr-6">
-                                Actions
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {Object.entries(
-                              mainWallet.balance,
-                            ).map(([crypto, balance]) => (
-                              <TableRow
-                                key={crypto}
-                                onClick={() =>
-                                  selectCurrency(crypto)
-                                }
-                                className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors duration-200"
-                              >
-                                <TableCell className="pl-6">
-                                  <div className="flex items-center space-x-3">
-                                    <CryptoIcon
-                                      symbol={crypto}
-                                    />
-                                    <div>
-                                      <p className="text-gray-900 dark:text-white font-medium">
-                                        {crypto}
-                                      </p>
-                                      <p className="text-sm text-muted-foreground">
-                                        {getCryptoName(
-                                          crypto,
-                                        )}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  <p className="font-mono text-gray-900 dark:text-white">
-                                    {balance.toFixed(2)}
-                                  </p>
-                                </TableCell>
-                                <TableCell>
-                                  <p className="text-muted-foreground">
-                                    ≈ ${balance.toFixed(2)}{" "}
-                                    USD
-                                  </p>
-                                </TableCell>
-                                <TableCell className="text-right pr-6">
-                                  <div className="flex items-center justify-end gap-2 text-[#07D7FF]">
-                                    <span className="text-sm">
-                                      Manage
-                                    </span>
-                                    <ChevronRight className="w-4 h-4" />
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
-              </div>
-            </>
-          )}
-
-          {/* Desktop: Inline Card - Hidden on Mobile */}
-          {showingCurrency && (
-            <div className="hidden md:block">
-              <ManageCoin
-                selectedCrypto={selectedCrypto}
-                totalBalance={
-                  mainWallet.balance[selectedCrypto] || 0
-                }
-                chainBalances={
-                  mainWallet.chainBalances?.[
-                    selectedCrypto
-                  ] || {}
-                }
-                onBack={backToList}
-                walletAddress={mainWallet.address}
-                variant="desktop"
-              />
-            </div>
-          )}
+              );
+            })}
+          </div>
         </div>
       </PageLayout.Content>
-
-      {/* Mobile: Full Screen View for Manage Crypto */}
-      {showingCurrency && (
-        <ManageCoin
-          selectedCrypto={selectedCrypto}
-          totalBalance={
-            mainWallet.balance[selectedCrypto] || 0
-          }
-          chainBalances={
-            mainWallet.chainBalances?.[selectedCrypto] || {}
-          }
-          onBack={backToList}
-          walletAddress={mainWallet.address}
-          variant="mobile-sheet"
-        />
-      )}
     </PageLayout>
   );
 }
